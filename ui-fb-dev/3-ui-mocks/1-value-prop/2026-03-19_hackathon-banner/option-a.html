@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option A: Full-Width Strip (Luthien Blue)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #09090b;
+      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* NAV (simplified from v10.8) */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1a1a1e;
+      padding: 0 24px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-wordmark {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #c8c8d0;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* BANNER STRIP */
+    .hackathon-banner {
+      position: fixed;
+      top: 48px;
+      left: 0;
+      right: 0;
+      z-index: 99;
+      background: #18181b;
+      border-top: 2px solid #6b9fff;
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #a1a1aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .hackathon-banner a {
+      color: #6b9fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .hackathon-banner a:hover { color: #93b8ff; }
+    .hackathon-banner .banner-highlight {
+      color: #e4e4e7;
+      font-weight: 600;
+    }
+    .hackathon-banner .banner-sep {
+      color: #3f3f46;
+      margin: 0 2px;
+    }
+    .hackathon-banner .banner-dismiss {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #52525b;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 4px;
+    }
+    .hackathon-banner .banner-dismiss:hover { color: #a1a1aa; }
+
+    @media (max-width: 640px) {
+      .hackathon-banner {
+        font-size: 0.75rem;
+        padding: 8px 40px 8px 16px;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+    }
+
+    /* HERO (simplified placeholder) */
+    .hero {
+      padding-top: 120px;
+      padding-bottom: 40px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: #fafafa;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: clamp(0.85rem, 2vw, 1.03rem);
+      color: #71717a;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* Rest of page placeholder */
+    .placeholder {
+      padding: 60px 24px;
+      text-align: center;
+      color: #3f3f46;
+      font-size: 0.85rem;
+      border-top: 1px solid #1a1a1e;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <span class="nav-wordmark">Luthien</span>
+  </nav>
+
+  <div class="hackathon-banner" id="hackathonBanner">
+    <span class="banner-highlight">Jai Dhyani speaks at AI Control Hackathon 2026</span>
+    <span class="banner-sep">|</span>
+    Fri Mar 20, 12 PM PDT
+    <span class="banner-sep">|</span>
+    Apart Research x Redwood Research
+    <span class="banner-sep">|</span>
+    655+ attendees
+    <span class="banner-sep">|</span>
+    <a href="https://luma.com/ai-control-hackathon-2026-jai-dhyani?tk=bfMBjG" target="_blank" rel="noopener">Register</a>
+    <span class="banner-sep">|</span>
+    <a href="../../../luthien-pbc-site/site/hackathon/">Project ideas</a>
+    <button class="banner-dismiss" onclick="document.getElementById('hackathonBanner').style.display='none'" aria-label="Dismiss">&times;</button>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Claude Code builds. You stay in control.</h1>
+      <p>Open-source proxy that sits between Claude Code and the Anthropic API.<br>Logs every request. Enforces your rules.</p>
+    </div>
+  </section>
+
+  <div class="placeholder">[rest of v10.8 page continues here]</div>
+
+</body>
+</html>

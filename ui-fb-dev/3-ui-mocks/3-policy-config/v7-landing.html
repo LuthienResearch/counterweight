@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Config UI v7 - 6 Mockup Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 32px;
+    max-width: 720px;
+  }
+  .context {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+  .context strong { color: #e5e5e5; }
+  .column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .column-header {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #666;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+  .column-header .header-icon {
+    margin-right: 8px;
+  }
+  .options { display: grid; gap: 20px; }
+  .option-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 24px;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .option-card:hover { border-color: #333; }
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .option-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: #888;
+    flex-shrink: 0;
+  }
+  .option-label.browser { color: #2563eb; border: 1px solid #1e3a5f; }
+  .option-label.terminal { color: #4ade80; border: 1px solid #1a3a2a; }
+  .option-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .option-desc {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    flex-grow: 1;
+  }
+  .reqs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .req-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: #4ade80;
+  }
+  .view-btn {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+    align-self: flex-start;
+  }
+  .view-btn:hover { background: #1d4ed8; }
+  @media (max-width: 768px) {
+    .column-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Policy Config UI v7</h1>
+  <p class="subtitle">6 approaches to policy config - 3 browser, 3 terminal. All built against 5 requirements from Round 2.</p>
+
+  <div class="context">
+    <strong>Feedback driving v7:</strong>
+    (1) Finn validated Option B (live demo) as the winner from v6.
+    (2) Josh asked "can I have multiple policies active?" - v7 answers yes by default.
+    (3) Simple find-and-replace (DeSlop) is not enough - Finn wants LLM judge + auto-retry against a style guide.
+    (4) v6 had broken interactions (configure button did nothing) - v7 makes every clickable element functional.
+  </div>
+
+  <div class="column-grid">
+    <!-- Browser Mockups Column -->
+    <div>
+      <div class="column-header"><span class="header-icon">&#9671;</span>Browser Mockups</div>
+      <div class="options">
+        <!-- B1 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label browser">B1</span>
+            <span class="option-title">DeSlop Hero + Multi-Policy</span>
+          </div>
+          <p class="option-desc">Demo-first layout with before/after comparison. Multiple policies shown active simultaneously. Josh's "can I have multiple?" answered by default state.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R2</span>
+            <span class="req-tag">R4</span>
+            <span class="req-tag">R5</span>
+          </div>
+          <a href="v7-b1-deslop-multi.html" class="view-btn">View B1</a>
+        </div>
+
+        <!-- B2 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label browser">B2</span>
+            <span class="option-title">DeSlop + LLM Judge</span>
+          </div>
+          <p class="option-desc">Leads with DeSlop demo (value first), then introduces LLM judge blocking as a second act. Shows both policy types + mixed activity log.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R2</span>
+            <span class="req-tag">R3</span>
+            <span class="req-tag">R4</span>
+            <span class="req-tag">R5</span>
+          </div>
+          <a href="v7-b2-judge-demo.html" class="view-btn">View B2</a>
+        </div>
+
+        <!-- B3 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label browser">B3</span>
+            <span class="option-title">Style Guide Policy</span>
+          </div>
+          <p class="option-desc">Finn's use case: paste a style guide, LLM judge scores output authenticity, auto-retries if below threshold. The "custom policy" tier.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R3</span>
+            <span class="req-tag">R4</span>
+          </div>
+          <a href="v7-b3-style-guide.html" class="view-btn">View B3</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal Mockups Column -->
+    <div>
+      <div class="column-header"><span class="header-icon">&#9646;</span>Terminal Mockups</div>
+      <div class="options">
+        <!-- T1 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label terminal">T1</span>
+            <span class="option-title">luthien CLI</span>
+          </div>
+          <p class="option-desc">Manage policies entirely from the command line. luthien status, luthien enable, luthien configure. No browser needed.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R2</span>
+            <span class="req-tag">R3</span>
+            <span class="req-tag">R4</span>
+            <span class="req-tag">R5</span>
+          </div>
+          <a href="v7-t1-inline-feedback.html" class="view-btn">View T1</a>
+        </div>
+
+        <!-- T2 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label terminal">T2</span>
+            <span class="option-title">CLAUDE.md Native</span>
+          </div>
+          <p class="option-desc">Define policies in your project's CLAUDE.md. Luthien reads them at startup. Customize by editing a file you already have.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R2</span>
+            <span class="req-tag">R3</span>
+            <span class="req-tag">R4</span>
+            <span class="req-tag">R5</span>
+          </div>
+          <a href="v7-t2-blocked-retry.html" class="view-btn">View T2</a>
+        </div>
+
+        <!-- T3 -->
+        <div class="option-card">
+          <div class="option-header">
+            <span class="option-label terminal">T3</span>
+            <span class="option-title">Interactive In-Session</span>
+          </div>
+          <p class="option-desc">Manage policies with /luthien commands inside Claude Code. Toggle, configure, and review without leaving your session.</p>
+          <div class="reqs">
+            <span class="req-tag">R1</span>
+            <span class="req-tag">R2</span>
+            <span class="req-tag">R3</span>
+            <span class="req-tag">R4</span>
+            <span class="req-tag">R5</span>
+          </div>
+          <a href="v7-t3-session-summary.html" class="view-btn">View T3</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

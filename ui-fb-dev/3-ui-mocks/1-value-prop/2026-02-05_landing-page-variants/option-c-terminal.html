@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option C — Terminal Native</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--sf:#161b22;--bd:#30363d;--tx:#c9d1d9;--mt:#8b949e;--ac:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;--r:8px;--mx:880px}
+body{font-family:'SF Mono',Monaco,'Cascadia Code',Consolas,monospace;background:var(--bg);color:var(--tx);line-height:1.7;-webkit-font-smoothing:antialiased;font-size:14px}
+a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline}
+code{color:var(--green);font-family:inherit}
+.c{max-width:var(--mx);margin:0 auto;padding:0 24px}
+section{padding:72px 0}
+@media(max-width:640px){section{padding:48px 0}.cards{grid-template-columns:1fr!important}.try-grid{grid-template-columns:1fr!important}}
+.tag{display:inline-block;font-size:.72rem;color:var(--yellow);margin-bottom:16px}
+.tag::before{content:'$ ';color:var(--mt)}
+
+/* Hero — terminal prompt style */
+.hero{padding:100px 0 72px;text-align:left}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.01em;margin-bottom:16px;color:#f0f6fc}
+.hero h1 em{color:var(--green);font-style:normal}
+.hero .sub{font-size:1rem;color:var(--mt);max-width:600px;margin-bottom:32px}
+.hero .prompt{color:var(--mt);margin-bottom:8px;font-size:.85rem}
+.hero .prompt span{color:var(--green)}
+
+/* Terminal window */
+.term{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;max-width:680px}
+.term-bar{background:#1c2128;padding:8px 14px;display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bd)}
+.term-dot{width:10px;height:10px;border-radius:50%;background:#30363d}
+.term-bar .title{margin-left:12px;color:var(--mt);font-size:.75rem}
+.term-body{padding:20px;font-size:.85rem;line-height:1.8}
+.term-body .green{color:var(--green)}.term-body .red{color:var(--red)}.term-body .blue{color:var(--ac)}.term-body .yellow{color:var(--yellow)}.term-body .dim{color:var(--mt)}
+
+.video-box{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);max-width:680px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:var(--mt);font-size:.85rem;margin-top:32px}
+
+/* Sections */
+.dark{background:var(--sf);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+h2{font-size:1.4rem;margin-bottom:8px;font-weight:600;color:#f0f6fc}
+h2::before{content:'## ';color:var(--mt)}
+.section-sub{color:var(--mt);margin-bottom:32px;font-size:.9rem}
+
+/* Problem — git diff style */
+.diff{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.diff-header{background:#1c2128;padding:8px 14px;font-size:.78rem;color:var(--mt);border-bottom:1px solid var(--bd)}
+.diff-body{padding:14px 18px;font-size:.88rem;line-height:1.7}
+.diff-body .del{color:var(--red);display:block}.diff-body .del::before{content:'- '}
+.diff-body .add{color:var(--green);display:block}.diff-body .add::before{content:'+ '}
+.diff-body .ctx{color:var(--mt);display:block}
+
+/* Cards — bordered, monospace */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:24px 20px;transition:border-color .2s}
+.card:hover{border-color:var(--ac)}
+.card .ic{font-size:1.4rem;margin-bottom:10px}
+.card h3{font-size:.95rem;margin-bottom:8px;color:#f0f6fc;font-weight:600}
+.card p{color:var(--mt);font-size:.85rem}
+.card .fb{margin-top:10px;padding-top:8px;border-top:1px solid var(--bd);font-size:.72rem;color:#484f58;font-style:italic}
+
+/* Steps — command log style */
+.log{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:620px;margin:0 auto}
+.log-line{padding:6px 0;display:flex;gap:12px;align-items:flex-start}
+.log-line .ts{color:#484f58;font-size:.75rem;min-width:52px;padding-top:2px}
+.log-line .level{font-size:.72rem;font-weight:600;min-width:44px;padding-top:2px;text-transform:uppercase}
+.log-line .level.info{color:var(--ac)}.log-line .level.warn{color:var(--yellow)}.log-line .level.err{color:var(--red)}.log-line .level.ok{color:var(--green)}
+.log-line .msg{color:var(--tx);font-size:.85rem;flex:1}
+.log-line .msg .dim{color:var(--mt)}
+
+/* Placeholder */
+.ph{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:40px 20px;color:var(--mt);font-size:.85rem;max-width:600px;margin:0 auto;text-align:center}
+
+/* Try It */
+.lead{color:var(--mt);margin-bottom:36px;font-size:.95rem}
+.try-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:680px;margin:0 auto}
+.to{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:28px 24px;text-align:center;transition:border-color .2s}
+.to:hover{border-color:var(--ac)}
+.to .ic{font-size:1.8rem;margin-bottom:10px}
+.to h3{font-size:1rem;margin-bottom:6px;color:#f0f6fc;font-weight:600}
+.to p{color:var(--mt);font-size:.82rem;margin-bottom:20px}
+.inst{text-align:left;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:14px;font-size:.8rem;color:var(--green);margin-bottom:16px;line-height:1.7}
+.inst .cm{color:#484f58}
+.btn{display:inline-block;padding:10px 24px;border-radius:6px;font-weight:600;font-size:.88rem;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.btn-p{background:var(--green);color:#0d1117}.btn-p:hover{background:#2ea043;text-decoration:none}
+.btn-o{background:transparent;border:1px solid var(--bd);color:var(--tx)}.btn-o:hover{border-color:var(--ac);text-decoration:none}
+
+footer{padding:36px 0;text-align:center;color:var(--mt);font-size:.8rem;border-top:1px solid var(--bd)}
+footer a{color:var(--mt)}footer a:hover{color:var(--ac)}
+</style>
+</head>
+<body>
+
+<!-- =============================================
+     OPTION C: TERMINAL NATIVE
+     Full monospace. GitHub-dark palette.
+     Git diff for problems, log output for steps.
+     Feels like it belongs in your terminal.
+     ============================================= -->
+
+<section class="hero"><div class="c">
+  <div class="tag">cat README.md</div>
+  <h1>Let AI code. <em>Stay in control.</em></h1>
+  <p class="sub">The drop-in proxy for AI coding agents. See every request, enforce every rule, without changing your code.</p>
+
+  <!-- Simulated terminal showing the setup -->
+  <div class="term">
+    <div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div><span class="title">~/project</span></div>
+    <div class="term-body">
+      <span class="dim">$</span> <span class="green">export</span> ANTHROPIC_BASE_URL=http://localhost:8000/anthropic/v1<br>
+      <span class="dim">$</span> <span class="green">claude</span><br>
+      <span class="blue">╭──────────────────────────────────────╮</span><br>
+      <span class="blue">│</span> Claude Code <span class="dim">via Luthien proxy</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="blue">│</span><br>
+      <span class="blue">│</span> <span class="green">●</span> Policies active: <span class="yellow">3</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="blue">│</span><br>
+      <span class="blue">│</span> <span class="green">●</span> Session logging: <span class="green">on</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="blue">│</span><br>
+      <span class="blue">╰──────────────────────────────────────╯</span><br>
+      <span class="dim">$</span> <span class="dim">_</span>
+    </div>
+  </div>
+
+  <div class="video-box">DEMO VIDEO</div>
+</div></section>
+
+<section class="dark"><div class="c">
+  <h2>The problem</h2>
+  <p class="section-sub">What your coding agent is actually doing vs. what you asked for.</p>
+
+  <div class="diff">
+    <div class="diff-header">agents.md → actual behavior</div>
+    <div class="diff-body">
+      <span class="ctx">  # Your instructions</span>
+      <span class="del">"Only modify files in src/auth/"</span>
+      <span class="add">Agent refactors 3 unrelated files, reorganizes imports, adds a feature not in spec</span>
+    </div>
+  </div>
+
+  <div class="diff">
+    <div class="diff-header">expected workflow → reality</div>
+    <div class="diff-body">
+      <span class="ctx">  # Run prompt, go get coffee</span>
+      <span class="del">Come back to scoped, reviewable changes</span>
+      <span class="add">Come back to unreviewable diff with scope creep everywhere</span>
+    </div>
+  </div>
+
+  <div class="diff">
+    <div class="diff-header">claude-code → codex</div>
+    <div class="diff-body">
+      <span class="ctx">  # Switch tools (billing limit, preference, etc.)</span>
+      <span class="del">Session history, context, conversation preserved</span>
+      <span class="add">Cold start. Everything gone. Repeat yourself from scratch.</span>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="c">
+  <h2>What Luthien gives you</h2>
+  <p class="section-sub">Four things you wish your coding agent already did.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="ic">⌨️</div><h3>Never leave the terminal</h3>
+      <p><code>luthien quota</code> to check usage. <code>luthien resume</code> to continue. Everything in your workflow.</p>
+      <div class="fb">Jack: "If I have to break my workflow, the friction is a lot higher"</div>
+    </div>
+    <div class="card">
+      <div class="ic">🔄</div><h3>Take your data with you</h3>
+      <p>Resume sessions across Claude Code and Codex. Better titles, cross-tool history, search.</p>
+      <div class="fb">Context lost every time you switch tools</div>
+    </div>
+    <div class="card">
+      <div class="ic">🔍</div><h3>Never lose context</h3>
+      <p>Searchable logs across every session. Find that prompt from last Tuesday. Full continuity.</p>
+      <div class="fb">Session fragmentation across tools and billing limits</div>
+    </div>
+    <div class="card">
+      <div class="ic">🛡️</div><h3>Control specific behaviors</h3>
+      <p>Policies detect scope creep, block destructive ops, retry, notify — terminal, email, or Slack.</p>
+      <div class="fb">Zac: email/Slack. Jack: terminal pings. Both supported.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="dark"><div class="c">
+  <h2>How it works</h2>
+  <p class="section-sub">What Luthien looks like running in your terminal.</p>
+  <div class="log">
+    <div class="log-line"><span class="ts">09:01</span><span class="level info">INFO</span><span class="msg">agents.md loaded <span class="dim">· 3 policies active</span></span></div>
+    <div class="log-line"><span class="ts">09:01</span><span class="level info">INFO</span><span class="msg">Prompt sent <span class="dim">· "refactor auth module"</span></span></div>
+    <div class="log-line"><span class="ts">09:04</span><span class="level warn">WARN</span><span class="msg">Scope violation detected <span class="dim">· agent editing src/utils/format.ts (not in scope)</span></span></div>
+    <div class="log-line"><span class="ts">09:04</span><span class="level err">BLOCK</span><span class="msg">Request blocked <span class="dim">· policy: scope_guard · retrying with corrected instructions</span></span></div>
+    <div class="log-line"><span class="ts">09:05</span><span class="level ok">OK</span><span class="msg">Retry successful <span class="dim">· agent scoped to src/auth/ only</span></span></div>
+    <div class="log-line"><span class="ts">09:12</span><span class="level ok">DONE</span><span class="msg">Session complete <span class="dim">· 2 files changed, 1 policy triggered, 0 violations shipped</span></span></div>
+  </div>
+</div></section>
+
+<section><div class="c">
+  <h2>What developers are saying</h2>
+  <div class="ph">Testimonials coming soon — currently in alpha with developers from Counterweight AI, Amazon, and GitHub.</div>
+</div></section>
+
+<section class="dark"><div class="c">
+  <h2>Try it with your own repo</h2>
+  <p class="lead">Bring your <code>claude.md</code>, point it at your code, see Luthien in action.</p>
+  <div class="try-grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="to">
+      <div class="ic">☁️</div><h3>Try in browser</h3>
+      <p>Public repos. No install. Runs on our cloud.</p>
+      <div class="inst"><span class="cm"># paste your GitHub URL</span><br>repo: github.com/you/project<br><span class="cm"># upload your claude.md</span><br><span class="cm"># run a prompt, watch Luthien work</span></div>
+      <a href="#" class="btn btn-p">Launch in browser →</a>
+    </div>
+    <div class="to">
+      <div class="ic">💻</div><h3>Run locally</h3>
+      <p>Private repos. Your machine, your data.</p>
+      <div class="inst"><span class="cm"># install</span><br>uv pip install luthien-proxy<br><br><span class="cm"># point your agent at Luthien</span><br>export ANTHROPIC_BASE_URL=<br>&nbsp;&nbsp;http://localhost:8000/anthropic/v1<br><br><span class="cm"># run as usual</span><br>claude</div>
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-o">View on GitHub →</a>
+    </div>
+    <div class="to">
+      <div class="ic">🚀</div><h3>Deploy to cloud</h3>
+      <p>One-click Railway deploy. Manage instances.</p>
+      <div style="background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:14px;margin-bottom:16px;text-align:left;font-size:.78rem;line-height:1.8">
+        <div style="color:var(--mt);text-transform:uppercase;font-size:.65rem;letter-spacing:.08em;margin-bottom:8px">Deployments</div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span>proxy-demo</span><span style="color:var(--green)">● running</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span>control-dev</span><span style="color:var(--green)">● running</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0"><span>my-test</span><span style="color:var(--green)">● running</span></div>
+      </div>
+      <a href="#" class="btn btn-o">Deploy on Railway →</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="c">Built by <a href="https://luthienresearch.org">Luthien Research</a> · Open source · <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a></div></footer>
+</body>
+</html>

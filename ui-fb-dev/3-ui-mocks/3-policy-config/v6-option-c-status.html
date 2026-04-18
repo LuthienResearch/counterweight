@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option C: Status Board</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* Status header */
+  .status-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+  }
+  .status-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .status-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 24px;
+    margin-left: 22px;
+  }
+
+  /* Config source */
+  .config-source {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+  }
+  .config-source-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .config-source code {
+    background: #0a0a0a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+  .config-source .hint {
+    color: #555;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #4ade80;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* Section header */
+  .section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+
+  /* Active policies (read-only) */
+  .policy-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .policy-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .policy-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+  .policy-status.active {
+    background: #0c1a0f;
+    color: #4ade80;
+    border: 1px solid #1a3a1f;
+  }
+  .policy-status.inactive {
+    background: #1a1a1a;
+    color: #555;
+    border: 1px solid #262626;
+  }
+  .policy-desc { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .policy-stats {
+    display: flex;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .policy-stats .value { color: #e5e5e5; font-weight: 600; }
+
+  /* Rules display */
+  .rules-display {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #1a1a1a;
+  }
+  .rule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin: 2px 4px 2px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .rule-badge .from { color: #f87171; }
+  .rule-badge .arrow { color: #555; }
+  .rule-badge .to { color: #4ade80; }
+
+  /* Timeline */
+  .timeline { list-style: none; }
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #141414;
+    font-size: 13px;
+  }
+  .timeline-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+    min-width: 70px;
+    padding-top: 2px;
+  }
+  .timeline-content { flex: 1; color: #aaa; }
+  .timeline-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+  .timeline-detail { margin-top: 2px; }
+  .timeline-detail .changed {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .timeline-detail .removed { color: #f87171; text-decoration: line-through; }
+  .timeline-detail .added { color: #4ade80; }
+
+  /* CLI hint */
+  .cli-hint {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 32px;
+    font-size: 13px;
+    color: #888;
+  }
+  .cli-hint h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .cli-hint code {
+    background: #0a0a0a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+  .cli-hint li {
+    list-style: none;
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#">Activity</a>
+  <a href="#" style="color: #e5e5e5;">Status</a>
+</div>
+
+<div class="container">
+  <a href="v6-landing.html" class="back-link">&larr; Back to all options</a>
+
+  <!-- Status header -->
+  <div class="status-header">
+    <div class="status-dot"></div>
+    <div class="status-title">Proxy running</div>
+  </div>
+  <p class="status-subtitle">1 policy active, processing requests on port 8000</p>
+
+  <!-- Config source -->
+  <div class="config-source">
+    <div class="config-source-label">Configuration</div>
+    <code>config/policy_config.yaml</code>
+    <div class="hint">Edit this file or use <code>luthien config</code> to change policies</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">142</div>
+      <div class="stat-label">replacements today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">47</div>
+      <div class="stat-label">requests processed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">3.0</div>
+      <div class="stat-label">avg per response</div>
+    </div>
+  </div>
+
+  <!-- Active policies -->
+  <div class="section-header">Policies</div>
+
+  <div class="policy-card">
+    <div class="policy-card-header">
+      <span class="policy-name">DeSlop</span>
+      <span class="policy-status active">active</span>
+    </div>
+    <p class="policy-desc">Removes em-dashes, curly quotes, and other AI-isms from responses</p>
+    <div class="policy-stats">
+      <span><span class="value">142</span> replacements</span>
+      <span><span class="value">47</span> requests</span>
+      <span><span class="value">100%</span> hit rate</span>
+    </div>
+    <div class="rules-display">
+      <span class="rule-badge"><span class="from">&mdash;</span> <span class="arrow">&rarr;</span> <span class="to">-</span></span>
+      <span class="rule-badge"><span class="from">&ndash;</span> <span class="arrow">&rarr;</span> <span class="to">-</span></span>
+      <span class="rule-badge"><span class="from">&ldquo; &rdquo;</span> <span class="arrow">&rarr;</span> <span class="to">" "</span></span>
+      <span class="rule-badge"><span class="from">&lsquo; &rsquo;</span> <span class="arrow">&rarr;</span> <span class="to">' '</span></span>
+    </div>
+  </div>
+
+  <div class="policy-card">
+    <div class="policy-card-header">
+      <span class="policy-name">Block Dangerous Commands</span>
+      <span class="policy-status inactive">available</span>
+    </div>
+    <p class="policy-desc">Prevents rm -rf, git push --force, and other destructive operations</p>
+  </div>
+
+  <div class="policy-card">
+    <div class="policy-card-header">
+      <span class="policy-name">Package Standards</span>
+      <span class="policy-status inactive">available</span>
+    </div>
+    <p class="policy-desc">Enforces your package manager instead of defaults</p>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-header" style="margin-top: 32px;">Recent activity</div>
+  <ul class="timeline">
+    <li class="timeline-item">
+      <span class="timeline-time">2 min ago</span>
+      <div class="timeline-content">
+        <span class="timeline-policy">DeSlop</span>
+        <div class="timeline-detail">
+          <span class="changed"><span class="removed">&mdash;</span> &rarr; <span class="added">-</span></span> &times;3,
+          <span class="changed"><span class="removed">&ldquo;</span> &rarr; <span class="added">"</span></span> &times;2,
+          <span class="changed"><span class="removed">&rsquo;</span> &rarr; <span class="added">'</span></span> &times;1
+        </div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-time">8 min ago</span>
+      <div class="timeline-content">
+        <span class="timeline-policy">DeSlop</span>
+        <div class="timeline-detail">
+          <span class="changed"><span class="removed">&mdash;</span> &rarr; <span class="added">-</span></span> &times;2,
+          <span class="changed"><span class="removed">&rsquo;</span> &rarr; <span class="added">'</span></span> &times;1
+        </div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-time">14 min ago</span>
+      <div class="timeline-content">
+        <span class="timeline-policy">DeSlop</span>
+        <div class="timeline-detail">
+          <span class="changed"><span class="removed">&ndash;</span> &rarr; <span class="added">-</span></span> &times;1
+        </div>
+      </div>
+    </li>
+    <li class="timeline-item">
+      <span class="timeline-time">21 min ago</span>
+      <div class="timeline-content">
+        <span class="timeline-policy">DeSlop</span>
+        <div class="timeline-detail">
+          <span class="changed"><span class="removed">&mdash;</span> &rarr; <span class="added">-</span></span> &times;4,
+          <span class="changed"><span class="removed">&ldquo;</span> &rarr; <span class="added">"</span></span> &times;3,
+          <span class="changed"><span class="removed">&rdquo;</span> &rarr; <span class="added">"</span></span> &times;3
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- CLI hints -->
+  <div class="cli-hint">
+    <h4>Configure from terminal</h4>
+    <ul>
+      <li><code>luthien config set-policy deslop</code> — switch active policy</li>
+      <li><code>luthien config add-rule "&mdash;" "-"</code> — add a replacement rule</li>
+      <li><code>luthien status</code> — view this dashboard in terminal</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

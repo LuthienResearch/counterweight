@@ -1,0 +1,87 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2867
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Bold;\f2\froman\fcharset0 Times-Roman;
+\f3\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red109\green109\blue109;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c50196\c50196\c50196;}
+\margl1440\margr1440\vieww42700\viewh14940\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs42 \cf0 Move public-repo-internal-archive folder and contents to root. \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+Read all files in ui-fb-dev/ (including _UI_Specs/ ) \
+and propose a restructure to support this feedback loop: \
+\
+WARM A's \uc0\u9472 \u9472 \u8594  during convo CAPTURE in user interview meeting notes (Google Drive/OtterAI txt/Superwhisper) -> re-organize \u8594  synthesize into themes + UPDATE REQUIREMENTS \u8594  UPDATE UI \u8594  REPEAT\
+                \uc0\u8593 \
+COLD \uc0\u8594  SCREEN \u8594  \u9583 \
+                \uc0\u8593 \
+WARM B's \uc0\u9472 \u9472 \u8594  REFERRALS \u8594  new names enter COLD or WARM\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f1\b\fs24 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Confidence: 88%
+\f2\b0  \'97 good synthesis of your inputs, but the screener criteria are my best guess without seeing your actual people list.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \strokec2 Fine, think about it now, lock it in, stop noodling after this.\
+
+\f1\b The loop:
+\f2\b0 \
+
+\f1\b SCREEN \uc0\u8594  CAPTURE \u8594  PROCESS \u8594  SHIP \u8594  LOOP
+\f2\b0 \
+
+\f1\b 1. SCREEN (during conversation, 30 seconds in your head)
+\f2\b0 \
+Three yes/no questions: Do they use AI coding agents daily? Have they been frustrated enough to build workarounds? Would they actually install a proxy? All three yes = "A" tier, schedule follow-up. Two yes = "B" tier, send the README link. One or zero = friendly conversation, move on.\
+
+\f1\b 2. CAPTURE (immediately after conversation, 60 seconds)
+\f2\b0 \
+Voice memo into Superwhisper. Fixed format: Name, role, tool they use, pain point in their words, what they reacted to, A/B/C tier, follow-up yes/no. That's it. Don't type anything. Don't open any docs.\
+
+\f1\b 3. PROCESS (evening, 30 min max)
+\f2\b0 \
+Dump transcripts into single 
+\f3\fs26 eag-raw-Feb-[date].md
+\f2\fs24 . Claude session to extract: what pain points repeated today, any new ones, does the README language match how people actually describe their pain? Nico's point applies here \'97 keep changes self-contained so iteration is fast.\
+
+\f1\b 4. SHIP (same evening, 20 min max OR flag for later)
+\f2\b0 \
+If 3+ people said the same thing and the README doesn't address it \uc0\u8594  update the README. One change per night maximum. If it needs a code change \u8594  note it for Jai, don't touch it yourself.\
+
+\f1\b 5. LOOP (next morning)
+\f2\b0 \
+Glance at yesterday's notes for 5 minutes. Adjust your pitch if needed. Go talk to more people.\
+
+\f1\b The Nico principle throughout:
+\f2\b0  Keep changes self-contained. Each iteration is small enough that it doesn't break anything and builds trust (with yourself and with Jai when you sync after EAG).\
+Now stop thinking about the system and go write those meeting invites.\
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \strokec2 ~17% context window used | Mon Feb 9, 2026 1:32 PM PT\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs42 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\
+\
+Requirements:\
+1. eag-sf/ folder for raw capture notes (one file per day, e.g. eag-raw-2026-02-13.md)\
+2. One consolidated requirements doc (merge policy-config-requirements-live.md + \
+   value-prop-requirements-live.md into single active-requirements.md)\
+3. One current README draft to iterate on (the thing I show people)\
+4. archive/ subfolder \'97 move anything reference-only or no longer actively updated\
+5. Screener criteria pinned at top of a contacts.md or similar:\
+   - Uses AI coding agents daily\
+   - Senior enough to install own tools\
+   - Has built workarounds for agent frustrations\
+\
+Rules:\
+- Don't delete anything, only move\
+- Don't rename files unless necessary for clarity\
+- Time budget: 15 min max\
+- Push back if I'm over-organizing\
+- Output a checklist of every move/change so I can verify}

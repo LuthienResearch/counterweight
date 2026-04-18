@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Config UI v6 — 3 Options (DeSlop Default)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 32px;
+    max-width: 640px;
+  }
+  .context {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+  .context strong { color: #e5e5e5; }
+  .context code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #4ade80;
+  }
+  .options { display: grid; gap: 24px; }
+  .option-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+  .option-card:hover { border-color: #333; }
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .option-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: #888;
+  }
+  .option-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .option-desc {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .option-pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .pros, .cons { list-style: none; }
+  .pros li::before { content: "+"; color: #4ade80; font-weight: 700; margin-right: 6px; }
+  .cons li::before { content: "-"; color: #f87171; font-weight: 700; margin-right: 6px; }
+  .pros li, .cons li { margin-bottom: 4px; color: #aaa; }
+  .label-text { color: #888; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .view-btn {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  .view-btn:hover { background: #1d4ed8; }
+  .reqs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .req-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: #4ade80;
+  }
+  hr { border: none; border-top: 1px solid #262626; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Policy Config UI v6</h1>
+  <p class="subtitle">Three approaches to policy config with DeSlop as the default policy. All built against the 5 surviving requirements from Round 2.</p>
+
+  <div class="context">
+    <strong>Design brief:</strong> Users decide in one session whether Luthien is worth their time (R1). The default policy must show obvious value on the first request. DeSlop (string replacement - removes em-dashes, curly quotes, AI-isms) is the default because it produces a visible change on every response.<br><br>
+    <strong>Requirements addressed:</strong>
+    R1 (obvious first value), R2 (interact from terminal or browser), R3 (verify policies working), R4 (customize for context), R5 (see what's active, toggle on/off with progressive disclosure).
+  </div>
+
+  <div class="options">
+    <!-- Option A -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-label">A</span>
+        <span class="option-title">Toggles + Blocked Log</span>
+      </div>
+      <p class="option-desc">Minimal dashboard. DeSlop is on by default. Policies listed as toggle switches. Below: a log of what each policy changed or blocked. Two-step Claude Code setup at the top.</p>
+      <div class="reqs">
+        <span class="req-tag">R1 default on</span>
+        <span class="req-tag">R2 setup instructions</span>
+        <span class="req-tag">R3 blocked log</span>
+        <span class="req-tag">R5 toggles</span>
+      </div>
+      <div class="option-pros-cons">
+        <ul class="pros">
+          <li>Simplest to build and maintain</li>
+          <li>Jack validated this pattern (v3B)</li>
+          <li>Progressive disclosure: toggle first, config later</li>
+        </ul>
+        <ul class="cons">
+          <li>No live preview of what DeSlop does</li>
+          <li>Customization (R4) requires expanding a panel</li>
+          <li>Blocked log may be empty on first visit</li>
+        </ul>
+      </div>
+      <a href="v6-option-a-toggles.html" class="view-btn">View Option A</a>
+    </div>
+
+    <!-- Option B -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-label">B</span>
+        <span class="option-title">Live Demo First</span>
+      </div>
+      <p class="option-desc">Hero section shows DeSlop working live: paste or select sample AI text, see replacements highlighted in real-time. Below the demo: policy toggles and activity log. Value is obvious before the user configures anything.</p>
+      <div class="reqs">
+        <span class="req-tag">R1 value obvious instantly</span>
+        <span class="req-tag">R3 see what changed</span>
+        <span class="req-tag">R4 edit replacements inline</span>
+        <span class="req-tag">R5 toggles below</span>
+      </div>
+      <div class="option-pros-cons">
+        <ul class="pros">
+          <li>Value obvious before any setup</li>
+          <li>Finn: would pay $20/mo for this alone</li>
+          <li>Demo doubles as config (edit replacements)</li>
+        </ul>
+        <ul class="cons">
+          <li>More complex to build</li>
+          <li>Demo is DeSlop-specific, doesn't generalize to other policies</li>
+          <li>Users may think Luthien is only a text cleaner</li>
+        </ul>
+      </div>
+      <a href="v6-option-b-demo.html" class="view-btn">View Option B</a>
+    </div>
+
+    <!-- Option C -->
+    <div class="option-card">
+      <div class="option-header">
+        <span class="option-label">C</span>
+        <span class="option-title">Status Board</span>
+      </div>
+      <p class="option-desc">Read-only status view. Shows what policies are active, what they changed in the last N requests, and aggregate stats. All configuration happens in YAML or CLI. The web page is for verification (R3), not configuration.</p>
+      <div class="reqs">
+        <span class="req-tag">R1 default active, stats visible</span>
+        <span class="req-tag">R2 config stays in terminal</span>
+        <span class="req-tag">R3 verification dashboard</span>
+        <span class="req-tag">R5 shows what's active</span>
+      </div>
+      <div class="option-pros-cons">
+        <ul class="pros">
+          <li>Matches terminal-first users (Jack, Zac)</li>
+          <li>No risk of building config UI nobody uses</li>
+          <li>Simplest web surface, easiest to maintain</li>
+        </ul>
+        <ul class="cons">
+          <li>No in-browser customization (R4 gap)</li>
+          <li>Harder to demo to non-technical stakeholders</li>
+          <li>Two places to look: terminal for config, browser for status</li>
+        </ul>
+      </div>
+      <a href="v6-option-c-status.html" class="view-btn">View Option C</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

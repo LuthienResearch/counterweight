@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option B: Terminal-first - Policy Configuration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Fira Code', monospace;
+            background: #0c0c0c; color: #d4d4d4; line-height: 1.5;
+        }
+        .option-label {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: #2563eb; color: white; text-align: center;
+            padding: 8px; font-size: 14px; font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .option-label a { color: white; margin-left: 16px; }
+        .terminal {
+            max-width: 900px; margin: 56px auto 0; padding: 0;
+        }
+        .terminal-header {
+            background: #1e1e1e; border: 1px solid #333; border-bottom: none;
+            border-radius: 8px 8px 0 0; padding: 8px 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #febc2e; }
+        .dot-green { background: #28c840; }
+        .terminal-title {
+            flex: 1; text-align: center; font-size: 13px; color: #888;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .terminal-body {
+            background: #0c0c0c; border: 1px solid #333; border-top: none;
+            border-radius: 0 0 8px 8px; padding: 20px 24px;
+            min-height: 600px;
+        }
+        .prompt { color: #4ade80; }
+        .command { color: #e5e5e5; }
+        .comment { color: #6a737d; }
+        .output { color: #d4d4d4; }
+        .blocked { color: #f87171; }
+        .success { color: #4ade80; }
+        .info { color: #60a5fa; }
+        .dim { color: #666; }
+        .line { margin: 2px 0; }
+        .section { margin: 20px 0; }
+        .divider { border-top: 1px solid #262626; margin: 16px 0; }
+        .toggle-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 0; border-bottom: 1px solid #1a1a1a;
+        }
+        .toggle-name { color: #e5e5e5; }
+        .toggle-on { color: #4ade80; font-weight: bold; }
+        .toggle-off { color: #666; }
+        .toggle-switch {
+            display: inline-block; width: 36px; height: 18px;
+            background: #333; border-radius: 9px; position: relative; cursor: pointer;
+        }
+        .toggle-switch.on { background: #166534; }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 14px; height: 14px; background: #888; border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .toggle-switch.on::after { left: 20px; background: #4ade80; }
+        .blocked-log {
+            background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 4px;
+            padding: 12px; margin: 8px 0;
+        }
+        .blocked-entry { margin: 4px 0; font-size: 13px; }
+        .timestamp { color: #555; font-size: 12px; }
+        h2 {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 13px; font-weight: 600; color: #888;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="option-label">
+        Option B: Terminal-first policy config (Zac + Jack's preference)
+        <a href="policy-config-option-a-current.html">A: Current</a>
+        <a href="policy-config-option-c-browser-ui.html">C: Browser UI</a>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+            <div class="terminal-title">luthien &mdash; policy config</div>
+        </div>
+        <div class="terminal-body">
+
+            <!-- Connection status -->
+            <div class="section">
+                <div class="line"><span class="prompt">$</span> <span class="command">luthien status</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="success">&#10003;</span> Luthien running on <span class="info">localhost:8000</span></div>
+                <div class="line"><span class="success">&#10003;</span> PostgreSQL connected</div>
+                <div class="line"><span class="success">&#10003;</span> Redis connected</div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="dim">Connect Claude Code:</span></div>
+                <div class="line"><span class="command">  export ANTHROPIC_BASE_URL=http://localhost:8000/v1</span></div>
+                <div class="line"><span class="command">  export ANTHROPIC_API_KEY=sk-luthien-dev-key</span></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Active policies -->
+            <div class="section">
+                <h2>Active Policies</h2>
+                <div class="toggle-row">
+                    <span class="toggle-name">PipBlockPolicy</span>
+                    <span><span class="toggle-switch on"></span> <span class="toggle-on">ON</span></span>
+                </div>
+                <div style="font-size: 12px; color: #888; padding: 2px 0 8px 0;">Blocks pip install, suggests uv add</div>
+
+                <div class="toggle-row">
+                    <span class="toggle-name">SafetyPolicy</span>
+                    <span><span class="toggle-switch on"></span> <span class="toggle-on">ON</span></span>
+                </div>
+                <div style="font-size: 12px; color: #888; padding: 2px 0 8px 0;">Blocks rm -rf, git push --force, drop table</div>
+
+                <div class="toggle-row">
+                    <span class="toggle-name">PIIGuardPolicy</span>
+                    <span><span class="toggle-switch on"></span> <span class="toggle-on">ON</span></span>
+                </div>
+                <div style="font-size: 12px; color: #888; padding: 2px 0 8px 0;">Blocks responses containing PII</div>
+
+                <div class="toggle-row">
+                    <span class="toggle-name">DeSlopPolicy</span>
+                    <span><span class="toggle-switch"></span> <span class="toggle-off">OFF</span></span>
+                </div>
+                <div style="font-size: 12px; color: #888; padding: 2px 0 8px 0;">Removes em-dashes, curly quotes from output</div>
+
+                <div class="toggle-row">
+                    <span class="toggle-name">ScopeGuardPolicy</span>
+                    <span><span class="toggle-switch"></span> <span class="toggle-off">OFF</span></span>
+                </div>
+                <div style="font-size: 12px; color: #888; padding: 2px 0 8px 0;">Only allow changes to files in the original request</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- What happened (blocked log) -->
+            <div class="section">
+                <h2>Recent Blocks</h2>
+                <div class="blocked-log">
+                    <div class="blocked-entry">
+                        <span class="timestamp">14:23:07</span>
+                        <span class="blocked"> BLOCKED</span>
+                        <span class="output"> pip install requests</span>
+                        <span class="dim"> &rarr; PipBlockPolicy</span>
+                    </div>
+                    <div class="blocked-entry">
+                        <span class="timestamp">14:23:07</span>
+                        <span class="info"> RETRIED</span>
+                        <span class="output"> Claude used uv add requests</span>
+                    </div>
+                    <div class="blocked-entry">
+                        <span class="timestamp">14:21:42</span>
+                        <span class="blocked"> BLOCKED</span>
+                        <span class="output"> rm -rf __pycache__</span>
+                        <span class="dim"> &rarr; SafetyPolicy</span>
+                    </div>
+                    <div class="blocked-entry">
+                        <span class="timestamp">14:21:42</span>
+                        <span class="info"> RETRIED</span>
+                        <span class="output"> Claude used find . -name __pycache__ -type d -delete</span>
+                    </div>
+                    <div class="blocked-entry">
+                        <span class="timestamp">14:19:55</span>
+                        <span class="blocked"> BLOCKED</span>
+                        <span class="output"> git push --force origin main</span>
+                        <span class="dim"> &rarr; SafetyPolicy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Inline terminal feedback example -->
+            <div class="section">
+                <h2>What Claude Code sees</h2>
+                <div class="line"><span class="dim"># When Luthien blocks something, Claude Code sees this in its output:</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="blocked-log" style="border-color: #f87171;">
+                    <div class="line"><span class="blocked">[Luthien] BLOCKED: pip install requests</span></div>
+                    <div class="line"><span class="blocked">Reason: pip install is not allowed. Use `uv add requests` instead.</span></div>
+                    <div class="line"><span class="blocked">Policy: PipBlockPolicy</span></div>
+                </div>
+                <div class="line" style="margin-top: 8px;"><span class="dim"># Claude Code reads this and retries with the correct command.</span></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Stats -->
+            <div class="section">
+                <h2>Today</h2>
+                <div class="line"><span class="dim">Requests proxied:</span> <span class="output">247</span></div>
+                <div class="line"><span class="dim">Actions blocked:</span> <span class="blocked">12</span></div>
+                <div class="line"><span class="dim">Auto-retried:</span> <span class="info">9</span></div>
+                <div class="line"><span class="dim">Latency overhead:</span> <span class="output">~45ms avg</span></div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept 1: The Scoreboard — Terminal Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #09090b;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ccc;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #2563eb;
+      font-size: 13px;
+      text-decoration: none;
+      margin-bottom: 24px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .description {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+    }
+
+    .svg-wrapper svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .description {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to all concepts</a>
+
+    <div class="description">
+      Your code quality has a score. It keeps going up. DeSlop fires automatically — the counter is your proof it's working.
+    </div>
+
+    <div class="svg-wrapper">
+      <svg viewBox="0 0 620 700" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+            .mono { font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace; }
+            .mono-bold { font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace; font-weight: 700; }
+
+            @keyframes blink {
+              0%, 100% { opacity: 0.6; }
+              50% { opacity: 0; }
+            }
+            .cursor-blink { animation: blink 1.1s step-end infinite; }
+          </style>
+        </defs>
+
+        <!-- Terminal background -->
+        <rect width="620" height="700" rx="8" fill="#1e1e1e"/>
+
+        <!-- Title bar -->
+        <rect width="620" height="32" rx="8" fill="#323233"/>
+        <!-- Square off bottom corners of title bar -->
+        <rect y="24" width="620" height="8" fill="#323233"/>
+
+        <!-- Traffic lights -->
+        <circle cx="20" cy="16" r="6" fill="#ff5f57"/>
+        <circle cx="40" cy="16" r="6" fill="#febc2e"/>
+        <circle cx="60" cy="16" r="6" fill="#28c840"/>
+
+        <!-- Title bar text -->
+        <text x="310" y="20" text-anchor="middle" class="mono" font-size="13">
+          <tspan fill="#808080">claude code +</tspan>
+          <tspan fill="#4ec9b0"> Luthien</tspan>
+        </text>
+
+        <!-- ============================================ -->
+        <!-- Scene 1: Startup + First Response            -->
+        <!-- ============================================ -->
+
+        <!-- $ luthien claude -->
+        <text x="20" y="68" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">$</tspan>
+          <tspan fill="#d4d4d4"> luthien claude</tspan>
+        </text>
+
+        <!-- Startup info -->
+        <text x="20" y="90" class="mono" font-size="12" fill="#808080">Connected to Luthien proxy (localhost:8000)</text>
+        <text x="20" y="108" class="mono" font-size="12" fill="#808080">Policies: DeSlop (default)</text>
+
+        <!-- User prompt -->
+        <text x="20" y="140" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> Add error handling to the auth module</tspan>
+        </text>
+
+        <!-- Claude response -->
+        <text x="20" y="168" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">&#9679;</tspan>
+          <tspan fill="#d4d4d4"> Bash</tspan>
+          <tspan fill="#808080"> (editing src/auth.py)</tspan>
+        </text>
+        <text x="36" y="186" class="mono" font-size="12" fill="#808080">&#9492; Modified 3 files</text>
+
+        <!-- Luthien catch output -->
+        <text x="20" y="214" class="mono" font-size="12">
+          <tspan fill="#febc2e">[Luthien]</tspan>
+          <tspan fill="#4ade80" class="mono-bold"> 6 catches</tspan>
+          <tspan fill="#808080"> (6 new)</tspan>
+        </text>
+        <text x="36" y="232" class="mono" font-size="12" fill="#d4a545">em-dash x3, curly quotes x2, smart apostrophe x1</text>
+
+        <!-- Scene separator 1 -->
+        <line x1="20" y1="252" x2="600" y2="252" stroke="#444444" stroke-width="1"/>
+
+        <!-- ============================================ -->
+        <!-- Scene 2: Second Response                     -->
+        <!-- ============================================ -->
+
+        <!-- User prompt -->
+        <text x="20" y="280" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> Now add unit tests for the auth changes</tspan>
+        </text>
+
+        <!-- Claude response -->
+        <text x="20" y="308" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">&#9679;</tspan>
+          <tspan fill="#d4d4d4"> Bash</tspan>
+          <tspan fill="#808080"> (creating tests/test_auth.py)</tspan>
+        </text>
+        <text x="36" y="326" class="mono" font-size="12" fill="#808080">&#9492; Created 1 file, 45 lines</text>
+
+        <!-- Luthien catch output -->
+        <text x="20" y="354" class="mono" font-size="12">
+          <tspan fill="#febc2e">[Luthien]</tspan>
+          <tspan fill="#4ade80" class="mono-bold"> 9 catches</tspan>
+          <tspan fill="#808080"> (3 new)</tspan>
+        </text>
+        <text x="36" y="372" class="mono" font-size="12" fill="#d4a545">em-dash x1, curly quotes x2</text>
+
+        <!-- Scene separator 2 -->
+        <line x1="20" y1="392" x2="600" y2="392" stroke="#444444" stroke-width="1"/>
+
+        <!-- ============================================ -->
+        <!-- Scene 3: Session Exit Scoreboard             -->
+        <!-- ============================================ -->
+
+        <!-- /exit command -->
+        <text x="20" y="420" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> /exit</tspan>
+        </text>
+
+        <!-- Top border -->
+        <text x="20" y="450" class="mono" font-size="13" fill="#444444">&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;</text>
+
+        <!-- Session Summary title -->
+        <text x="46" y="474" class="mono" font-size="13" fill="#d4d4d4">Luthien Session Summary</text>
+
+        <!-- Middle border -->
+        <text x="20" y="496" class="mono" font-size="13" fill="#444444">&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;</text>
+
+        <!-- Score line -->
+        <text x="46" y="526" class="mono-bold" font-size="16" fill="#4ade80">Score: 47 catches</text>
+
+        <!-- Policy breakdown -->
+        <text x="46" y="558" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">DeSlop</tspan>
+          <tspan fill="#808080">          44 catches   </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+        </text>
+        <text x="46" y="578" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">DogfoodSafety</tspan>
+          <tspan fill="#808080">    2 blocks    </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+        </text>
+        <text x="46" y="598" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">Package Stds</tspan>
+          <tspan fill="#808080">     1 rewrite   </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+        </text>
+
+        <!-- Session stats -->
+        <text x="46" y="628" class="mono" font-size="12" fill="#808080">Session: 42 min | 12 responses</text>
+
+        <!-- Bottom border -->
+        <text x="20" y="650" class="mono" font-size="13" fill="#444444">&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;&#9473;</text>
+
+        <!-- Bottom cursor -->
+        <text x="20" y="680" class="mono" font-size="13" fill="#4ec9b0">$</text>
+        <rect x="34" y="668" width="8" height="16" rx="1" fill="#4ec9b0" class="cursor-blink"/>
+
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

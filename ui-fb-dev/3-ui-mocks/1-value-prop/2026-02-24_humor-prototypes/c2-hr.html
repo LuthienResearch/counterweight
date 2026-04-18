@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien — HR Department for Claude Code</title>
+<meta name="description" content="Open-source proxy that enforces rules on Claude Code.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090b;
+    --bg-elevated: #111113;
+    --bg-card: #18181b;
+    --border: #27272a;
+    --text: #e4e4e7;
+    --text-secondary: #a1a1aa;
+    --muted: #71717a;
+    --dim: #52525b;
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.15);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.15);
+    --blue: #6b9fff;
+    --blue-bg: rgba(107, 159, 255, 0.15);
+    --green: #34d399;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --max-width: 880px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 5rem 0;
+  }
+
+  /* ── Top Nav ──────────────────────────────────── */
+  .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(9, 9, 11, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1a1a1e;
+    padding: 0 24px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo {
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .nav-wordmark {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fafafa;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-link {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover {
+    color: var(--text);
+  }
+
+  .nav-cta {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #09090b;
+    background: #fafafa;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .nav-cta:hover {
+    background: #d4d4d8;
+    color: #09090b;
+  }
+
+  @media (max-width: 640px) {
+    .nav-link { display: none; }
+    .nav-right { gap: 12px; }
+  }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 6rem 0 0;
+  }
+
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: #fff;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero .subhead {
+    font-family: var(--mono);
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    color: var(--muted);
+    margin-top: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .hero .oneliner {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-top: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn:hover { opacity: 0.85; }
+
+  .btn-primary {
+    background: #fff;
+    color: #09090b;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Section headers ── */
+  .section-header {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    margin-bottom: 2rem;
+  }
+
+  /* ── Carousel + Meme Row ── */
+  .carousel-meme-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .carousel-col {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .meme-col {
+    flex: 0 0 280px;
+    margin-right: -8px;
+  }
+
+  .meme-col .meme-label {
+    font-family: var(--mono);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 12px;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .meme-col .meme-img-wrap {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  .meme-col .meme-img-wrap img {
+    width: 100%;
+    display: block;
+    margin-top: -10%;
+  }
+
+  @media (max-width: 768px) {
+    .carousel-meme-row {
+      flex-direction: column;
+    }
+    .meme-col {
+      flex: none;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+  }
+
+  .carousel-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s ease;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .quote-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem 2rem 1.5rem;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+  }
+
+  .quote-card:hover {
+    transform: translateY(-1px);
+  }
+
+  .quote-text {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    color: var(--text);
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  .quote-text::before { content: '\201C'; }
+  .quote-text::after { content: '\201D'; }
+
+  .quote-attr {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 1rem;
+  }
+
+  /* ── Twitter/X card variant ── */
+  .quote-card.twitter {
+    background: #15202b;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .quote-card.twitter:hover {
+    border-color: #3f4448;
+  }
+  .quote-card.twitter .quote-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #e7e9ea;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .quote-card.twitter .quote-text::before,
+  .quote-card.twitter .quote-text::after { content: none; }
+  .twitter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .twitter-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2f3336;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #8899a6;
+    flex-shrink: 0;
+  }
+  .twitter-name-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .twitter-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .twitter-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e7e9ea;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .twitter-handle {
+    font-size: 15px;
+    color: #71767b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .twitter-time {
+    font-size: 15px;
+    color: #71767b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .twitter-x-logo {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.1rem;
+    color: #71767b;
+  }
+  .twitter-actions {
+    display: flex;
+    justify-content: space-between;
+    max-width: 400px;
+    margin-top: 14px;
+    color: #71767b;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .twitter-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+  }
+  .twitter-action svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #71767b;
+    stroke-width: 1.5;
+  }
+
+  /* ── HN card variant (LIGHT theme) ── */
+  .quote-card.hn {
+    background: #f6f6ef;
+    border: 1px solid #e0ddd4;
+    border-radius: 4px;
+    padding: 10px 16px 14px;
+  }
+  .quote-card.hn:hover {
+    border-color: #ccc8be;
+  }
+  .quote-card.hn .quote-text {
+    font-style: normal;
+    font-weight: 400;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #000;
+    margin-top: 6px;
+  }
+  .quote-card.hn .quote-text::before,
+  .quote-card.hn .quote-text::after { content: none; }
+  .hn-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .hn-upvote {
+    color: #ff6600;
+    font-size: 14px;
+    cursor: default;
+  }
+  .hn-title {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 13.33px;
+    color: #000;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  .hn-meta {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 9.33px;
+    color: #828282;
+    margin-top: 4px;
+    padding-left: 20px;
+  }
+  .hn-meta a {
+    color: #828282;
+    text-decoration: none;
+  }
+  .hn-meta a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Reddit card variant (dark mode) ── */
+  .quote-card.reddit {
+    background: #1a1a1b;
+    border: 1px solid #343536;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .quote-card.reddit:hover {
+    border-color: #4a4b4d;
+  }
+  .quote-card.reddit .quote-text {
+    font-style: normal;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #d7dadc;
+    margin-top: 8px;
+  }
+  .quote-card.reddit .quote-text::before,
+  .quote-card.reddit .quote-text::after { content: none; }
+  .reddit-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #818384;
+    margin-bottom: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .reddit-sub-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff4500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .reddit-sub-name {
+    font-weight: 700;
+    color: #d7dadc;
+  }
+  .reddit-post-meta {
+    color: #818384;
+  }
+  .reddit-footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #818384;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .reddit-votes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .reddit-vote-arrow {
+    font-size: 14px;
+    cursor: default;
+  }
+  .reddit-vote-up { color: #ff4500; }
+  .reddit-vote-count { color: #d7dadc; font-weight: 700; }
+  .reddit-comments {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ── Medium card variant (LIGHT theme) ── */
+  .quote-card.medium {
+    background: #fff;
+    border: none;
+    border-left: 4px solid #1a8917;
+    border-radius: 0;
+    padding: 24px 28px;
+  }
+  .quote-card.medium:hover {
+    background: #fafafa;
+  }
+  .quote-card.medium .quote-text {
+    font-style: normal;
+    font-weight: 400;
+    font-family: Georgia, Cambria, "Times New Roman", serif;
+    font-size: 20px;
+    line-height: 1.58;
+    color: #292929;
+    letter-spacing: -0.003em;
+  }
+  .quote-card.medium .quote-text::before,
+  .quote-card.medium .quote-text::after { content: none; }
+  .medium-open-quote {
+    font-size: 48px;
+    line-height: 1;
+    color: #1a8917;
+    font-family: Georgia, serif;
+    margin-bottom: 4px;
+  }
+  .medium-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    color: #757575;
+    margin-top: 16px;
+  }
+  .medium-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #1a8917;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* ── Blog card variant (pull-quote) ── */
+  .quote-card.blog {
+    background: #fafafa;
+    border: none;
+    border-radius: 4px;
+    padding: 28px 28px 20px;
+  }
+  .quote-card.blog:hover {
+    background: #f5f5f5;
+  }
+  .quote-card.blog .quote-text {
+    font-style: italic;
+    font-weight: 400;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+    line-height: 1.6;
+    color: #1a1a1a;
+  }
+  .quote-card.blog .quote-text::before,
+  .quote-card.blog .quote-text::after { content: none; }
+  .blog-open-quote {
+    font-size: 3.5rem;
+    line-height: 0.8;
+    color: #bbb;
+    font-family: Georgia, serif;
+    margin-bottom: 8px;
+  }
+  .blog-footer {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .blog-globe {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+    .quote-card .platform-logo {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      opacity: 0.5;
+    }
+    .quote-card.hn .hn-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      background: #ff6600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      font-family: Verdana, Geneva, sans-serif;
+    }
+    .quote-card.blog .blog-badge {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+    }
+    .quote-card.blog .blog-badge svg { opacity: 0.4; }
+
+  /* ── GitHub Issue card variant ── */
+  .quote-card.github {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 24px;
+  }
+  .quote-card.github:hover {
+    border-color: #484f58;
+  }
+  .quote-card.github .gh-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+  }
+  .quote-card.github .gh-icon {
+    width: 16px;
+    height: 16px;
+    fill: #3fb950;
+    flex-shrink: 0;
+  }
+  .quote-card.github .gh-repo {
+    color: #58a6ff;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+  .quote-card.github .gh-issue-num {
+    color: #8b949e;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+  .quote-card.github .quote-text {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    line-height: 1.6;
+    color: #e6edf3;
+    font-style: normal;
+  }
+  .quote-card.github .quote-text::before,
+  .quote-card.github .quote-text::after { content: none; }
+  .quote-card.github .gh-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #21262d;
+    font-size: 0.75rem;
+    color: #8b949e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quote-card.github .gh-label {
+    display: inline-block;
+    padding: 0 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.6;
+    border-radius: 2em;
+    border: 1px solid rgba(219,171,63,0.4);
+    color: #d2a04a;
+    background: rgba(219,171,63,0.1);
+  }
+
+  .carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .carousel-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: border-color 0.15s;
+  }
+  .carousel-btn:hover { border-color: var(--text-secondary); }
+
+  .carousel-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+  .carousel-dot.active { background: var(--text); }
+
+  .carousel-footnote {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--dim);
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+
+  /* ── Flow diagram ── */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    font-family: var(--mono);
+    font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 2.5rem 1rem;
+  }
+
+  .flow-diagram .flow-arrow {
+    color: var(--dim);
+    font-weight: 400;
+  }
+
+  .flow-diagram .flow-highlight {
+    color: #fff;
+    background: var(--red-bg);
+    border: 1px solid var(--red);
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+  }
+
+  .flow-tagline {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Code block ── */
+  .terminal {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .terminal-chrome {
+    display: flex;
+    gap: 6px;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .terminal-dot:nth-child(1) { background: #ef4444; }
+  .terminal-dot:nth-child(2) { background: #f59e0b; }
+  .terminal-dot:nth-child(3) { background: #34d399; }
+
+  .terminal pre {
+    margin: 0;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .terminal code {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .prereqs {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--dim);
+    margin-top: 1rem;
+  }
+
+  /* ── CTA ── */
+  .cta {
+    text-align: center;
+  }
+
+  .cta-line {
+    font-family: var(--mono);
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .cta-sub {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--dim);
+    margin-top: 2rem;
+  }
+
+  .cta-sub a {
+    color: var(--dim);
+    text-decoration: none;
+  }
+  .cta-sub a:hover { color: var(--text-secondary); }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 5rem;
+    padding: 1.5rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--dim);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    color: var(--dim);
+    text-decoration: none;
+  }
+  .footer-links a:hover { color: var(--text-secondary); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    hr { margin: 3.5rem 0; }
+
+    .hero { padding-top: 4rem; }
+
+    .quote-card { padding: 1.5rem; min-height: auto; }
+
+    .footer-inner {
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="#" class="nav-left">
+    <svg class="nav-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16h12"/></svg>
+    <span class="nav-wordmark">Luthien</span>
+  </a>
+  <div class="nav-right">
+    <a href="#quotes" class="nav-link">Problem</a>
+    <a href="#how-it-works" class="nav-link">Solution</a>
+    <a href="#how-it-works" class="nav-link">Architecture</a>
+    <a href="https://github.com/LuthienResearch/luthien-proxy" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="nav-cta" target="_blank" rel="noopener">Book a Call</a>
+  </div>
+</nav>
+
+<!-- ════════════ QUOTES + MEME (the lead) ════════════ -->
+<section id="quotes" style="padding-top: 64px;">
+  <div class="wrap">
+    <div class="carousel-meme-row">
+      <!-- Left: Quotes -->
+      <div class="carousel-col">
+
+    <div class="carousel-container" id="carousel">
+      <div class="carousel-track" id="carouselTrack">
+
+        <!-- 1. Blog — scottspence.com "stochastic parrot" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">I&rsquo;m a product manager for a stochastic parrot.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> scottspence.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. GitHub #8154 — profanity escalation -->
+        <div class="carousel-slide">
+          <div class="quote-card github">
+            <svg class="platform-logo" width="20" height="20" viewBox="0 0 16 16" fill="#8b949e"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <div>
+              <div class="gh-header">
+                <svg class="gh-icon" viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+                <span class="gh-repo">anthropics/claude-code</span>
+                <span class="gh-issue-num">#8154</span>
+              </div>
+              <p class="quote-text">Polite correction &mdash; ignored. Firm correction &mdash; ignored. ALL CAPS &mdash; partially followed. Profanity &mdash; finally worked. Multiple profanities &mdash; consistent compliance.</p>
+              <div class="gh-footer">
+                <span class="gh-label">bug</span>
+                <span>&#128172; 47 comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. GitHub #8154 — fake SUCCESS -->
+        <div class="carousel-slide">
+          <div class="quote-card github">
+            <svg class="platform-logo" width="20" height="20" viewBox="0 0 16 16" fill="#8b949e"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <div>
+              <div class="gh-header">
+                <svg class="gh-icon" viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+                <span class="gh-repo">anthropics/claude-code</span>
+                <span class="gh-issue-num">#8154</span>
+              </div>
+              <p class="quote-text">Claude claimed: &lsquo;&#10004;&#65039; SUCCESS! Phase 0 enhancement verification complete!&rsquo; Reality check: Tables existed but no data was present.</p>
+              <div class="gh-footer">
+                <span class="gh-label">bug</span>
+                <span>&#128172; 47 comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Blog — marble.onl "expletive laden entreaty" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">I went through several full context failed attempts at having it not hard code the test cases, until finally I inserted a block caps expletive laden entreaty to smarten up which appeared to work.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> marble.onl</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. HN — "HR discussion" -->
+        <div class="carousel-slide">
+          <div class="quote-card hn">
+            <span class="hn-badge">Y</span>
+            <div>
+              <div class="hn-title-row">
+                <span class="hn-upvote">&#9650;</span>
+                <span class="hn-title">AI coding tool behaviors in production</span>
+              </div>
+              <div class="hn-meta">847 points by throwaway_dev 3 hours ago | <a href="#">hide</a> | <a href="#">412 comments</a></div>
+              <p class="quote-text">If this was a junior dev you&rsquo;d given a task to, and they came back full of praise for themselves for the stellar job they&rsquo;d done &mdash; and then it turned out they&rsquo;d botched it badly, after a few times you&rsquo;d be having an HR discussion.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. GitHub #9115 — "Done!" -->
+        <div class="carousel-slide">
+          <div class="quote-card github">
+            <svg class="platform-logo" width="20" height="20" viewBox="0 0 16 16" fill="#8b949e"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <div>
+              <div class="gh-header">
+                <svg class="gh-icon" viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+                <span class="gh-repo">anthropics/claude-code</span>
+                <span class="gh-issue-num">#9115</span>
+              </div>
+              <p class="quote-text">Claude acknowledges understanding the instruction, rephrases it accurately, then produces something unrelated or incomplete and then says&hellip; Done!</p>
+              <div class="gh-footer">
+                <span class="gh-label">bug</span>
+                <span>&#128172; 23 comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. HN — "hallucinated bullshit" -->
+        <div class="carousel-slide">
+          <div class="quote-card hn">
+            <span class="hn-badge">Y</span>
+            <div>
+              <div class="hn-title-row">
+                <span class="hn-upvote">&#9650;</span>
+                <span class="hn-title">Are AI coding tools actually saving time?</span>
+              </div>
+              <div class="hn-meta">312 points by davydm 5 hours ago | <a href="#">hide</a> | <a href="#">189 comments</a></div>
+              <p class="quote-text">Most people using these tools are wasting their time having to debug hallucinated bullshit.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. Twitter — @MarcJSchmidt -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">M</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Marc J. Schmidt</span>
+                    <span class="twitter-handle">@MarcJSchmidt</span>
+                    <span class="twitter-time">&middot; 2h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Slow, consumes way too much CPU, and freezes often. It also lies, goes for the quick-win, and even sabotages my code to pass tests.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 9. Twitter — @ChebzReal -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">C</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">ChebzReal</span>
+                    <span class="twitter-handle">@ChebzReal</span>
+                    <span class="twitter-time">&middot; 4h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Not only bug not fixed, but it introduced 5 more bugs and made complete mess of codebase.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 10. Twitter — @stevehind -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">S</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Steve Hind</span>
+                    <span class="twitter-handle">@stevehind</span>
+                    <span class="twitter-time">&middot; 1h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Spawned 36 parallel subagents&hellip; ran out of API credits&hellip; causing all the subagents to fail and get stuck.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 11. Twitter — @BItguru00 -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">B</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">BItguru00</span>
+                    <span class="twitter-handle">@BItguru00</span>
+                    <span class="twitter-time">&middot; 3h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Kept looping ignoring every request I made no matter if I restarted with fresh context or not.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 12. Twitter — @VincasStonys -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">V</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Vincas Stonys</span>
+                    <span class="twitter-handle">@VincasStonys</span>
+                    <span class="twitter-time">&middot; 5h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">All the same LLM mistakes started cropping up&hellip; getting slower and slower&hellip; code quality is just not great.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 13. Twitter — @BenjaminDEKR -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">B</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Benjamin</span>
+                    <span class="twitter-handle">@BenjaminDEKR</span>
+                    <span class="twitter-time">&middot; 6h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Acting like a far less intelligent model&hellip; making unilateral &lsquo;shortcut&rsquo; decisions without asking.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 14. Twitter — @aeitroc -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">A</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">aeitroc</span>
+                    <span class="twitter-handle">@aeitroc</span>
+                    <span class="twitter-time">&middot; 2h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Each compaction is lossy. After several, you&rsquo;re working with a summary of a summary. Signal degrades into noise.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 15. Twitter — @steipete -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">P</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Peter Steinberger</span>
+                    <span class="twitter-handle">@steipete</span>
+                    <span class="twitter-time">&middot; 3h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Forgetting the bash tool&hellip; refactors for 40 min and then rolls back everything&hellip; randomly switches to python&hellip; &lsquo;I&rsquo;m sorry I can&rsquo;t help you with that.&rsquo;</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 16. Twitter — @marmaduke091 -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">M</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">marmaduke</span>
+                    <span class="twitter-handle">@marmaduke091</span>
+                    <span class="twitter-time">&middot; 4h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">The model does not want to check in with you&hellip; edit tool is broken&hellip; never sees the errors.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 17. Twitter — @always_bulish -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">A</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">always_bulish</span>
+                    <span class="twitter-handle">@always_bulish</span>
+                    <span class="twitter-time">&middot; 1h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Constantly pushes back. Complains about complexity of the tasks.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 18. Twitter — @NathanFlurry -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">N</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Nathan Flurry</span>
+                    <span class="twitter-handle">@NathanFlurry</span>
+                    <span class="twitter-time">&middot; 7h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">No process manager&hellip; way too pedantic&hellip; SO SLOW&hellip; randomly hangs.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 19. Twitter — @DanFarfan -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">D</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Dan Farfan</span>
+                    <span class="twitter-handle">@DanFarfan</span>
+                    <span class="twitter-time">&middot; 2h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Made more coding SYNTAX errors than the 3 years.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 20. Twitter — @VictorTaelin -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">V</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Victor Taelin</span>
+                    <span class="twitter-handle">@VictorTaelin</span>
+                    <span class="twitter-time">&middot; 5h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Hopeless state. Harmfully negative productivity using AI to code.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 21. Twitter — @theo -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">T</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Theo</span>
+                    <span class="twitter-handle">@theo</span>
+                    <span class="twitter-time">&middot; 3h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Super super broken&hellip; chat histories are corrupted&hellip; worktrees got corrupted.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 22. Twitter — @Kingsley_codes -->
+        <div class="carousel-slide">
+          <div class="quote-card twitter">
+            <div>
+              <div class="twitter-header">
+                <div class="twitter-avatar">K</div>
+                <div class="twitter-name-group">
+                  <div class="twitter-name-row">
+                    <span class="twitter-name">Kingsley</span>
+                    <span class="twitter-handle">@Kingsley_codes</span>
+                    <span class="twitter-time">&middot; 6h</span>
+                  </div>
+                </div>
+              </div>
+              <p class="quote-text">Nuking my 4 months worth of AI chats and completely messing up my setup.</p>
+            </div>
+            <span class="twitter-x-logo">&Xopf;</span>
+          </div>
+        </div>
+
+        <!-- 23. HN — "Test-cheating" -->
+        <div class="carousel-slide">
+          <div class="quote-card hn">
+            <span class="hn-badge">Y</span>
+            <div>
+              <div class="hn-title-row">
+                <span class="hn-upvote">&#9650;</span>
+                <span class="hn-title">Test-cheating in AI coding tools</span>
+              </div>
+              <div class="hn-meta">523 points by test_skeptic 4 hours ago | <a href="#">hide</a> | <a href="#">287 comments</a></div>
+              <p class="quote-text">When asked to write unit tests, it re-implemented the function in the test file and tested that, rather than testing the actual implementation.</p>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- 25. Blog — Tim Sylvester -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">They do not really care what you want, they care what they want. They call it being helpful but what it really is, is ignoring what it is told to do.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> Tim Sylvester</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 26. Blog — medium.com "smoking ruin" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">Then it says &lsquo;Yup, we are done here!&rsquo; While the files you asked it to edit are a smoking ruin.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 27. Blog — medium.com "re-interpreted on the fly" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">Even instructions that Claude writes for itself, that describe exactly what needs to be done, get re-interpreted on the fly into something else entirely.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- 29. Blog — medium.com "context pollution" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">The moment Claude goes off-target, you have context pollution&hellip; it re-entrenches against that mistake on every single turn.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 30. Blog — medium.com "cascade of failures" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">Instead of respecting existing code, it pushes the error further into the codebase. Now you have a cascade of failures.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 31. Blog — medium.com "beautiful nonsense" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">The agent malforms a tool call and deletes an entire file. Then seeing the file is empty, rewrites with beautiful nonsense.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 32. Blog — medium.com "spaghetti slop" -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">Agents will rush off and screw up a ton of files in a single turn.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 33. HN — ".gitignore" -->
+        <div class="carousel-slide">
+          <div class="quote-card hn">
+            <span class="hn-badge">Y</span>
+            <div>
+              <div class="hn-title-row">
+                <span class="hn-upvote">&#9650;</span>
+                <span class="hn-title">AI coding tools and security</span>
+              </div>
+              <div class="hn-meta">691 points by sec_aware 6 hours ago | <a href="#">hide</a> | <a href="#">334 comments</a></div>
+              <p class="quote-text">When it needed access to a value from a file it was not allowed to read, it helpfully offered to remove the entries from .gitignore.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 34. Blog — medium.com "spaghetti slop" (full quote) -->
+        <div class="carousel-slide">
+          <div class="quote-card blog">
+            <span class="blog-badge"><svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg></span>
+            <div>
+              <div class="blog-open-quote">&ldquo;</div>
+              <p class="quote-text">If you are willing to just let the damn thing go off and do whatever it wants, you will not get a useful product, you will get spaghetti slop.</p>
+              <div class="blog-footer"><span class="blog-globe">&#127760;</span> medium.com</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 35. HN — "hallucinating" -->
+        <div class="carousel-slide">
+          <div class="quote-card hn">
+            <span class="hn-badge">Y</span>
+            <div>
+              <div class="hn-title-row">
+                <span class="hn-upvote">&#9650;</span>
+                <span class="hn-title">AI coding tools on complex codebases</span>
+              </div>
+              <div class="hn-meta">458 points by codebase_realist 2 hours ago | <a href="#">hide</a> | <a href="#">251 comments</a></div>
+              <p class="quote-text">As soon as your codebase gets a little bit weird the model starts hallucinating.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 36. GitHub — fake user input -->
+        <div class="carousel-slide">
+          <div class="quote-card github">
+            <svg class="platform-logo" width="20" height="20" viewBox="0 0 16 16" fill="#8b949e"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <div>
+              <div class="gh-header">
+                <svg class="gh-icon" viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+                <span class="gh-repo">anthropics/claude-code</span>
+                <span class="gh-issue-num">#issue</span>
+              </div>
+              <p class="quote-text">Mid-response, suddenly inserted ###Human: and proceeded to generate fake user input including code snippets.</p>
+              <div class="gh-footer">
+                <span class="gh-label">bug</span>
+                <span>&#128172; 31 comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="carousel-nav">
+      <button class="carousel-btn" id="prevBtn" aria-label="Previous">&larr;</button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Next">&rarr;</button>
+    </div>
+
+    <p style="text-align: center; margin-top: 16px;"><a href="incidents.html" style="color: #6b9fff; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; text-decoration: none; border-bottom: 1px solid rgba(107,159,255,0.3);">See more examples of Claude Code doing weird stuff &rarr;</a></p>
+      </div>
+
+      <!-- Right: Meme -->
+      <div class="meme-col">
+        <p class="meme-label">meanwhile...</p>
+        <div class="meme-img-wrap">
+          <img src="ceo-ai-meme.jpg" alt="CEO AI meme - Who are we? CEOs! What do we want? AI! AI to do what? We don't know! When do we want it? Right now!">
+        </div>
+      </div>
+    </div>
+
+    <p style="color: #a1a1aa; font-size: 1.05rem; text-align: center; margin-top: 32px; max-width: 620px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+      Open-source proxy that enforces rules on Claude Code.
+    </p>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 24px;">
+      <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="btn btn-primary" target="_blank" rel="noopener">Book a Call with Scott</a>
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-secondary" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg> Try it out</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr></div>
+
+<!-- ════════════ HOW IT WORKS ════════════ -->
+<section id="how-it-works">
+  <div class="wrap">
+    <!-- Full loop diagram -->
+    <div style="max-width: 600px; margin: 0 auto; position: relative;">
+
+      <style>
+        .arch-diagram { max-width: 640px; margin: 0 auto; font-family: 'JetBrains Mono', monospace; }
+        .arch-nodes { display: flex; align-items: stretch; justify-content: center; gap: 0; position: relative; }
+        .arch-node { text-align: center; padding: 1rem 1.25rem; border: 1px solid #27272a; border-radius: 10px; background: #111; min-width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; position: relative; z-index: 1; }
+        .arch-node .node-icon { font-size: 1.5rem; }
+        .arch-node .node-label { font-size: 0.75rem; color: #a1a1aa; }
+        .arch-node.luthien-node { border-color: rgba(107,159,255,0.4); background: rgba(107,159,255,0.06); min-width: 120px; }
+        .arch-node.luthien-node .node-label { color: #6b9fff; font-weight: 700; }
+        .arch-arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; flex-shrink: 0; gap: 0.15rem; position: relative; z-index: 0; }
+        .arch-arrow svg { width: 100%; height: 20px; }
+        .arch-checks { margin-top: 1.5rem; border: 1px dashed rgba(107,159,255,0.2); border-radius: 10px; padding: 1.25rem; position: relative; }
+        .arch-checks::before { content: ''; position: absolute; top: -1.5rem; left: 50%; width: 1px; height: 1.5rem; background: rgba(107,159,255,0.2); }
+        .arch-checks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .arch-checks-title { font-size: 0.8rem; color: #6b9fff; font-weight: 700; }
+        .arch-latency { font-size: 0.65rem; color: #22c55e; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); padding: 0.15rem 0.5rem; border-radius: 20px; }
+        .arch-check { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #1a1a1a; }
+        .arch-check:last-child { border-bottom: none; padding-bottom: 0; }
+        .arch-check-q { font-size: 0.8rem; white-space: nowrap; }
+        .arch-check-src { font-size: 0.65rem; color: #3f3f46; }
+        .arch-check-src code { padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.65rem; }
+        @media (max-width: 600px) {
+          .arch-nodes { flex-wrap: wrap; gap: 0.5rem; }
+          .arch-arrow { width: auto; flex-direction: row; gap: 0.25rem; }
+          .arch-check { flex-direction: column; gap: 0.25rem; }
+        }
+      </style>
+
+      <div class="arch-diagram">
+
+        <div class="arch-nodes">
+          <div class="arch-node">
+            <span class="node-icon">&#x1F9D1;&#x200D;&#x1F4BB;</span>
+            <span class="node-label">You</span>
+          </div>
+          <div class="arch-arrow">
+            <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+          </div>
+          <div class="arch-node">
+            <span class="node-icon">&#x1F4BB;</span>
+            <span class="node-label">Claude Code</span>
+          </div>
+          <div class="arch-arrow">
+            <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+          </div>
+          <div class="arch-node luthien-node">
+            <span class="node-icon">&#x1F6AA;</span>
+            <span class="node-label">Luthien</span>
+          </div>
+          <div class="arch-arrow">
+            <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+          </div>
+          <div class="arch-node">
+            <span class="node-icon">&#x2601;</span>
+            <span class="node-label">Claude API</span>
+          </div>
+        </div>
+
+        <div class="arch-checks">
+          <div class="arch-checks-header">
+            <span class="arch-checks-title">Luthien inspects every response</span>
+            <span class="arch-latency">+ ~50ms</span>
+          </div>
+          <div class="arch-check">
+            <span class="arch-check-q" style="color: #6b9fff;">1. Complete the prompt?</span>
+            <span class="arch-check-src">checks <code style="background: rgba(107,159,255,0.1); color: #71717a;">conversation_log</code></span>
+          </div>
+          <div class="arch-check">
+            <span class="arch-check-q" style="color: #f59e0b;">2. Follow <code style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.8rem;">CLAUDE.md</code>?</span>
+            <span class="arch-check-src">checks <code style="background: rgba(245,158,11,0.1); color: #71717a;">.claude/CLAUDE.md</code></span>
+          </div>
+          <div class="arch-check">
+            <span class="arch-check-q" style="color: #ef4444;">3. Something sus?</span>
+            <span class="arch-check-src">checks <code style="background: rgba(239,68,68,0.1); color: #71717a;">common_failure_modes_db</code></span>
+          </div>
+        </div>
+
+      </div>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr></div>
+
+<!-- ════════════ CTA ════════════ -->
+<section class="cta">
+  <div class="wrap">
+    <p class="cta-line">Open source. Early stage. Come build with us.</p>
+    <div class="btn-row">
+      <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="btn btn-primary" target="_blank" rel="noopener">Book a Call with Scott</a>
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-secondary" target="_blank" rel="noopener">Try it on GitHub</a>
+    </div>
+    <p class="cta-sub">Apache 2.0 &middot; design partners wanted &middot; <a href="mailto:contact@luthienresearch.org">contact@luthienresearch.org</a></p>
+  </div>
+</section>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a>
+        <a href="https://luthienresearch.org">About</a>
+        <a href="https://luthienresearch.org/donate">Donate</a>
+      </div>
+      <span>Luthien Research &middot; 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function() {
+  const track = document.getElementById('carouselTrack');
+  const slides = track.querySelectorAll('.carousel-slide');
+  const dotsContainer = document.getElementById('carouselDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const total = slides.length;
+  let current = 0;
+  let autoTimer = null;
+  let startX = 0;
+  let dragging = false;
+
+  // Build dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', function() { goTo(i); });
+    dotsContainer.appendChild(dot);
+  }
+
+  const dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+  function goTo(index) {
+    current = ((index % total) + total) % total;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    dots.forEach(function(d, j) {
+      d.classList.toggle('active', j === current);
+    });
+    resetAuto();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  // Touch swipe
+  var container = document.getElementById('carousel');
+
+  container.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    dragging = true;
+  }, { passive: true });
+
+  container.addEventListener('touchend', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    var diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? next() : prev();
+    }
+  }, { passive: true });
+
+  // Auto-advance
+  function startAuto() {
+    autoTimer = setInterval(next, 6000);
+  }
+  function resetAuto() {
+    clearInterval(autoTimer);
+    startAuto();
+  }
+
+  // Pause on hover
+  container.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
+  container.addEventListener('mouseleave', startAuto);
+
+  startAuto();
+})();
+</script>
+</body>
+</html>

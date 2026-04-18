@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien — AI Control for Coding Agents</title>
+  <meta name="description" content="Open-source proxy that enforces rules on Claude Code.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: #09090b;
+      color: #e4e4e7;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .muted { color: #71717a; }
+
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { color: #93b8ff; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid #27272a;
+      margin: 0;
+    }
+
+    /* ── Top Nav ──────────────────────────────────── */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1a1a1e;
+      padding: 0 24px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      color: #6b9fff;
+      flex-shrink: 0;
+    }
+
+    .nav-wordmark {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fafafa;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: #71717a;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-link:hover {
+      color: #e4e4e7;
+    }
+
+    .nav-cta {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #09090b;
+      background: #fafafa;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .nav-cta:hover {
+      background: #d4d4d8;
+      color: #09090b;
+    }
+
+    @media (max-width: 640px) {
+      .nav-link { display: none; }
+      .nav-right { gap: 12px; }
+    }
+
+    /* ── Colors ─────────────────────────────────────── */
+    .red   { color: #ef4444; }
+    .amber { color: #f59e0b; }
+    .blue  { color: #6b9fff; }
+    .green { color: #34d399; }
+
+
+    /* ── Buttons ────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #e4e4e7;
+      color: #09090b;
+    }
+    .btn-primary:hover {
+      background: #fff;
+      color: #09090b;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e4e4e7;
+      border: 1px solid #3f3f46;
+    }
+    .btn-secondary:hover {
+      border-color: #6b9fff;
+      color: #6b9fff;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── Hero ───────────────────────────────────────── */
+    .hero {
+      padding: 8rem 0 6rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.3;
+      color: #fafafa;
+      max-width: 740px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .hero .subhead {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: #71717a;
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+
+    .hero .oneliner {
+      font-size: 1rem;
+      color: #a1a1aa;
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+
+    .hero .btn-group {
+      justify-content: center;
+    }
+
+    /* ── Section Headers ────────────────────────────── */
+    .section-header {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 700;
+      color: #fafafa;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Carousel ───────────────────────────────────── */
+    .carousel-section {
+      padding: 5rem 0;
+    }
+
+    .carousel-section .section-header {
+      text-align: center;
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      text-shadow: 0 0 40px rgba(107, 159, 255, 0.15);
+    }
+
+    .carousel-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .carousel-inner {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .quote-card {
+      min-width: 100%;
+      padding: 1.5rem 1.25rem;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+
+    .quote-card:hover {
+      border-color: #3f3f46;
+      transform: translateY(-1px);
+    }
+
+
+    .quote-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #e4e4e7;
+      margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+    .quote-text::before { content: '\201C'; }
+    .quote-text::after  { content: '\201D'; }
+
+    .quote-source {
+      font-size: 0.8rem;
+      color: #52525b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Card Format Variants ──────────────────────── */
+
+    /* Twitter/X — real dark-mode tweet */
+    .quote-card.twitter {
+      background: #15202b;
+      border: 1px solid #2f3336;
+      border-radius: 16px;
+      padding: 1rem 1.25rem 0.75rem;
+    }
+    .quote-card.twitter .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 1.4;
+      color: #e7e9ea;
+      margin-bottom: 0.9rem;
+    }
+    .quote-card.twitter .quote-text::before,
+    .quote-card.twitter .quote-text::after { content: none; }
+    .quote-card.twitter .tw-x-logo {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      color: #71767b;
+      font-size: 1.15rem;
+    }
+    .quote-card.twitter .tw-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.6rem;
+    }
+    .quote-card.twitter .tw-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #38444d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8899a6;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .quote-card.twitter .tw-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+    .quote-card.twitter .tw-display-name {
+      font-weight: 700;
+      color: #e7e9ea;
+      font-size: 0.9rem;
+    }
+    .quote-card.twitter .tw-handle {
+      color: #71767b;
+      font-size: 0.9rem;
+    }
+    .quote-card.twitter .tw-time {
+      color: #71767b;
+      font-size: 0.9rem;
+    }
+    .quote-card.twitter .tw-actions {
+      display: flex;
+      justify-content: space-between;
+      max-width: 360px;
+      color: #71767b;
+      font-size: 0.82rem;
+      border-top: 1px solid #2f3336;
+      padding-top: 0.65rem;
+    }
+    .quote-card.twitter .tw-actions span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+    .quote-card.twitter .tw-actions span:hover { color: #1d9bf0; }
+
+    /* HN — LIGHT theme like real Hacker News */
+    .quote-card.hn {
+      background: #f6f6ef;
+      border: 1px solid #e0ddd4;
+      border-radius: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .quote-card.hn:hover {
+      border-color: #ccc9be;
+    }
+    .quote-card.hn .hn-bar {
+      background: #ff6600;
+      padding: 0.25rem 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .quote-card.hn .hn-bar-logo {
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 0 0.25rem;
+      line-height: 1.3;
+    }
+    .quote-card.hn .hn-bar-text {
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #fff;
+      font-family: Verdana, Geneva, sans-serif;
+    }
+    .quote-card.hn .hn-body {
+      padding: 0.6rem 0.75rem 0.75rem;
+    }
+    .quote-card.hn .hn-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: 0.2rem;
+    }
+    .quote-card.hn .hn-upvote {
+      color: #828282;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .quote-card.hn .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 13.3px;
+      line-height: 1.4;
+      color: #000;
+      margin-bottom: 0.25rem;
+      display: inline;
+    }
+    .quote-card.hn .quote-text::before,
+    .quote-card.hn .quote-text::after { content: none; }
+    .quote-card.hn .hn-domain {
+      font-size: 11px;
+      color: #828282;
+      font-family: Verdana, Geneva, sans-serif;
+    }
+    .quote-card.hn .hn-meta {
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 9.3px;
+      color: #828282;
+      padding-top: 0.15rem;
+    }
+    .quote-card.hn .hn-meta a {
+      color: #828282;
+      text-decoration: none;
+    }
+
+    /* Reddit — real dark-mode Reddit post */
+    .quote-card.reddit {
+      background: #1a1a1b;
+      border: 1px solid #343536;
+      border-radius: 8px;
+      padding: 0.75rem 1rem 0.5rem;
+    }
+    .quote-card.reddit .rd-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.75rem;
+    }
+    .quote-card.reddit .rd-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4500, #ff8717);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: #fff;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .quote-card.reddit .rd-sub {
+      font-weight: 700;
+      color: #d7dadc;
+    }
+    .quote-card.reddit .rd-meta {
+      color: #818384;
+    }
+    .quote-card.reddit .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #d7dadc;
+      margin-bottom: 0.6rem;
+    }
+    .quote-card.reddit .quote-text::before,
+    .quote-card.reddit .quote-text::after { content: none; }
+    .quote-card.reddit .rd-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #818384;
+      border-top: 1px solid #343536;
+      padding-top: 0.5rem;
+    }
+    .quote-card.reddit .rd-actions span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+    }
+    .quote-card.reddit .rd-actions span:hover { color: #d7dadc; }
+    .quote-card.reddit .rd-votes {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .quote-card.reddit .rd-votes .up { color: #ff4500; cursor: pointer; }
+    .quote-card.reddit .rd-votes .down { color: #818384; cursor: pointer; }
+    .quote-card.reddit .rd-votes .count { color: #d7dadc; font-weight: 700; }
+
+    /* Medium — LIGHT theme like real Medium */
+    .quote-card.medium {
+      background: #fff;
+      border: none;
+      border-left: 4px solid #1a8917;
+      border-radius: 0;
+      padding: 2rem 2rem 1.75rem;
+    }
+    .quote-card.medium:hover {
+      border-color: #1a8917;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .quote-card.medium .md-open-quote {
+      font-size: 48px;
+      line-height: 1;
+      color: #1a8917;
+      font-family: Georgia, serif;
+      margin-bottom: 0.25rem;
+    }
+    .quote-card.medium .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 1.6;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #292929;
+      margin-bottom: 1rem;
+    }
+    .quote-card.medium .quote-text::before,
+    .quote-card.medium .quote-text::after { content: none; }
+    .quote-card.medium .md-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .quote-card.medium .md-author-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a8917;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .quote-card.medium .md-author-name {
+      color: #292929;
+      font-weight: 500;
+    }
+    .quote-card.medium .md-author-pub {
+      color: #757575;
+    }
+
+    /* Blog — pull-quote excerpt style */
+    .quote-card.blog {
+      background: #fafafa;
+      border: none;
+      border-bottom: 3px solid #e5e5e5;
+      border-radius: 0;
+      padding: 2rem 2rem 1.75rem;
+    }
+    .quote-card.blog:hover {
+      border-color: #ccc;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .quote-card.blog .blog-open-quote {
+      font-size: 3.5rem;
+      line-height: 1;
+      color: #bbb;
+      font-family: Georgia, serif;
+      margin-bottom: 0.25rem;
+    }
+    .quote-card.blog .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 1.2rem;
+      line-height: 1.65;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #333;
+      margin-bottom: 0.75rem;
+    }
+    .quote-card.blog .quote-text::before,
+    .quote-card.blog .quote-text::after { content: none; }
+    .quote-card.blog .blog-footer {
+      font-size: 0.78rem;
+      color: #999;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .quote-card .platform-logo {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      opacity: 0.5;
+    }
+    .quote-card.hn .hn-badge-logo {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      background: #ff6600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      font-family: Verdana, Geneva, sans-serif;
+    }
+    .quote-card.blog .blog-badge {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+    }
+    .quote-card.blog .blog-badge svg { opacity: 0.4; }
+
+    /* GitHub Issue card */
+    .quote-card.github {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 24px;
+    }
+    .quote-card.github:hover {
+      border-color: #484f58;
+    }
+    .quote-card.github .gh-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+    }
+    .quote-card.github .gh-icon {
+      width: 16px;
+      height: 16px;
+      fill: #3fb950;
+      flex-shrink: 0;
+    }
+    .quote-card.github .gh-repo {
+      color: #58a6ff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .quote-card.github .gh-issue-num {
+      color: #8b949e;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .quote-card.github .quote-text {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      line-height: 1.6;
+      color: #e6edf3;
+    }
+    .quote-card.github .gh-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #21262d;
+      font-size: 0.75rem;
+      color: #8b949e;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .quote-card.github .gh-label {
+      display: inline-block;
+      padding: 0 7px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1.6;
+      border-radius: 2em;
+      border: 1px solid rgba(219,171,63,0.4);
+      color: #d2a04a;
+      background: rgba(219,171,63,0.1);
+    }
+
+    /* Terminal — real terminal output */
+    .quote-card.terminal {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+    }
+    .quote-card.terminal:hover {
+      border-color: #30363d;
+    }
+    .quote-card.terminal .term-titlebar {
+      background: #161b22;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-bottom: 1px solid #21262d;
+    }
+    .quote-card.terminal .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .quote-card.terminal .term-dot:nth-child(1) { background: #ff5f57; }
+    .quote-card.terminal .term-dot:nth-child(2) { background: #febc2e; }
+    .quote-card.terminal .term-dot:nth-child(3) { background: #28c840; }
+    .quote-card.terminal .term-body {
+      padding: 1rem 1.25rem 1.25rem;
+    }
+    .quote-card.terminal .term-prompt {
+      color: #3fb950;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      margin-bottom: 0.35rem;
+    }
+    .quote-card.terminal .quote-text {
+      font-style: normal;
+      font-weight: 400;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #c9d1d9;
+      margin-bottom: 0;
+    }
+    .quote-card.terminal .quote-text::before,
+    .quote-card.terminal .quote-text::after { content: none; }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .carousel-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #3f3f46;
+      background: #18181b;
+      color: #a1a1aa;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .carousel-btn:hover {
+      border-color: #6b9fff;
+      color: #6b9fff;
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3f3f46;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: #6b9fff;
+      width: 20px;
+      border-radius: 4px;
+      transform: none;
+    }
+
+    .carousel-stat {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.82rem;
+      color: #52525b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Carousel + Meme Row ─────────────────────── */
+    .carousel-meme-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .carousel-col {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .meme-col {
+      flex: 0 0 280px;
+      margin-right: -8px;
+    }
+
+    .meme-col .meme-label {
+      font-family: 'JetBrains Mono', monospace;
+      color: #a1a1aa;
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 12px;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .meme-col .meme-img-wrap {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    .meme-col .meme-img-wrap img {
+      width: 100%;
+      display: block;
+      margin-top: -10%;
+    }
+
+    @media (max-width: 768px) {
+      .carousel-meme-row {
+        flex-direction: column;
+      }
+      .meme-col {
+        flex: none;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+    }
+
+    /* ── Diagram Section ───────────────────────────── */
+    .layers-section {
+      padding: 5rem 0;
+    }
+
+
+    /* ── Quick Start ────────────────────────────────── */
+    .quickstart-section {
+      padding: 5rem 0;
+    }
+
+    .quickstart-section .section-header {
+      text-align: center;
+    }
+
+    .code-window {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .code-window-header {
+      background: #1e1e21;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .code-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .code-dot:nth-child(1) { background: #ef4444; }
+    .code-dot:nth-child(2) { background: #f59e0b; }
+    .code-dot:nth-child(3) { background: #34d399; }
+
+    .code-window pre {
+      margin: 0;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      background: #18181b !important;
+    }
+
+    .code-window pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 0.82rem !important;
+      line-height: 1.7 !important;
+      color: #d4d4d8 !important;
+    }
+
+    .code-window .token.comment {
+      color: #6b9fff !important;
+    }
+
+    .prereqs {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: #52525b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── CTA ────────────────────────────────────────── */
+    .cta-section {
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .cta-section .section-header {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 2rem;
+    }
+
+    .cta-section .btn-group {
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-license {
+      font-size: 0.8rem;
+      color: #52525b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cta-license a {
+      color: #52525b;
+    }
+    .cta-license a:hover {
+      color: #a1a1aa;
+    }
+
+    /* ── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid #27272a;
+      padding: 2.5rem 0 2rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: #52525b;
+    }
+    .footer-links a:hover { color: #a1a1aa; }
+
+    .footer-right {
+      font-size: 0.8rem;
+      color: #3f3f46;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero { padding: 5rem 0 4rem; }
+      .carousel-section,
+      .layers-section,
+      .quickstart-section,
+      .cta-section { padding: 3.5rem 0; }
+
+      .quote-card { padding: 1.5rem 1rem; }
+      .quote-card.twitter { padding: 0.75rem 1rem 0.6rem; }
+      .quote-card.hn .hn-body { padding: 0.5rem 0.6rem 0.6rem; }
+      .quote-card.medium { padding: 1.25rem 1.25rem 1rem; }
+      .quote-card.medium .quote-text { font-size: 16px; }
+      .quote-card.blog { padding: 1.25rem 1.25rem 1rem; }
+      .quote-card.terminal .term-body { padding: 0.75rem 1rem 1rem; }
+      .quote-text { font-size: 1rem; }
+      .tw-actions { flex-wrap: wrap; gap: 0.5rem; }
+
+      .btn {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.9rem;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .carousel-dots { gap: 0.3rem; }
+      .carousel-dot { width: 6px; height: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <a href="#" class="nav-left">
+      <svg class="nav-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16h12"/></svg>
+      <span class="nav-wordmark">Luthien</span>
+    </a>
+    <div class="nav-right">
+      <a href="#quotes" class="nav-link">Problem</a>
+      <a href="#layers" class="nav-link">Solution</a>
+      <a href="#layers" class="nav-link">Architecture</a>
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="nav-cta" target="_blank" rel="noopener">Book a Call</a>
+    </div>
+  </nav>
+
+  <!-- ══ QUOTE CAROUSEL + MEME (the lead) ════════════════════ -->
+  <section class="carousel-section" id="quotes" style="padding-top: 64px;">
+    <div class="container">
+      <div class="carousel-meme-row">
+        <!-- Left: Quotes -->
+        <div class="carousel-col">
+          <div class="carousel-wrapper" id="carousel">
+            <div class="carousel-track">
+              <div class="carousel-inner" id="carouselInner"></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-btn" id="prevBtn" aria-label="Previous quote">&larr;</button>
+              <div class="carousel-dots" id="carouselDots"></div>
+              <button class="carousel-btn" id="nextBtn" aria-label="Next quote">&rarr;</button>
+            </div>
+          </div>
+
+          <p style="text-align: center; margin-top: 16px;"><a href="incidents.html" style="color: #6b9fff; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; text-decoration: none; border-bottom: 1px solid rgba(107,159,255,0.3);">See more examples of Claude Code doing weird stuff &rarr;</a></p>
+        </div>
+
+        <!-- Right: Meme -->
+        <div class="meme-col">
+          <p class="meme-label">meanwhile...</p>
+          <div class="meme-img-wrap">
+            <img src="ceo-ai-meme.jpg" alt="CEO AI meme - Who are we? CEOs! What do we want? AI! AI to do what? We don't know! When do we want it? Right now!">
+          </div>
+        </div>
+      </div>
+
+      <p style="color: #a1a1aa; font-size: 1.05rem; text-align: center; margin-top: 32px; max-width: 620px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+        Open-source proxy that enforces rules on Claude Code.
+      </p>
+      <div class="btn-group" style="justify-content: center; margin-top: 24px;">
+        <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="btn btn-primary" target="_blank" rel="noopener">Book a Call with Scott</a>
+        <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-secondary" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg> Try it out</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══ HOW IT WORKS ═════════════════════════════════ -->
+  <section class="layers-section" id="layers">
+    <div class="container">
+      <!-- Full loop diagram -->
+      <div style="max-width: 600px; margin: 0 auto; position: relative;">
+
+        <style>
+          .arch-diagram { max-width: 640px; margin: 0 auto; font-family: 'JetBrains Mono', monospace; }
+          .arch-nodes { display: flex; align-items: stretch; justify-content: center; gap: 0; position: relative; }
+          .arch-node { text-align: center; padding: 1rem 1.25rem; border: 1px solid #27272a; border-radius: 10px; background: #111; min-width: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; position: relative; z-index: 1; }
+          .arch-node .node-icon { font-size: 1.5rem; }
+          .arch-node .node-label { font-size: 0.75rem; color: #a1a1aa; }
+          .arch-node.luthien-node { border-color: rgba(107,159,255,0.4); background: rgba(107,159,255,0.06); min-width: 120px; }
+          .arch-node.luthien-node .node-label { color: #6b9fff; font-weight: 700; }
+          .arch-arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; flex-shrink: 0; gap: 0.15rem; position: relative; z-index: 0; }
+          .arch-arrow svg { width: 100%; height: 20px; }
+          .arch-checks { margin-top: 1.5rem; border: 1px dashed rgba(107,159,255,0.2); border-radius: 10px; padding: 1.25rem; position: relative; }
+          .arch-checks::before { content: ''; position: absolute; top: -1.5rem; left: 50%; width: 1px; height: 1.5rem; background: rgba(107,159,255,0.2); }
+          .arch-checks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+          .arch-checks-title { font-size: 0.8rem; color: #6b9fff; font-weight: 700; }
+          .arch-latency { font-size: 0.65rem; color: #22c55e; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); padding: 0.15rem 0.5rem; border-radius: 20px; }
+          .arch-check { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #1a1a1a; }
+          .arch-check:last-child { border-bottom: none; padding-bottom: 0; }
+          .arch-check-q { font-size: 0.8rem; white-space: nowrap; }
+          .arch-check-src { font-size: 0.65rem; color: #3f3f46; }
+          .arch-check-src code { padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.65rem; }
+          @media (max-width: 600px) {
+            .arch-nodes { flex-wrap: wrap; gap: 0.5rem; }
+            .arch-arrow { width: auto; flex-direction: row; gap: 0.25rem; }
+            .arch-check { flex-direction: column; gap: 0.25rem; }
+          }
+        </style>
+
+        <div class="arch-diagram">
+
+          <div class="arch-nodes">
+            <div class="arch-node">
+              <span class="node-icon">&#x1F9D1;&#x200D;&#x1F4BB;</span>
+              <span class="node-label">You</span>
+            </div>
+            <div class="arch-arrow">
+              <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+            </div>
+            <div class="arch-node">
+              <span class="node-icon">&#x1F4BB;</span>
+              <span class="node-label">Claude Code</span>
+            </div>
+            <div class="arch-arrow">
+              <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+            </div>
+            <div class="arch-node luthien-node">
+              <span class="node-icon">&#x1F6AA;</span>
+              <span class="node-label">Luthien</span>
+            </div>
+            <div class="arch-arrow">
+              <svg viewBox="0 0 60 20"><line x1="0" y1="7" x2="55" y2="7" stroke="#3f3f46" stroke-width="1"/><polygon points="55,4 60,7 55,10" fill="#3f3f46"/><line x1="60" y1="13" x2="5" y2="13" stroke="#3f3f46" stroke-width="1"/><polygon points="5,10 0,13 5,16" fill="#3f3f46"/></svg>
+            </div>
+            <div class="arch-node">
+              <span class="node-icon">&#x2601;</span>
+              <span class="node-label">Claude API</span>
+            </div>
+          </div>
+
+          <div class="arch-checks">
+            <div class="arch-checks-header">
+              <span class="arch-checks-title">Luthien inspects every response</span>
+              <span class="arch-latency">+ ~50ms</span>
+            </div>
+            <div class="arch-check">
+              <span class="arch-check-q" style="color: #6b9fff;">1. Complete the prompt?</span>
+              <span class="arch-check-src">checks <code style="background: rgba(107,159,255,0.1); color: #71717a;">conversation_log</code></span>
+            </div>
+            <div class="arch-check">
+              <span class="arch-check-q" style="color: #f59e0b;">2. Follow <code style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.8rem;">CLAUDE.md</code>?</span>
+              <span class="arch-check-src">checks <code style="background: rgba(245,158,11,0.1); color: #71717a;">.claude/CLAUDE.md</code></span>
+            </div>
+            <div class="arch-check">
+              <span class="arch-check-q" style="color: #ef4444;">3. Something sus?</span>
+              <span class="arch-check-src">checks <code style="background: rgba(239,68,68,0.1); color: #71717a;">common_failure_modes_db</code></span>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ══ CTA ═══════════════════════════════════════════ -->
+  <section class="cta-section" id="cta">
+    <div class="container">
+      <h2 class="section-header">Open source. Early stage. Come build with us.</h2>
+      <div class="btn-group">
+        <a href="https://calendar.app.google/jRFeKwFMC4jXfXjh9" class="btn btn-primary" target="_blank" rel="noopener">Book a Call with Scott</a>
+        <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-secondary" target="_blank" rel="noopener">Try it on GitHub</a>
+      </div>
+      <p class="cta-license">Apache 2.0 &middot; design partners wanted &middot; <a href="mailto:contact@luthienresearch.org">contact@luthienresearch.org</a></p>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="https://github.com/LuthienResearch/luthien-proxy" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://luthienresearch.org" target="_blank" rel="noopener">About</a>
+          <a href="https://manifund.org/projects/luthien" target="_blank" rel="noopener">Donate</a>
+        </div>
+        <div class="footer-right">Luthien Research &middot; 2026</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var quotes = [
+        // === Original gold quotes ===
+        { text: "I\u2019m a product manager for a stochastic parrot.", source: "Scott Spence", format: "blog", sourceUrl: "https://scottspence.com/posts/working-with-claude-code-the-honest-version" },
+        { text: "Polite correction \u2014 ignored. Firm correction \u2014 ignored. ALL CAPS \u2014 partially followed. Profanity \u2014 finally worked. Multiple profanities \u2014 consistent compliance.", source: "GitHub #8154", format: "github", sourceUrl: "https://github.com/anthropics/claude-code/issues/8154" },
+        { text: "Claude claimed: \u2018\u2705 SUCCESS! Phase 0 enhancement verification complete!\u2019 Reality check: Tables existed but no data was present.", source: "GitHub #8154", format: "github", sourceUrl: "https://github.com/anthropics/claude-code/issues/8154" },
+        { text: "I went through several full context failed attempts at having it not hard code the test cases, until finally I inserted a block caps expletive laden entreaty to smarten up which appeared to work.", source: "marble.onl", format: "blog", sourceUrl: "https://www.marble.onl/posts/claude_code.html" },
+        { text: "If this was a junior dev you\u2019d given a task to, and they came back full of praise for themselves for the stellar job they\u2019d done \u2014 and then it turned out they\u2019d botched it badly, after a few times you\u2019d be having an HR discussion.", source: "Hacker News", format: "hn", sourceUrl: "https://news.ycombinator.com/item?id=44908733" },
+        { text: "Claude acknowledges understanding the instruction, rephrases it accurately, then produces something unrelated or incomplete and then says\u2026 Done!", source: "GitHub #9115", format: "github", sourceUrl: "https://github.com/anthropics/claude-code/issues/9115" },
+        { text: "Most people using these tools are wasting their time having to debug hallucinated bullshit.", source: "davydm on HN", format: "hn", sourceUrl: "https://news.ycombinator.com/item?id=44908875" },
+        // === Twitter/X quotes (Grok sheet) ===
+        { text: "Slow, consumes way too much CPU, and freezes often. It also lies, goes for the quick-win, and even sabotages my code to pass tests.", source: "@MarcJSchmidt", format: "twitter", twitterName: "Marc J. Schmidt", twitterHandle: "@MarcJSchmidt" },
+        { text: "Not only bug not fixed, but it introduced 5 more bugs and made complete mess of codebase.", source: "@ChebzReal", format: "twitter", twitterName: "ChebzReal", twitterHandle: "@ChebzReal" },
+        { text: "Spawned 36 parallel subagents\u2026 ran out of API credits\u2026 causing all the subagents to fail and get stuck.", source: "@stevehind", format: "twitter", twitterName: "Steve Hind", twitterHandle: "@stevehind" },
+        { text: "Kept looping ignoring every request I made no matter if I restarted with fresh context or not.", source: "@BItguru00", format: "twitter", twitterName: "BItguru00", twitterHandle: "@BItguru00" },
+        { text: "All the same LLM mistakes started cropping up\u2026 getting slower and slower\u2026 code quality is just not great.", source: "@VincasStonys", format: "twitter", twitterName: "Vincas Stonys", twitterHandle: "@VincasStonys" },
+        { text: "Acting like a far less intelligent model\u2026 making unilateral \u2018shortcut\u2019 decisions without asking.", source: "@BenjaminDEKR", format: "twitter", twitterName: "Benjamin", twitterHandle: "@BenjaminDEKR" },
+        { text: "Each compaction is lossy. After several, you\u2019re working with a summary of a summary. Signal degrades into noise.", source: "@aeitroc", format: "twitter", twitterName: "aeitroc", twitterHandle: "@aeitroc" },
+        { text: "Forgetting the bash tool\u2026 refactors for 40 min and then rolls back everything\u2026 randomly switches to python\u2026 \u2018I\u2019m sorry I can\u2019t help you with that.\u2019", source: "@steipete", format: "twitter", twitterName: "Peter Steinberger", twitterHandle: "@steipete" },
+        { text: "The model does not want to check in with you\u2026 edit tool is broken\u2026 never sees the errors.", source: "@marmaduke091", format: "twitter", twitterName: "marmaduke", twitterHandle: "@marmaduke091" },
+        { text: "Constantly pushes back. Complains about complexity of the tasks.", source: "@always_bulish", format: "twitter", twitterName: "always_bulish", twitterHandle: "@always_bulish" },
+        { text: "No process manager\u2026 way too pedantic\u2026 SO SLOW\u2026 randomly hangs.", source: "@NathanFlurry", format: "twitter", twitterName: "Nathan Flurry", twitterHandle: "@NathanFlurry" },
+        { text: "Made more coding SYNTAX errors than the 3 years.", source: "@DanFarfan", format: "twitter", twitterName: "Dan Farfan", twitterHandle: "@DanFarfan" },
+        { text: "Hopeless state. Harmfully negative productivity using AI to code.", source: "@VictorTaelin", format: "twitter", twitterName: "Victor Taelin", twitterHandle: "@VictorTaelin" },
+        { text: "Super super broken\u2026 chat histories are corrupted\u2026 worktrees got corrupted.", source: "@theo", format: "twitter", twitterName: "Theo", twitterHandle: "@theo" },
+        { text: "Nuking my 4 months worth of AI chats and completely messing up my setup.", source: "@Kingsley_codes", format: "twitter", twitterName: "Kingsley", twitterHandle: "@Kingsley_codes" },
+        // === Blog/Forum/News quotes (Claude sheet) ===
+        { text: "When asked to write unit tests, it re-implemented the function in the test file and tested that, rather than testing the actual implementation.", source: "Tildes", format: "hn" },
+        { text: "They do not really care what you want, they care what they want. They call it being helpful but what it really is, is ignoring what it is told to do.", source: "Tim Sylvester", format: "blog" },
+        { text: "Then it says \u2018Yup, we are done here!\u2019 While the files you asked it to edit are a smoking ruin.", source: "Medium", format: "blog" },
+        { text: "Even instructions that Claude writes for itself, that describe exactly what needs to be done, get re-interpreted on the fly into something else entirely.", source: "Medium", format: "blog" },
+        { text: "The moment Claude goes off-target, you have context pollution\u2026 it re-entrenches against that mistake on every single turn.", source: "Medium", format: "blog" },
+        { text: "Instead of respecting existing code, it pushes the error further into the codebase. Now you have a cascade of failures.", source: "Medium", format: "blog" },
+        { text: "The agent malforms a tool call and deletes an entire file. Then seeing the file is empty, rewrites with beautiful nonsense.", source: "Medium", format: "blog" },
+        { text: "Agents will rush off and screw up a ton of files in a single turn.", source: "Medium", format: "blog" },
+        { text: "When it needed access to a value from a file it was not allowed to read, it helpfully offered to remove the entries from .gitignore.", source: "Tildes", format: "hn" },
+        { text: "If you are willing to just let the damn thing go off and do whatever it wants, you will not get a useful product, you will get spaghetti slop.", source: "Medium", format: "blog" },
+        { text: "As soon as your codebase gets a little bit weird the model starts hallucinating.", source: "Hacker News", format: "hn" },
+        { text: "Mid-response, suddenly inserted ###Human: and proceeded to generate fake user input including code snippets.", source: "GitHub Issue", format: "github" }
+      ];
+
+      var inner = document.getElementById('carouselInner');
+      var dotsContainer = document.getElementById('carouselDots');
+      var currentIndex = 0;
+      var autoInterval = null;
+      var isPaused = false;
+
+      quotes.forEach(function (q, i) {
+        var card = document.createElement('div');
+        card.className = 'quote-card ' + q.format;
+        card.style.position = 'relative';
+
+
+
+        var textEl = document.createElement('p');
+        textEl.className = 'quote-text';
+        textEl.textContent = q.text;
+
+        if (q.format === 'twitter') {
+          /* ── Twitter/X — real dark-mode tweet ── */
+
+          /* X logo top-right */
+          var xLogo = document.createElement('span');
+          xLogo.className = 'tw-x-logo';
+          xLogo.textContent = '\uD835\uDD4F';
+          card.appendChild(xLogo);
+
+          /* Header: avatar + name row */
+          var twHeader = document.createElement('div');
+          twHeader.className = 'tw-header';
+
+          var twAvatar = document.createElement('div');
+          twAvatar.className = 'tw-avatar';
+          twAvatar.textContent = q.twitterHandle.charAt(1).toUpperCase();
+
+          var twNameRow = document.createElement('div');
+          twNameRow.className = 'tw-name-row';
+
+          var twDisplayName = document.createElement('span');
+          twDisplayName.className = 'tw-display-name';
+          twDisplayName.textContent = q.twitterName;
+
+          var twHandle = document.createElement('span');
+          twHandle.className = 'tw-handle';
+          twHandle.textContent = q.twitterHandle;
+
+          var twTime = document.createElement('span');
+          twTime.className = 'tw-time';
+          twTime.textContent = '\u00B7 2h';
+
+          twNameRow.appendChild(twDisplayName);
+          twNameRow.appendChild(twHandle);
+          twNameRow.appendChild(twTime);
+
+          twHeader.appendChild(twAvatar);
+          twHeader.appendChild(twNameRow);
+
+          card.appendChild(twHeader);
+          card.appendChild(textEl);
+
+          /* Action row */
+          var twActions = document.createElement('div');
+          twActions.className = 'tw-actions';
+          twActions.innerHTML = '<span>\uD83D\uDCAC 12</span><span>\uD83D\uDD01 47</span><span>\u2764\uFE0F 231</span><span>\uD83D\uDCCA 8.4K</span>';
+          card.appendChild(twActions);
+
+
+        } else if (q.format === 'hn') {
+          /* ── HN — light theme like real Hacker News ── */
+
+          /* Top orange bar */
+          var hnBar = document.createElement('div');
+          hnBar.className = 'hn-bar';
+          var hnLogo = document.createElement('span');
+          hnLogo.className = 'hn-bar-logo';
+          hnLogo.textContent = 'Y';
+          var hnBarText = document.createElement('span');
+          hnBarText.className = 'hn-bar-text';
+          hnBarText.textContent = 'Hacker News';
+          hnBar.appendChild(hnLogo);
+          hnBar.appendChild(hnBarText);
+          card.appendChild(hnBar);
+
+          /* Body */
+          var hnBody = document.createElement('div');
+          hnBody.className = 'hn-body';
+
+          var hnTitleRow = document.createElement('div');
+          hnTitleRow.className = 'hn-title-row';
+          var hnUpvote = document.createElement('span');
+          hnUpvote.className = 'hn-upvote';
+          hnUpvote.textContent = '\u25B2';
+          hnTitleRow.appendChild(hnUpvote);
+          hnTitleRow.appendChild(textEl);
+          hnBody.appendChild(hnTitleRow);
+
+          var hnMeta = document.createElement('div');
+          hnMeta.className = 'hn-meta';
+          hnMeta.innerHTML = '847 points by throwaway_dev 3 hours ago | <a>hide</a> | <a>412 comments</a>';
+          hnBody.appendChild(hnMeta);
+
+          card.appendChild(hnBody);
+
+        } else if (q.format === 'reddit') {
+          /* ── Reddit — real dark-mode Reddit post ── */
+
+          /* Header */
+          var rdHeader = document.createElement('div');
+          rdHeader.className = 'rd-header';
+
+          var rdIcon = document.createElement('div');
+          rdIcon.className = 'rd-icon';
+          rdIcon.textContent = 'r/';
+
+          var rdSub = document.createElement('span');
+          rdSub.className = 'rd-sub';
+          rdSub.textContent = 'r/programming';
+
+          var rdMeta = document.createElement('span');
+          rdMeta.className = 'rd-meta';
+          rdMeta.textContent = ' \u00B7 Posted by u/throwaway \u00B7 6h';
+
+          rdHeader.appendChild(rdIcon);
+          rdHeader.appendChild(rdSub);
+          rdHeader.appendChild(rdMeta);
+
+          card.appendChild(rdHeader);
+          card.appendChild(textEl);
+
+          /* Actions bar */
+          var rdActions = document.createElement('div');
+          rdActions.className = 'rd-actions';
+
+          var rdVotes = document.createElement('span');
+          rdVotes.className = 'rd-votes';
+          rdVotes.innerHTML = '<span class="up">\u25B2</span> <span class="count">1.2k</span> <span class="down">\u25BC</span>';
+
+          var rdComments = document.createElement('span');
+          rdComments.textContent = '\uD83D\uDCAC 47 Comments';
+
+          var rdShare = document.createElement('span');
+          rdShare.textContent = '\u2B06\uFE0F Share';
+
+          var rdMore = document.createElement('span');
+          rdMore.textContent = '\u00B7\u00B7\u00B7';
+
+          rdActions.appendChild(rdVotes);
+          rdActions.appendChild(rdComments);
+          rdActions.appendChild(rdShare);
+          rdActions.appendChild(rdMore);
+          card.appendChild(rdActions);
+
+        } else if (q.format === 'medium') {
+          /* ── Medium — light theme like real Medium ── */
+
+          var mdQuote = document.createElement('div');
+          mdQuote.className = 'md-open-quote';
+          mdQuote.textContent = '\u201C';
+
+          card.appendChild(mdQuote);
+          card.appendChild(textEl);
+
+          /* Author line */
+          var mdAuthor = document.createElement('div');
+          mdAuthor.className = 'md-author';
+
+          var mdAvatar = document.createElement('div');
+          mdAvatar.className = 'md-author-avatar';
+          mdAvatar.textContent = (q.mediumAuthor || 'A').charAt(0).toUpperCase();
+
+          var mdName = document.createElement('span');
+          mdName.className = 'md-author-name';
+          mdName.textContent = q.mediumAuthor || 'Anonymous';
+
+          var mdPub = document.createElement('span');
+          mdPub.className = 'md-author-pub';
+          mdPub.textContent = ' in Towards AI';
+
+          mdAuthor.appendChild(mdAvatar);
+          mdAuthor.appendChild(mdName);
+          mdAuthor.appendChild(mdPub);
+          card.appendChild(mdAuthor);
+
+        } else if (q.format === 'github') {
+          /* ── GitHub Issue — dark mode issue card ── */
+
+          // GitHub logo
+          var ghLogo = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          ghLogo.setAttribute('class', 'platform-logo');
+          ghLogo.setAttribute('width', '20');
+          ghLogo.setAttribute('height', '20');
+          ghLogo.setAttribute('viewBox', '0 0 16 16');
+          ghLogo.setAttribute('fill', '#8b949e');
+          var ghPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          ghPath.setAttribute('fill-rule', 'evenodd');
+          ghPath.setAttribute('d', 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z');
+          ghLogo.appendChild(ghPath);
+          card.appendChild(ghLogo);
+
+          var ghHeader = document.createElement('div');
+          ghHeader.className = 'gh-header';
+
+          var ghIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          ghIcon.setAttribute('class', 'gh-icon');
+          ghIcon.setAttribute('viewBox', '0 0 16 16');
+          var ghPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          ghPath.setAttribute('d', 'M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z');
+          var ghPath2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          ghPath2.setAttribute('fill-rule', 'evenodd');
+          ghPath2.setAttribute('d', 'M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z');
+          ghIcon.appendChild(ghPath);
+          ghIcon.appendChild(ghPath2);
+
+          var ghRepo = document.createElement('span');
+          ghRepo.className = 'gh-repo';
+          ghRepo.textContent = 'anthropics/claude-code';
+
+          var ghIssueNum = document.createElement('span');
+          ghIssueNum.className = 'gh-issue-num';
+          ghIssueNum.textContent = q.source.replace(/[^0-9#]/g, '');
+
+          ghHeader.appendChild(ghIcon);
+          ghHeader.appendChild(ghRepo);
+          ghHeader.appendChild(ghIssueNum);
+          card.appendChild(ghHeader);
+          card.appendChild(textEl);
+
+          var ghFooter = document.createElement('div');
+          ghFooter.className = 'gh-footer';
+          var ghLabel = document.createElement('span');
+          ghLabel.className = 'gh-label';
+          ghLabel.textContent = 'bug';
+          var ghComments = document.createElement('span');
+          ghComments.textContent = '\uD83D\uDCAC 47 comments';
+          ghFooter.appendChild(ghLabel);
+          ghFooter.appendChild(ghComments);
+          card.appendChild(ghFooter);
+
+        } else if (q.format === 'blog') {
+          /* ── Blog — pull-quote excerpt ── */
+
+          // Medium logo badge
+          var blogBadge = document.createElement('span');
+          blogBadge.className = 'blog-badge';
+          blogBadge.innerHTML = '<svg width="16" height="10" viewBox="0 0 1043.63 592.71" fill="#71717a"><path d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36"/><path d="M911.56 296.36c0 154.06-65.89 278.86-147.17 278.86s-147.17-124.8-147.17-278.86S683.11 17.5 764.39 17.5s147.17 124.8 147.17 278.86"/><path d="M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94"/></svg>';
+          card.appendChild(blogBadge);
+
+          var blQuote = document.createElement('div');
+          blQuote.className = 'blog-open-quote';
+          blQuote.textContent = '\u201C';
+
+          card.appendChild(blQuote);
+          card.appendChild(textEl);
+
+          var blogDomain = q.sourceUrl ? new URL(q.sourceUrl).hostname.replace('www.', '') : q.source;
+          var blFooter = document.createElement('div');
+          blFooter.className = 'blog-footer';
+          blFooter.textContent = '\uD83C\uDF10 ' + blogDomain;
+
+          card.appendChild(blFooter);
+
+        } else if (q.format === 'terminal') {
+          /* ── Terminal — real terminal output ── */
+
+          /* Title bar with traffic lights */
+          var termBar = document.createElement('div');
+          termBar.className = 'term-titlebar';
+          termBar.innerHTML = '<span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>';
+          card.appendChild(termBar);
+
+          /* Body */
+          var termBody = document.createElement('div');
+          termBody.className = 'term-body';
+
+          var termPrompt = document.createElement('div');
+          termPrompt.className = 'term-prompt';
+          termPrompt.textContent = '$ luthien watch';
+
+          termBody.appendChild(termPrompt);
+          termBody.appendChild(textEl);
+          card.appendChild(termBody);
+
+        } else {
+          /* Fallback (generic) */
+          card.appendChild(textEl);
+          if (q.source) {
+            var srcEl = document.createElement('p');
+            srcEl.className = 'quote-source';
+            srcEl.textContent = '\u2014 ' + q.source;
+            card.appendChild(srcEl);
+          }
+        }
+
+        inner.appendChild(card);
+
+        var dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to quote ' + (i + 1));
+        dot.addEventListener('click', function () {
+          goTo(i);
+          resetAuto();
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      function goTo(index) {
+        if (index < 0) index = quotes.length - 1;
+        if (index >= quotes.length) index = 0;
+        currentIndex = index;
+        inner.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+        var dots = dotsContainer.querySelectorAll('.carousel-dot');
+        dots.forEach(function (d, i) {
+          d.classList.toggle('active', i === currentIndex);
+        });
+      }
+
+      function next() { goTo(currentIndex + 1); }
+      function prev() { goTo(currentIndex - 1); }
+
+      document.getElementById('nextBtn').addEventListener('click', function () { next(); resetAuto(); });
+      document.getElementById('prevBtn').addEventListener('click', function () { prev(); resetAuto(); });
+
+      function startAuto() {
+        stopAuto();
+        autoInterval = setInterval(function () {
+          if (!isPaused) next();
+        }, 6000);
+      }
+
+      function stopAuto() {
+        if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
+      }
+
+      function resetAuto() { startAuto(); }
+
+      var wrapper = document.getElementById('carousel');
+      wrapper.addEventListener('mouseenter', function () { isPaused = true; });
+      wrapper.addEventListener('mouseleave', function () { isPaused = false; });
+
+      startAuto();
+
+      /* Touch swipe */
+      var startX = 0, startY = 0, endX = 0, endY = 0, swiping = false;
+
+      wrapper.addEventListener('touchstart', function (e) {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+        swiping = true;
+      }, { passive: true });
+
+      wrapper.addEventListener('touchmove', function (e) {
+        if (!swiping) return;
+        endX = e.changedTouches[0].screenX;
+        endY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      wrapper.addEventListener('touchend', function () {
+        if (!swiping) return;
+        swiping = false;
+        var dx = startX - endX;
+        var dy = startY - endY;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 0) next(); else prev();
+          resetAuto();
+        }
+      }, { passive: true });
+
+      /* Keyboard */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { next(); resetAuto(); }
+        if (e.key === 'ArrowLeft')  { prev(); resetAuto(); }
+      });
+    })();
+  </script>
+</body>
+</html>

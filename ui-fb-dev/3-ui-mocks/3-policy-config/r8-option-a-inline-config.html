@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R8 Option A: Inline Config Fields</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; padding: 24px; }
+        h1 { font-size: 20px; margin-bottom: 8px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 14px; margin-bottom: 24px; }
+        .design-note { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 13px; line-height: 1.5; }
+        .design-note strong { color: #58a6ff; }
+
+        .policy-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .policy-header { display: flex; align-items: center; justify-content: space-between; padding: 16px; cursor: pointer; }
+        .policy-header:hover { background: #1c2128; }
+        .policy-info { display: flex; align-items: center; gap: 12px; }
+        .policy-name { font-weight: 600; color: #f0f6fc; }
+        .policy-desc { font-size: 13px; color: #8b949e; }
+        .policy-right { display: flex; align-items: center; gap: 12px; }
+
+        .toggle { position: relative; width: 44px; height: 24px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #30363d; border-radius: 12px; transition: 0.2s; }
+        .toggle .slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #c9d1d9; border-radius: 50%; transition: 0.2s; }
+        .toggle input:checked + .slider { background: #238636; }
+        .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+        .chevron { color: #8b949e; font-size: 12px; transition: transform 0.2s; }
+        .chevron.open { transform: rotate(90deg); }
+
+        .config-panel { border-top: 1px solid #30363d; padding: 16px; background: #0d1117; display: none; }
+        .config-panel.open { display: block; }
+
+        .config-group { margin-bottom: 16px; }
+        .config-group:last-child { margin-bottom: 0; }
+        .config-label { font-size: 12px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .config-field { display: flex; gap: 8px; align-items: center; }
+        .config-field select, .config-field input { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; color: #c9d1d9; font-size: 14px; }
+        .config-field select { min-width: 160px; }
+        .config-field input { flex: 1; }
+        .config-hint { font-size: 12px; color: #8b949e; margin-top: 4px; }
+
+        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .tag { background: #1f6feb22; border: 1px solid #1f6feb44; border-radius: 12px; padding: 4px 10px; font-size: 12px; color: #58a6ff; display: flex; align-items: center; gap: 4px; }
+        .tag .remove { cursor: pointer; opacity: 0.6; }
+        .tag .remove:hover { opacity: 1; }
+        .add-tag { background: none; border: 1px dashed #30363d; border-radius: 12px; padding: 4px 10px; font-size: 12px; color: #8b949e; cursor: pointer; }
+        .add-tag:hover { border-color: #58a6ff; color: #58a6ff; }
+
+        .save-bar { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #30363d; }
+        .btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+        .btn-primary { background: #238636; color: #fff; }
+        .btn:hover { filter: brightness(1.1); }
+    </style>
+</head>
+<body>
+    <h1>R8 Option A: Inline Config Fields</h1>
+    <p class="subtitle">Policy customization via expandable config sections below each toggle</p>
+
+    <div class="design-note">
+        <strong>Design rationale:</strong> Extends the existing toggle UI (R5) with an expand/collapse config panel per policy.
+        Users see toggles by default; click to customize. Minimal learning curve. Stays within the policy config page.
+        <br><br>
+        <strong>Tradeoff:</strong> Limited to pre-defined config fields. Can't create fully custom policies here;
+        that still requires Python. Good for "80% customization" (which package manager, which commands to block).
+    </div>
+
+    <!-- Policy 1: Package Manager Standards -->
+    <div class="policy-card">
+        <div class="policy-header" onclick="toggleConfig(this)">
+            <div class="policy-info">
+                <div>
+                    <div class="policy-name">Package Manager Standards</div>
+                    <div class="policy-desc">Block wrong package manager commands</div>
+                </div>
+            </div>
+            <div class="policy-right">
+                <span class="chevron">&#9654;</span>
+                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+        </div>
+        <div class="config-panel">
+            <div class="config-group">
+                <div class="config-label">Enforce package manager</div>
+                <div class="config-field">
+                    <select>
+                        <option>pnpm</option>
+                        <option selected>npm</option>
+                        <option>yarn</option>
+                        <option>bun</option>
+                    </select>
+                    <span style="color: #8b949e; font-size: 13px;">for JavaScript/TypeScript</span>
+                </div>
+                <div class="config-field" style="margin-top: 8px;">
+                    <select>
+                        <option selected>uv</option>
+                        <option>pip</option>
+                        <option>poetry</option>
+                        <option>conda</option>
+                    </select>
+                    <span style="color: #8b949e; font-size: 13px;">for Python</span>
+                </div>
+                <div class="config-hint">Blocks install commands using any other package manager.</div>
+            </div>
+            <div class="save-bar">
+                <button class="btn btn-secondary">Reset to default</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy 2: Dangerous Commands -->
+    <div class="policy-card">
+        <div class="policy-header" onclick="toggleConfig(this)">
+            <div class="policy-info">
+                <div>
+                    <div class="policy-name">Block Dangerous Commands</div>
+                    <div class="policy-desc">Prevent destructive shell commands</div>
+                </div>
+            </div>
+            <div class="policy-right">
+                <span class="chevron">&#9654;</span>
+                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+        </div>
+        <div class="config-panel">
+            <div class="config-group">
+                <div class="config-label">Blocked commands</div>
+                <div class="tag-list">
+                    <span class="tag">rm -rf <span class="remove">x</span></span>
+                    <span class="tag">git push --force <span class="remove">x</span></span>
+                    <span class="tag">git reset --hard <span class="remove">x</span></span>
+                    <span class="tag">DROP TABLE <span class="remove">x</span></span>
+                    <span class="tag">chmod 777 <span class="remove">x</span></span>
+                    <button class="add-tag">+ Add command</button>
+                </div>
+                <div class="config-hint">AI requests containing these commands will be blocked.</div>
+            </div>
+            <div class="config-group">
+                <div class="config-label">Action when blocked</div>
+                <div class="config-field">
+                    <select>
+                        <option selected>Block and notify in terminal</option>
+                        <option>Block silently (log only)</option>
+                        <option>Warn but allow</option>
+                    </select>
+                </div>
+            </div>
+            <div class="save-bar">
+                <button class="btn btn-secondary">Reset to default</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy 3: DeSlop (AI-ism cleanup) -->
+    <div class="policy-card">
+        <div class="policy-header" onclick="toggleConfig(this)">
+            <div class="policy-info">
+                <div>
+                    <div class="policy-name">Clean AI Output (DeSlop)</div>
+                    <div class="policy-desc">Remove em dashes, curly quotes, and other AI-isms</div>
+                </div>
+            </div>
+            <div class="policy-right">
+                <span class="chevron">&#9654;</span>
+                <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+        </div>
+        <div class="config-panel">
+            <div class="config-group">
+                <div class="config-label">Replacements</div>
+                <div style="font-size: 13px; color: #c9d1d9; margin-top: 4px;">
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                        <input value="—" style="width: 80px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 8px; color: #c9d1d9; font-size: 13px; text-align: center;">
+                        <span style="color: #8b949e;">&#8594;</span>
+                        <input value="-" style="width: 80px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 8px; color: #c9d1d9; font-size: 13px; text-align: center;">
+                        <span class="remove" style="color: #8b949e; cursor: pointer;">x</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                        <input value="–" style="width: 80px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 8px; color: #c9d1d9; font-size: 13px; text-align: center;">
+                        <span style="color: #8b949e;">&#8594;</span>
+                        <input value="-" style="width: 80px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px 8px; color: #c9d1d9; font-size: 13px; text-align: center;">
+                        <span class="remove" style="color: #8b949e; cursor: pointer;">x</span>
+                    </div>
+                    <button class="add-tag">+ Add replacement</button>
+                </div>
+            </div>
+            <div class="save-bar">
+                <button class="btn btn-secondary">Reset to default</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy 4: Backward Compat -->
+    <div class="policy-card">
+        <div class="policy-header" onclick="toggleConfig(this)">
+            <div class="policy-info">
+                <div>
+                    <div class="policy-name">No Backward Compatibility Code</div>
+                    <div class="policy-desc">Flag dead code left "for backward compat"</div>
+                </div>
+            </div>
+            <div class="policy-right">
+                <span class="chevron">&#9654;</span>
+                <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+        </div>
+        <div class="config-panel">
+            <div class="config-group">
+                <div class="config-label">Patterns to flag</div>
+                <div class="tag-list">
+                    <span class="tag"># removed <span class="remove">x</span></span>
+                    <span class="tag"># deprecated <span class="remove">x</span></span>
+                    <span class="tag">_unused_ prefix <span class="remove">x</span></span>
+                    <span class="tag">re-export for compat <span class="remove">x</span></span>
+                    <button class="add-tag">+ Add pattern</button>
+                </div>
+            </div>
+            <div class="save-bar">
+                <button class="btn btn-secondary">Reset to default</button>
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleConfig(header) {
+            const panel = header.nextElementSibling;
+            const chevron = header.querySelector('.chevron');
+            panel.classList.toggle('open');
+            chevron.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

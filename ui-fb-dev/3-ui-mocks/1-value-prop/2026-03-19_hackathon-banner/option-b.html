@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option B: Card Section After Hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #09090b;
+      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1a1a1e;
+      padding: 0 24px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-wordmark {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #c8c8d0;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* HERO */
+    .hero {
+      padding-top: 80px;
+      padding-bottom: 40px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: #fafafa;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: clamp(0.85rem, 2vw, 1.03rem);
+      color: #71717a;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* HACKATHON CARD */
+    .hackathon-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-left: 3px solid #6b9fff;
+      border-radius: 8px;
+      padding: 20px 24px;
+      max-width: 720px;
+      margin: 0 auto 40px;
+    }
+    .hackathon-card .card-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #6b9fff;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hackathon-card .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fafafa;
+      margin-bottom: 8px;
+    }
+    .hackathon-card .card-details {
+      font-size: 0.88rem;
+      color: #a1a1aa;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .hackathon-card .card-details strong {
+      color: #e4e4e7;
+    }
+    .hackathon-card .card-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hackathon-card .card-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #6b9fff;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .hackathon-card .card-links a:hover { color: #93b8ff; }
+
+    @media (max-width: 640px) {
+      .hackathon-card {
+        padding: 16px 18px;
+      }
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid #27272a;
+      margin: 0;
+    }
+    .placeholder {
+      padding: 60px 24px;
+      text-align: center;
+      color: #3f3f46;
+      font-size: 0.85rem;
+      border-top: 1px solid #1a1a1e;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <span class="nav-wordmark">Luthien</span>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Claude Code builds. You stay in control.</h1>
+      <p>Open-source proxy that sits between Claude Code and the Anthropic API.<br>Logs every request. Enforces your rules.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="hackathon-card">
+      <div class="card-eyebrow">Upcoming Event</div>
+      <div class="card-title">Jai Dhyani speaks at AI Control Hackathon 2026</div>
+      <div class="card-details">
+        <strong>Friday March 20, 12:00 PM PDT</strong> on Zoom<br>
+        Apart Research x Redwood Research. 655+ attendees. $10k in prizes.<br>
+        Talk: "Luthien Proxy: Real-World AI Control"
+      </div>
+      <div class="card-links">
+        <a href="https://luma.com/ai-control-hackathon-2026-jai-dhyani?tk=bfMBjG" target="_blank" rel="noopener">Register &rarr;</a>
+        <a href="../../../luthien-pbc-site/site/hackathon/">See project ideas &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="placeholder">[demo section, problem cards, architecture, etc. continue here]</div>
+
+</body>
+</html>

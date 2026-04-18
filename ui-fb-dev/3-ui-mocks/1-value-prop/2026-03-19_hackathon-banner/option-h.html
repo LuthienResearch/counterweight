@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option H: White Banner, Full-Width, Centered</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #09090b;
+      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+    }
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1a1a1e; padding: 0 24px; height: 48px;
+      display: flex; align-items: center;
+    }
+    .nav-wordmark { font-size: 0.85rem; font-weight: 700; color: #c8c8d0; letter-spacing: 0.18em; text-transform: uppercase; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* ========== WHITE BANNER (centered layout) ========== */
+    .hackathon-banner {
+      margin-top: 48px;
+      background: #fff;
+      padding: 36px 24px;
+      text-align: center;
+    }
+    .banner-image {
+      width: 160px; height: 160px;
+      border-radius: 14px; overflow: hidden;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .banner-image img { width: 100%; height: 100%; object-fit: cover; }
+    .banner-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #6b7280; margin-bottom: 8px;
+    }
+    .banner-title {
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem); font-weight: 800;
+      color: #111; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.25;
+    }
+    .banner-details {
+      font-size: 0.88rem; color: #4b5563; line-height: 1.6; margin-bottom: 18px;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .banner-details strong { color: #111; }
+    .banner-cta-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 0.9rem;
+      color: #fff; background: #111; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .banner-cta-primary:hover { background: #333; color: #fff; transform: translateY(-1px); }
+
+    .hero { padding-top: 48px; padding-bottom: 40px; text-align: center; }
+    .hero h1 { font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 700; color: #fafafa; margin-bottom: 16px; }
+    .hero p { font-size: clamp(0.85rem, 2vw, 1.03rem); color: #71717a; max-width: 780px; margin: 0 auto; }
+    .placeholder { padding: 60px 24px; text-align: center; color: #3f3f46; font-size: 0.85rem; border-top: 1px solid #1a1a1e; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav"><span class="nav-wordmark">Luthien</span></nav>
+
+  <div class="hackathon-banner">
+    <div class="banner-image">
+      <img src="https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,anim=false,background=white,quality=75,width=500,height=500/event-covers/vr/03832919-09d5-460d-b809-cb54db1e2a63.png" alt="HackTalk: Jai Dhyani on Luthien Proxy">
+    </div>
+    <div class="banner-eyebrow">Apart Research x Redwood Research</div>
+    <div class="banner-title">Jai Dhyani speaks at AI Control Hackathon 2026</div>
+    <div class="banner-details">
+      <strong>Friday, March 20</strong> / 12:00 - 12:45 PM PDT / Zoom<br>
+      655+ attendees. "Luthien Proxy: Real-World AI Control"
+    </div>
+    <a href="https://luma.com/ai-control-hackathon-2026-jai-dhyani?tk=bfMBjG" target="_blank" rel="noopener" class="banner-cta-primary" id="bannerCta">Register for the talk &rarr;</a>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Claude Code builds. You stay in control.</h1>
+      <p>Open-source proxy that sits between Claude Code and the Anthropic API.<br>Logs every request. Enforces your rules.</p>
+    </div>
+  </section>
+  <div class="placeholder">[rest of v10.8 page continues here]</div>
+
+  <script>
+    (function() {
+      var talkEnd = new Date('2026-03-20T19:45:00Z');
+      if (new Date() > talkEnd) {
+        var cta = document.getElementById('bannerCta');
+        cta.href = '../hackathon/';
+        cta.removeAttribute('target');
+        cta.removeAttribute('rel');
+        cta.textContent = 'See hackathon project ideas \u2192';
+      }
+    })();
+  </script>
+</body>
+</html>

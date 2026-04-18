@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v8: Inspiration-Driven Redesign</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .nav .page-name { color: #888; }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+
+  .back-link {
+    display: inline-block;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: #3b82f6; }
+
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 32px;
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  .context-box {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  .context-box h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 16px;
+  }
+  .context-box p {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .context-box p:last-child { margin-bottom: 0; }
+
+  .analogies {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .analogy {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .analogy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e5e5e5;
+    margin-bottom: 4px;
+  }
+  .analogy-steal {
+    font-size: 12px;
+    color: #4ade80;
+    margin-bottom: 2px;
+  }
+  .analogy-delete {
+    font-size: 12px;
+    color: #f87171;
+  }
+
+  /* Concept sections */
+  .concept {
+    margin-bottom: 40px;
+  }
+  .concept-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .concept-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #0c1425;
+    color: #60a5fa;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid #1e3a5f;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .concept-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .concept-metaphor {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .concept-desc {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .mockup-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .mockup-link {
+    display: block;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .mockup-link:hover {
+    border-color: #4ade80;
+    background: #0c1a0f;
+  }
+  .mockup-link-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .mockup-link-label.browser { color: #60a5fa; }
+  .mockup-link-label.terminal { color: #facc15; }
+  .mockup-link-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #e5e5e5;
+    margin-bottom: 4px;
+  }
+  .mockup-link-desc {
+    font-size: 12px;
+    color: #888;
+  }
+
+  /* Requirements checklist */
+  .requirements {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+  }
+  .requirements h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 16px;
+  }
+  .req-table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+  }
+  .req-table th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #555;
+    padding: 8px 12px;
+    border-bottom: 1px solid #262626;
+  }
+  .req-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1a1a1a;
+    color: #aaa;
+  }
+  .req-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: #4ade80;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .req-table .check {
+    color: #4ade80;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+
+  .version-note {
+    margin-top: 32px;
+    padding: 16px 20px;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.7;
+  }
+  .version-note code {
+    background: #1a1a1a;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 20px 16px; }
+    h1 { font-size: 20px; }
+    .analogies { grid-template-columns: 1fr; }
+    .mockup-links { grid-template-columns: 1fr; }
+    .concept-title { font-size: 16px; }
+    .req-table { font-size: 12px; }
+    .req-table th, .req-table td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <span class="page-name">v8 Mockups</span>
+</div>
+
+<div class="container">
+  <a href="../v7-landing.html" class="back-link">&larr; Back to v7</a>
+
+  <h1>v8: Inspiration-Driven Redesign</h1>
+  <p class="subtitle">
+    v7 was organized around Luthien's architecture (policies, toggles, config).
+    v8 redesigns from the user's mental model: "is my code cleaner/safer?"
+    The before/after demo does 90% of the work. Everything else is infrastructure users tolerate, not value they seek.
+  </p>
+
+  <!-- What we stole -->
+  <div class="context-box">
+    <h2>Analogies</h2>
+    <p>Each concept steals from products that "just work" — where value is obvious and config is optional.</p>
+    <div class="analogies">
+      <div class="analogy">
+        <div class="analogy-name">Thermostat</div>
+        <div class="analogy-steal">Steal: One-number status. Set and forget.</div>
+        <div class="analogy-delete">Delete: Rule builders, condition/action forms</div>
+      </div>
+      <div class="analogy">
+        <div class="analogy-name">Ad Blocker</div>
+        <div class="analogy-steal">Steal: Works on install. Counter = proof.</div>
+        <div class="analogy-delete">Delete: Tooltips, testing sandbox, bulk actions</div>
+      </div>
+      <div class="analogy">
+        <div class="analogy-name">Car Warning Lights</div>
+        <div class="analogy-steal">Steal: Silent until something happens.</div>
+        <div class="analogy-delete">Delete: Always-visible dashboards</div>
+      </div>
+      <div class="analogy">
+        <div class="analogy-name">Gmail Filters</div>
+        <div class="analogy-steal">Steal: Create rules from observed events.</div>
+        <div class="analogy-delete">Delete: Import/export, YAML editors</div>
+      </div>
+    </div>
+    <p style="color: #666; font-size: 12px;">DeSlop is always the star. Every mockup leads with it as the default active policy.</p>
+  </div>
+
+  <!-- ==================== -->
+  <!-- CONCEPT 1: SCOREBOARD -->
+  <!-- ==================== -->
+  <div class="concept">
+    <div class="concept-header">
+      <span class="concept-number">Concept 1</span>
+      <span class="concept-title">The Scoreboard</span>
+    </div>
+    <p class="concept-metaphor">Your code quality has a score, and it keeps going up.</p>
+    <p class="concept-desc">
+      One big number dominates the screen. A reverse-chronological feed shows every catch.
+      The most recent catch shows the full before/after diff inline. Older catches collapse to one-liners.
+      Policy management lives in a drawer at the bottom — accessible but never front-loaded.
+    </p>
+    <div class="mockup-links">
+      <a href="scoreboard-browser.html" class="mockup-link">
+        <div class="mockup-link-label browser">Browser</div>
+        <div class="mockup-link-title">Scoreboard Dashboard</div>
+        <div class="mockup-link-desc">Big number + activity feed + drawer for policies</div>
+      </a>
+      <a href="scoreboard-terminal.html" class="mockup-link">
+        <div class="mockup-link-label terminal">Terminal</div>
+        <div class="mockup-link-title">Running Counter</div>
+        <div class="mockup-link-desc">Inline catch count, session exit scoreboard</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== -->
+  <!-- CONCEPT 2: DIFF VIEWER -->
+  <!-- ==================== -->
+  <div class="concept">
+    <div class="concept-header">
+      <span class="concept-number">Concept 2</span>
+      <span class="concept-title">The Diff Viewer</span>
+    </div>
+    <p class="concept-metaphor">Every request is a git diff. Luthien shows what it changed and why.</p>
+    <p class="concept-desc">
+      Split-pane view: raw LLM output on the left, after Luthien on the right.
+      Annotations on changed lines show which policy fired. Click an annotation to edit
+      that rule — the "Gmail filter from example" pattern. You see what happened, then configure from context.
+    </p>
+    <div class="mockup-links">
+      <a href="diff-viewer-browser.html" class="mockup-link">
+        <div class="mockup-link-label browser">Browser</div>
+        <div class="mockup-link-title">Split-Pane Diff</div>
+        <div class="mockup-link-desc">Side-by-side diff with clickable policy annotations</div>
+      </a>
+      <a href="diff-viewer-terminal.html" class="mockup-link">
+        <div class="mockup-link-label terminal">Terminal</div>
+        <div class="mockup-link-title">git diff --stat Style</div>
+        <div class="mockup-link-desc">Inline summary, /luthien diff for full view</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== -->
+  <!-- CONCEPT 3: TERMINAL NATIVE -->
+  <!-- ==================== -->
+  <div class="concept">
+    <div class="concept-header">
+      <span class="concept-number">Concept 3</span>
+      <span class="concept-title">Terminal Native</span>
+    </div>
+    <p class="concept-metaphor">Luthien is a shell command, not an app. Config lives in CLAUDE.md.</p>
+    <p class="concept-desc">
+      The terminal is the full experience. The browser is just a read-only activity mirror
+      for demos and people who prefer pictures. Install, configure, forget.
+      /luthien gives you an interactive menu mid-session. Config-as-code in YAML.
+    </p>
+    <div class="mockup-links">
+      <a href="terminal-native-status.html" class="mockup-link">
+        <div class="mockup-link-label browser">Browser</div>
+        <div class="mockup-link-title">Live Activity Mirror</div>
+        <div class="mockup-link-desc">Read-only view of what's happening in the terminal</div>
+      </a>
+      <a href="terminal-native-full.html" class="mockup-link">
+        <div class="mockup-link-label terminal">Terminal</div>
+        <div class="mockup-link-title">The Full Experience</div>
+        <div class="mockup-link-desc">Startup, inline feedback, /luthien menu, session summary</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Requirements coverage -->
+  <div class="requirements">
+    <h2>Requirements Coverage</h2>
+    <table class="req-table">
+      <thead>
+        <tr>
+          <th>Req</th>
+          <th>Description</th>
+          <th>Scoreboard</th>
+          <th>Diff Viewer</th>
+          <th>Terminal Native</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>R1</td>
+          <td>Value obvious on first response</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+        </tr>
+        <tr>
+          <td>R2</td>
+          <td>Meet users where they work (terminal)</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+        </tr>
+        <tr>
+          <td>R3</td>
+          <td>Policy visibility (know what fired)</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+        </tr>
+        <tr>
+          <td>R4</td>
+          <td>Configuration (tweak rules)</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+        </tr>
+        <tr>
+          <td>R5</td>
+          <td>Status indication (what's active)</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+          <td class="check">Y</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="version-note">
+    <strong>Versioning:</strong> This is <code>v8</code>, an internal exploration. v7 stays where it is (historical record).
+    These are exploration artifacts until tested with a real user. When ready to show: add permalink
+    to version table in requirements doc with session feedback.
+    <br><br>
+    Created 2026-03-18.
+  </div>
+</div>
+
+</body>
+</html>

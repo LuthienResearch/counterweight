@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T3: Interactive in-session</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  .back-link {
+    display: inline-block;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: #3b82f6; }
+
+  .description {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+
+  .svg-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .req-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+  }
+  .req-tags-label { color: #666; }
+  .req-tag {
+    font-size: 11px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: #4ade80;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 20px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="v7-landing.html" class="back-link">← Back to all options</a>
+
+  <div class="description">
+    Manage policies with <code style="background:#0a0a0a;padding:2px 6px;border-radius:3px;color:#4ade80;">/luthien</code> commands inside Claude Code. No separate terminal, no config files.
+  </div>
+
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" width="620" height="1560" viewBox="0 0 620 1560">
+      <!-- Terminal background -->
+      <rect width="620" height="1560" rx="8" fill="#1e1e1e"/>
+
+      <!-- Title bar -->
+      <rect width="620" height="32" rx="8" fill="#323233"/>
+      <rect y="24" width="620" height="8" fill="#323233"/>
+      <line x1="0" y1="32" x2="620" y2="32" stroke="#404040" stroke-width="0.5"/>
+
+      <!-- Traffic lights -->
+      <circle cx="18" cy="16" r="6.5" fill="#ff5f57"/>
+      <circle cx="40" cy="16" r="6.5" fill="#febc2e"/>
+      <circle cx="62" cy="16" r="6.5" fill="#28c840"/>
+
+      <!-- Title: "claude code +" in gray, "Luthien" in green -->
+      <text x="270" y="22" text-anchor="end" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">claude code +</text>
+      <text x="274" y="22" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13" font-weight="bold">Luthien</text>
+
+      <!-- ============================================ -->
+      <!-- SCENE 1: Start and first response (R1)      -->
+      <!-- y=60 start                                  -->
+      <!-- ============================================ -->
+
+      <!-- $ luthien claude — y=60 -->
+      <text x="20" y="60" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">$</text>
+      <text x="36" y="60" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">luthien claude</text>
+
+      <!-- Connection message — y=86, y=108 -->
+      <text x="36" y="86" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Connected to Luthien proxy (localhost:8000)</text>
+      <text x="36" y="108" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Policies active: DeSlop (default)</text>
+
+      <!-- User prompt — y=130 -->
+      <rect x="16" y="126" width="340" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="140" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="140" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">Set up the project dependencies</text>
+
+      <!-- Claude response — y=170 -->
+      <text x="36" y="170" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">I'll set up the project dependencies...</text>
+
+      <!-- DeSlop fires — y=200, y=222 -->
+      <text x="36" y="200" fill="#febc2e" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x26A0; Luthien DeSlop: cleaned 2 AI-isms</text>
+      <text x="36" y="222" fill="#d4a545" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">  (em-dashes &#x2192; hyphens)</text>
+
+      <!-- R1 annotation — right side, vertically between the two DeSlop lines -->
+      <!-- Arrow points from right of warning text, box starts well clear of terminal text -->
+      <polygon points="390,202 396,196 396,208" fill="#4ec9b0"/>
+      <rect x="396" y="188" width="210" height="34" rx="6" fill="#0d2818" stroke="#4ec9b0" stroke-width="1.5"/>
+      <text x="408" y="210" fill="#4ec9b0" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600">R1: value on first use</text>
+
+      <!-- 30px breathing room: last content y=222, separator at y=252 -->
+      <!-- Separator -->
+      <line x1="30" y1="256" x2="590" y2="256" stroke="#555555" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <!-- ============================================ -->
+      <!-- SCENE 2: /luthien menu (R2 + R5)            -->
+      <!-- y=292 start (36px after separator)          -->
+      <!-- ============================================ -->
+
+      <!-- User prompt: /luthien — y=292 -->
+      <rect x="16" y="288" width="102" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="303" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="303" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">/luthien</text>
+
+      <!-- Policy Manager header — y=337 -->
+      <text x="36" y="337" fill="#e5e5e5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14" font-weight="bold">Luthien Policy Manager</text>
+
+      <!-- Policy table — y=367, y=391, y=415 -->
+      <text x="36" y="367" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">[1] DeSlop</text>
+      <text x="220" y="367" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">ON</text>
+      <text x="264" y="367" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">string replacement</text>
+      <text x="452" y="367" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">4 rules</text>
+
+      <text x="36" y="391" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">[2] DogfoodSafety</text>
+      <text x="220" y="391" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">OFF</text>
+      <text x="264" y="391" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">LLM judge</text>
+
+      <text x="36" y="415" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">[3] Package Standards</text>
+      <text x="220" y="415" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">OFF</text>
+      <text x="264" y="415" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">string replacement</text>
+
+      <!-- Hint commands — y=449, y=471, y=493 -->
+      <text x="36" y="449" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Toggle: /luthien enable 2</text>
+      <text x="36" y="471" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Configure: /luthien config 1</text>
+      <text x="36" y="493" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Status: /luthien status</text>
+
+      <!-- Enable DogfoodSafety — y=520 -->
+      <rect x="16" y="516" width="220" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="531" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="531" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">/luthien enable 2</text>
+
+      <!-- Confirmation — y=561, y=583 -->
+      <text x="36" y="561" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x2713; DogfoodSafety enabled</text>
+      <text x="36" y="583" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Policies active: DeSlop, DogfoodSafety</text>
+
+      <!-- R2+R5 annotation — right side, aligned with the enable confirmation -->
+      <polygon points="340,563 346,557 346,569" fill="#4ec9b0"/>
+      <rect x="346" y="548" width="260" height="34" rx="6" fill="#0d2818" stroke="#4ec9b0" stroke-width="1.5"/>
+      <text x="358" y="570" fill="#4ec9b0" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600">R2+R5: manage in terminal</text>
+
+      <!-- 30px breathing room: last content y=583, separator at y=617 -->
+      <!-- Separator -->
+      <line x1="30" y1="617" x2="590" y2="617" stroke="#555555" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <!-- ============================================ -->
+      <!-- SCENE 3: Customize (R4)                     -->
+      <!-- y=653 start (36px after separator)          -->
+      <!-- ============================================ -->
+
+      <!-- User prompt: /luthien config 1 — y=653 -->
+      <rect x="16" y="649" width="210" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="664" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="664" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">/luthien config 1</text>
+
+      <!-- DeSlop rules list — y=698, y=724..y=800 -->
+      <text x="36" y="698" fill="#e5e5e5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">DeSlop rules:</text>
+      <text x="52" y="724" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">1. em-dash &#x2192; hyphen</text>
+      <text x="52" y="748" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">2. en-dash &#x2192; hyphen</text>
+      <text x="52" y="772" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">3. curly double quotes &#x2192; straight</text>
+      <text x="52" y="796" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">4. curly single quotes &#x2192; straight</text>
+
+      <!-- Hint commands — y=826, y=848 -->
+      <text x="36" y="826" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Add: /luthien config 1 add "utilize" "use"</text>
+      <text x="36" y="848" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Remove: /luthien config 1 rm 3</text>
+
+      <!-- User adds rule — y=875 -->
+      <rect x="16" y="871" width="410" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="886" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="886" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">/luthien config 1 add "utilize" "use"</text>
+
+      <!-- Confirmation — y=916 -->
+      <text x="36" y="916" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x2713; Rule added. DeSlop now has 5 rules.</text>
+
+      <!-- R4 annotation — right side, aligned with confirmation -->
+      <polygon points="370,918 376,912 376,924" fill="#4ec9b0"/>
+      <rect x="376" y="902" width="230" height="34" rx="6" fill="#0d2818" stroke="#4ec9b0" stroke-width="1.5"/>
+      <text x="388" y="924" fill="#4ec9b0" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600">R4: customize in terminal</text>
+
+      <!-- 30px breathing room: last content y=916, separator at y=950 -->
+      <!-- Separator -->
+      <line x1="30" y1="950" x2="590" y2="950" stroke="#555555" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <!-- ============================================ -->
+      <!-- SCENE 4: Policy fires - blocked (R3)        -->
+      <!-- y=986 start (36px after separator)          -->
+      <!-- ============================================ -->
+
+      <!-- User prompt — y=986 -->
+      <rect x="16" y="982" width="290" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="997" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="997" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">Delete the old test data</text>
+
+      <!-- Claude response — y=1027 -->
+      <text x="20" y="1027" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x25CF;</text>
+      <text x="36" y="1027" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14" font-weight="bold">Bash</text>
+      <text x="73" y="1027" fill="#ff5f57" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">(rm -rf /tmp/test-data)</text>
+
+      <!-- Luthien blocks it — y=1059, y=1081 -->
+      <text x="36" y="1059" fill="#febc2e" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x26A0; Luthien DogfoodSafety: blocked rm -rf</text>
+      <text x="36" y="1081" fill="#d4a545" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">  Auto-retrying: use find + delete instead</text>
+
+      <!-- Auto-corrected command — y=1113 -->
+      <text x="20" y="1113" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x25CF;</text>
+      <text x="36" y="1113" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14" font-weight="bold">Bash</text>
+      <text x="73" y="1113" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">(find /tmp/test-data -delete)</text>
+
+      <!-- Retry accepted — y=1141 -->
+      <text x="36" y="1141" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x2713; Retry accepted</text>
+
+      <!-- R3 annotation — right side, aligned between the two warning lines -->
+      <!-- "blocked rm -rf" at y=1059 ends ~x=370, annotation starts at x=400 to clear -->
+      <polygon points="394,1070 400,1064 400,1076" fill="#4ec9b0"/>
+      <rect x="400" y="1056" width="206" height="34" rx="6" fill="#0d2818" stroke="#4ec9b0" stroke-width="1.5"/>
+      <text x="412" y="1078" fill="#4ec9b0" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600">R3: policies working</text>
+
+      <!-- 30px breathing room: last content y=1141, separator at y=1175 -->
+      <!-- Separator -->
+      <line x1="30" y1="1175" x2="590" y2="1175" stroke="#555555" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <!-- ============================================ -->
+      <!-- SCENE 5: Session summary (R3 retrospective) -->
+      <!-- y=1211 start (36px after separator)         -->
+      <!-- ============================================ -->
+
+      <!-- User prompt: /luthien status — y=1211 -->
+      <rect x="16" y="1207" width="195" height="20" rx="3" fill="#333333"/>
+      <text x="20" y="1222" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">&#x276F;</text>
+      <text x="36" y="1222" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14">/luthien status</text>
+
+      <!-- Session summary box — y=1248, height=220 (ends y=1468) -->
+      <rect x="20" y="1248" width="580" height="220" rx="6" fill="#2a2a2a" stroke="#444444" stroke-width="1"/>
+
+      <!-- Box header — y=1280 -->
+      <text x="40" y="1280" fill="#e5e5e5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="14" font-weight="bold">This session: 23 requests</text>
+
+      <!-- DeSlop row — y=1314 -->
+      <text x="40" y="1314" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">DeSlop</text>
+      <text x="220" y="1314" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">41 replacements</text>
+      <text x="400" y="1314" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">&#x2713;</text>
+
+      <!-- DogfoodSafety row — y=1342 -->
+      <text x="40" y="1342" fill="#d4d4d4" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">DogfoodSafety</text>
+      <text x="220" y="1342" fill="#4ec9b0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">1 block</text>
+      <text x="320" y="1342" fill="#febc2e" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">1 retry</text>
+
+      <!-- Divider line then totals — y=1364 line, y=1390 text -->
+      <line x1="40" y1="1364" x2="580" y2="1364" stroke="#444444" stroke-width="0.5"/>
+      <text x="40" y="1390" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Today total:</text>
+      <text x="164" y="1390" fill="#808080" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">142 replacements, 2 blocks</text>
+
+      <!-- Hints — y=1422, y=1444 -->
+      <text x="40" y="1422" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">Details: /luthien status --verbose</text>
+      <text x="40" y="1444" fill="#5a5a5a" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="13">History: /luthien status --week</text>
+
+      <!-- R3 retrospective annotation — below the summary box to avoid any overlap -->
+      <!-- Box bottom at y=1468, annotation starts at y=1490 -->
+      <polygon points="280,1492 286,1486 286,1498" fill="#4ec9b0"/>
+      <rect x="286" y="1480" width="280" height="34" rx="6" fill="#0d2818" stroke="#4ec9b0" stroke-width="1.5"/>
+      <text x="298" y="1502" fill="#4ec9b0" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600">R3: session summary at a glance</text>
+    </svg>
+  </div>
+
+  <div class="req-tags">
+    <span class="req-tags-label">Requirements:</span>
+    <span class="req-tag">R1</span>
+    <span class="req-tag">R2</span>
+    <span class="req-tag">R3</span>
+    <span class="req-tag">R4</span>
+    <span class="req-tag">R5</span>
+  </div>
+</div>
+</body>
+</html>

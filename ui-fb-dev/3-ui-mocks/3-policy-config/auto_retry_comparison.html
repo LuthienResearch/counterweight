@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Retry: 3 UI Options - Luthien</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding: 48px 24px 40px;
+        }
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .page-header h1 .icon { margin-right: 8px; }
+        .page-header p {
+            font-size: 15px;
+            color: #888;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Options grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 48px;
+        }
+
+        /* Option card */
+        .option-card {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 16px;
+            padding: 32px 28px;
+        }
+        .option-label {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 4px 12px;
+            margin-bottom: 16px;
+        }
+        .option-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .option-card .description {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 24px;
+        }
+
+        /* Flow demo area */
+        .flow-demo {
+            background: #0a0a0a;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Option A - Silent Retry flow */
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .flow-badge {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 6px;
+        }
+        .flow-badge.blocked {
+            background: #450a0a;
+            color: #f87171;
+            border: 1px solid #7f1d1d;
+        }
+        .flow-badge.retrying {
+            background: #451a03;
+            color: #fbbf24;
+            border: 1px solid #78350f;
+        }
+        .flow-badge.fixed {
+            background: #14532d;
+            color: #4ade80;
+            border: 1px solid #166534;
+        }
+        .flow-arrow {
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* Blocked item rows */
+        .blocked-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+        }
+        .blocked-row:last-child { margin-bottom: 0; }
+        .blocked-row-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .blocked-row-policy {
+            font-size: 11px;
+            color: #666;
+        }
+        .blocked-row-action {
+            font-size: 13px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: #e5e5e5;
+        }
+        .blocked-row-status {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+        .status-auto-fixed {
+            background: #14532d;
+            color: #4ade80;
+        }
+        .status-passed {
+            color: #4ade80;
+        }
+        .status-review {
+            background: #1e1b4b;
+            color: #a78bfa;
+            cursor: pointer;
+        }
+        .status-blocked-badge {
+            background: #450a0a;
+            color: #f87171;
+        }
+        .status-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #14532d;
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .status-stop {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #450a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Best for section */
+        .best-for h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+        .best-for ul {
+            list-style: disc;
+            padding-left: 20px;
+        }
+        .best-for li {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        /* Quick Comparison table */
+        .comparison-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 64px;
+        }
+        .comparison-card {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 16px;
+            padding: 32px;
+        }
+        .comparison-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .comparison-table th {
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            padding: 10px 16px;
+            border-bottom: 1px solid #262626;
+        }
+        .comparison-table td {
+            font-size: 13px;
+            color: #e5e5e5;
+            padding: 10px 16px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table .feature-name { color: #888; }
+
+        /* Option B specific - flow with status text */
+        .flow-status-text {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .flow-status-text .arrow { color: #555; }
+
+        @media (max-width: 900px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header">
+        <h1><span class="icon">&#x270F;&#xFE0F;</span> Auto-Retry: 3 UI Options</h1>
+        <p>When Luthien blocks an action, should it auto-retry until Claude does it right?<br>Pick which feels most useful.</p>
+    </div>
+
+    <!-- 3 Options -->
+    <div class="options-grid">
+
+        <!-- OPTION A: Silent Retry -->
+        <div class="option-card">
+            <span class="option-label">Option A</span>
+            <h2>Silent Retry</h2>
+            <p class="description">Luthien retries automatically. You only see final result.</p>
+
+            <div class="flow-demo">
+                <div class="flow-steps">
+                    <span class="flow-badge blocked">Blocked</span>
+                    <span class="flow-arrow">&rarr;</span>
+                    <span class="flow-badge retrying">Retrying...</span>
+                    <span class="flow-arrow">&rarr;</span>
+                    <span class="flow-badge fixed">&#10003; Fixed</span>
+                </div>
+                <div class="blocked-row">
+                    <div class="blocked-row-info">
+                        <span class="blocked-row-policy">Block scope creep</span>
+                        <span class="blocked-row-action">Edit helpers.js</span>
+                    </div>
+                    <span class="blocked-row-status status-auto-fixed">Auto-fixed</span>
+                </div>
+            </div>
+
+            <div class="best-for">
+                <h3>Best for:</h3>
+                <ul>
+                    <li>Maximum autonomy &mdash; just let it run</li>
+                    <li>Don't want to see failed attempts</li>
+                    <li>Trust Luthien to handle it</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- OPTION B: Retry with Summary -->
+        <div class="option-card">
+            <span class="option-label">Option B</span>
+            <h2>Retry with Summary</h2>
+            <p class="description">Auto-retry, but show you what happened.</p>
+
+            <div class="flow-demo">
+                <div class="blocked-row" style="margin-bottom: 12px;">
+                    <div class="blocked-row-info">
+                        <span class="flow-status-text">Blocked <span class="arrow">&rarr;</span> Retried 2x <span class="arrow">&rarr;</span> Passed</span>
+                        <span class="blocked-row-action">Edit helpers.js</span>
+                    </div>
+                    <span class="status-check">&#10003;</span>
+                </div>
+                <div class="blocked-row">
+                    <div class="blocked-row-info">
+                        <span class="flow-status-text">Blocked <span class="arrow">&rarr;</span> Retried 3x <span class="arrow">&rarr;</span> Needs you</span>
+                        <span class="blocked-row-action">rm -rf node_modules</span>
+                    </div>
+                    <span class="blocked-row-status status-review">Review</span>
+                </div>
+            </div>
+
+            <div class="best-for">
+                <h3>Best for:</h3>
+                <ul>
+                    <li>Autonomy + visibility</li>
+                    <li>See patterns in what gets blocked</li>
+                    <li>Learn what Claude struggles with</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- OPTION C: Block Only (No Retry) -->
+        <div class="option-card">
+            <span class="option-label">Option C</span>
+            <h2>Block Only (No Retry)</h2>
+            <p class="description">Just block it. Claude figures it out or doesn't.</p>
+
+            <div class="flow-demo">
+                <div class="blocked-row" style="margin-bottom: 12px;">
+                    <div class="blocked-row-info">
+                        <span class="flow-status-text">Blocked</span>
+                        <span class="blocked-row-action">Edit helpers.js</span>
+                    </div>
+                    <span class="status-stop">&#x1F534;</span>
+                </div>
+                <div class="blocked-row">
+                    <div class="blocked-row-info">
+                        <span class="flow-status-text">Blocked</span>
+                        <span class="blocked-row-action">rm -rf node_modules</span>
+                    </div>
+                    <span class="status-stop">&#x1F534;</span>
+                </div>
+            </div>
+
+            <div class="best-for">
+                <h3>Best for:</h3>
+                <ul>
+                    <li>Simplest &mdash; no magic</li>
+                    <li>Claude learns from blocks naturally</li>
+                    <li>Full control over what gets through</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Comparison -->
+    <div class="comparison-section">
+        <div class="comparison-card">
+            <h2>Quick Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>A: Silent Retry</th>
+                        <th>B: Retry + Summary</th>
+                        <th>C: Block Only</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="feature-name">Auto-retry?</td>
+                        <td>Yes (hidden)</td>
+                        <td>Yes (visible)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">User sees failures?</td>
+                        <td>No</td>
+                        <td>Summary only</td>
+                        <td>Yes, all</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Human intervention</td>
+                        <td>Rarely</td>
+                        <td>When retries fail</td>
+                        <td>Every block</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Complexity</td>
+                        <td>Low (fire &amp; forget)</td>
+                        <td>Medium</td>
+                        <td>Lowest</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Trust level needed</td>
+                        <td>High</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

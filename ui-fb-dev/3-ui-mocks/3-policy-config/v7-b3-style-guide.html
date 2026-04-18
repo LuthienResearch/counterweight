@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B3: Style Guide Policy</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .container { max-width: 840px; margin: 0 auto; padding: 32px 24px; }
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* Hero section */
+  .hero-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .hero-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .hero-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #0c1425;
+    color: #60a5fa;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #1e3a5f;
+  }
+  .hero-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  /* Style guide textarea */
+  .guide-section {
+    margin-top: 24px;
+  }
+  .guide-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .guide-textarea {
+    width: 100%;
+    min-height: 180px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 16px;
+    color: #ccc;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    resize: vertical;
+  }
+  .guide-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+  }
+  .guide-hint {
+    color: #555;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  /* Demo section */
+  .demo-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .demo-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .demo-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* Before/after panels */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+  .compare-panel {
+    background: #0a0a0a;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 200px;
+  }
+  .compare-panel.panel-fail {
+    border: 1px solid rgba(248, 113, 113, 0.3);
+  }
+  .compare-panel.panel-pass {
+    border: 1px solid rgba(74, 222, 128, 0.3);
+  }
+  .compare-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .label-fail { color: #f87171; }
+  .label-pass { color: #4ade80; }
+  .compare-text {
+    font-size: 13px;
+    color: #bbb;
+    line-height: 1.7;
+  }
+  .compare-text .hl-red {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+  .compare-text .hl-amber {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+  .compare-text .hl-green {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+
+  /* Score badges */
+  .score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #1a1a1a;
+  }
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .score-fail {
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+  }
+  .score-pass {
+    background: rgba(74, 222, 128, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.25);
+  }
+  .score-status {
+    font-size: 12px;
+    color: #888;
+  }
+  .status-retrying { color: #f59e0b; }
+  .status-accepted { color: #4ade80; }
+
+  /* How it works (expandable) */
+  .how-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .how-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .how-header:hover { background: #1a1a1a; }
+  .how-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .how-arrow {
+    font-size: 14px;
+    color: #555;
+    transition: transform 0.2s;
+  }
+  .how-arrow.open { transform: rotate(180deg); }
+  .how-body {
+    display: none;
+    padding: 0 24px 20px;
+  }
+  .how-body.visible { display: block; }
+  .how-step {
+    font-size: 13px;
+    color: #aaa;
+    padding: 6px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    line-height: 1.6;
+  }
+  .how-step .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: right;
+  }
+  .how-step code {
+    background: #1a1a1a;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+
+  /* Configuration panel */
+  .config-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .config-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+  .config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .config-row:last-child { border-bottom: none; }
+  .config-row-label {
+    font-size: 14px;
+    color: #ccc;
+  }
+  .config-row-sublabel {
+    font-size: 12px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  /* Slider */
+  .slider-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slider-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    outline: none;
+  }
+  .slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4ade80;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #166534;
+  }
+  .slider-input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4ade80;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #166534;
+  }
+  .slider-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4ade80;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* Radio buttons */
+  .radio-group {
+    display: flex;
+    gap: 4px;
+  }
+  .radio-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #888;
+    padding: 6px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .radio-btn:first-child { border-radius: 6px 0 0 6px; }
+  .radio-btn:last-child { border-radius: 0 6px 6px 0; }
+  .radio-btn.active {
+    background: #0c1a0f;
+    border-color: #1a3a1f;
+    color: #4ade80;
+  }
+  .radio-btn:hover:not(.active) {
+    border-color: #555;
+    color: #e5e5e5;
+  }
+
+  /* Dropdown (visual only) */
+  .dropdown {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .dropdown:focus { outline: none; border-color: #2563eb; }
+
+  /* Policy cards section */
+  .section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+  .policy-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .policy-item:hover { border-color: #333; }
+  .policy-item.active { border-left: 3px solid #4ade80; }
+  .policy-item.highlighted { border-left: 3px solid #2563eb; background: #0c1425; }
+  .policy-info { flex: 1; }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .policy-desc { font-size: 13px; color: #888; }
+  .policy-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .expand-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .expand-btn:hover { color: #e5e5e5; border-color: #555; }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #666;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: #166534; }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Policy config panel (hidden by default) */
+  .policy-config {
+    display: none;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .policy-config.visible { display: block; }
+
+  /* Setup banner */
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 32px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .setup-banner code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+
+  /* Safety net: prevent horizontal scroll */
+  body { overflow-x: hidden; }
+
+  /* Mobile responsive */
+  @media (max-width: 640px) {
+    .nav {
+      padding: 12px 16px;
+      gap: 10px;
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+    .container {
+      padding: 20px 14px;
+    }
+    .hero-section,
+    .demo-section,
+    .how-section,
+    .config-section {
+      padding: 18px 14px;
+      border-radius: 10px;
+    }
+    .hero-header {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hero-title {
+      font-size: 17px;
+    }
+    .guide-textarea {
+      font-size: 12px;
+      padding: 12px;
+      min-height: 150px;
+    }
+
+    /* Stack before/after panels */
+    .compare {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .compare-panel {
+      padding: 14px;
+      min-height: auto;
+    }
+    .compare-label {
+      font-size: 10px;
+    }
+    .compare-text {
+      font-size: 12px;
+    }
+    .score-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .score-badge {
+      font-size: 11px;
+    }
+    .score-status {
+      font-size: 11px;
+    }
+
+    /* How it works */
+    .how-header {
+      padding: 14px;
+    }
+    .how-body {
+      padding: 0 14px 16px;
+    }
+
+    /* Stack config rows vertically */
+    .config-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .slider-control {
+      width: 100%;
+    }
+    .slider-input {
+      width: 100%;
+      flex: 1;
+    }
+    .radio-group {
+      width: 100%;
+    }
+    .radio-btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px 12px;
+    }
+    .dropdown {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* Policy cards */
+    .policy-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+    }
+    .policy-info {
+      width: 100%;
+    }
+    .policy-desc {
+      display: block;
+      margin-left: 0 !important;
+      margin-top: 2px;
+    }
+    .policy-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .policy-config {
+      padding: 12px;
+    }
+
+    /* Setup banner */
+    .setup-banner {
+      padding: 14px;
+      font-size: 12px;
+    }
+    .setup-banner code {
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    /* Demo header */
+    .demo-header-row {
+      margin-bottom: 14px;
+    }
+    .demo-title {
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#">Activity</a>
+  <a href="#" style="color: #e5e5e5;">Policies</a>
+</div>
+
+<div class="container">
+  <a href="v7-landing.html" class="back-link">&larr; Back to all options</a>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <div class="hero-header">
+      <span class="hero-title">StyleChecker</span>
+      <span class="hero-badge">LLM judge - custom policy</span>
+    </div>
+    <p class="hero-subtitle">Paste your style guide. Luthien scores every response for authenticity and retries if it fails.</p>
+
+    <!-- Style Guide Input -->
+    <div class="guide-section">
+      <div class="guide-label">Your style guide</div>
+      <textarea class="guide-textarea" readonly>STYLE GUIDE
+- Never use em dashes or en dashes. Use hyphens.
+- No curly quotes. Straight quotes only.
+- Avoid generic AI headings like "Key Takeaways" or "In Conclusion"
+- No bulleted lists where prose would work better
+- Write like a person explaining to a colleague, not a report
+- Threshold: 7.0/10 minimum authenticity score</textarea>
+      <p class="guide-hint">This becomes the judge prompt. Luthien evaluates every response against your rules.</p>
+    </div>
+  </div>
+
+  <!-- Demo: Before/After with Scoring -->
+  <div class="demo-section">
+    <div class="demo-header-row">
+      <span class="demo-title">Demo: before and after</span>
+    </div>
+
+    <div class="compare">
+      <!-- Left panel - failing -->
+      <div class="compare-panel panel-fail">
+        <div class="compare-label label-fail">First attempt (score: 4.2/10)</div>
+        <div class="compare-text">
+          <span class="hl-red">Key Takeaways</span><br><br>
+          The onboarding flow has several issues that need attention:<br><br>
+          <span class="hl-amber">- Users drop off at the payment step<br>
+          - The confirmation email arrives too late<br>
+          - Mobile layout breaks on smaller screens</span><br><br>
+          The payment step <span class="hl-red">&mdash;</span> which accounts for 60% of drop-offs <span class="hl-red">&mdash;</span> needs a complete redesign. Users don't trust the form because it doesn't show security indicators.
+        </div>
+        <div class="score-row">
+          <span class="score-badge score-fail">4.2/10 - below threshold (7.0)</span>
+          <span class="score-status status-retrying">Auto-retrying with style guide constraints...</span>
+        </div>
+      </div>
+
+      <!-- Right panel - passing -->
+      <div class="compare-panel panel-pass">
+        <div class="compare-label label-pass">After retry (score: 8.1/10)</div>
+        <div class="compare-text">
+          <span class="hl-green">Problems with the onboarding flow</span><br><br>
+          The biggest problem is the payment step, which accounts for 60% of drop-offs. Users don't trust the form because it doesn't show security indicators <span class="hl-green">-</span> adding a lock icon and "secured by Stripe" badge would help immediately.<br><br>
+          <span class="hl-green">The confirmation email is also arriving too late. Right now it takes 3-5 minutes, but users expect it within 30 seconds. And the mobile layout breaks on screens under 375px wide, which covers about 12% of our traffic.</span>
+        </div>
+        <div class="score-row">
+          <span class="score-badge score-pass">8.1/10 - passed</span>
+          <span class="score-status status-accepted">Accepted - delivered to Claude Code</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works (expandable) -->
+  <div class="how-section">
+    <div class="how-header" onclick="toggleHow()">
+      <span class="how-title">How it works</span>
+      <span class="how-arrow" id="how-arrow">&#9660;</span>
+    </div>
+    <div class="how-body" id="how-body">
+      <div class="how-step">
+        <span class="step-num">1.</span>
+        <span><code>StyleChecker</code> is a <code>SimpleLLMPolicy</code> with your style guide as the judge prompt.</span>
+      </div>
+      <div class="how-step">
+        <span class="step-num">2.</span>
+        <span>On each response, Luthien sends the output plus your style guide to a judge model.</span>
+      </div>
+      <div class="how-step">
+        <span class="step-num">3.</span>
+        <span>If the score is below your threshold, Luthien retries with explicit constraints from the failing criteria.</span>
+      </div>
+      <div class="how-step">
+        <span class="step-num">4.</span>
+        <span>You can adjust the threshold and retry count below.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuration -->
+  <div class="config-section">
+    <div class="config-title">Configuration</div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-row-label">Authenticity threshold</div>
+        <div class="config-row-sublabel">Minimum score to pass without retry</div>
+      </div>
+      <div class="slider-control">
+        <input type="range" class="slider-input" min="1" max="10" step="0.5" value="7" id="threshold-slider" oninput="updateThreshold(this.value)">
+        <span class="slider-value" id="threshold-value">7.0</span>
+      </div>
+    </div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-row-label">Max retries</div>
+        <div class="config-row-sublabel">How many times to retry before accepting</div>
+      </div>
+      <div class="radio-group">
+        <button class="radio-btn" onclick="selectRetry(1, this)">1</button>
+        <button class="radio-btn active" onclick="selectRetry(2, this)">2</button>
+        <button class="radio-btn" onclick="selectRetry(3, this)">3</button>
+      </div>
+    </div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-row-label">Judge model</div>
+        <div class="config-row-sublabel">Which model evaluates the responses</div>
+      </div>
+      <select class="dropdown">
+        <option>claude-sonnet-4-5-20250514</option>
+        <option>claude-haiku-35-20250401</option>
+        <option>gpt-4o-mini</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Policy Cards -->
+  <div class="section-header">All policies</div>
+
+  <div class="policy-item active" id="deslop-item">
+    <div class="policy-info">
+      <span class="policy-name">DeSlop</span>
+      <span class="policy-desc" style="margin-left: 8px;">Removes AI-isms from responses</span>
+      <div class="policy-config" id="deslop-config">
+        <p>String replacement policy. Replaces em dashes, curly quotes, and other common AI formatting artifacts with plain-text equivalents.</p>
+      </div>
+    </div>
+    <div class="policy-actions">
+      <button class="expand-btn" onclick="toggleConfig('deslop-config', this)">configure</button>
+      <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="policy-item active" id="safety-item">
+    <div class="policy-info">
+      <span class="policy-name">DogfoodSafety</span>
+      <span class="policy-desc" style="margin-left: 8px;">Blocks dangerous commands via LLM judge</span>
+      <div class="policy-config" id="safety-config">
+        <p>LLM judge policy. Evaluates tool-use responses for dangerous operations like rm -rf, git push --force, and DROP TABLE. Blocks with explanation.</p>
+      </div>
+    </div>
+    <div class="policy-actions">
+      <button class="expand-btn" onclick="toggleConfig('safety-config', this)">configure</button>
+      <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="policy-item highlighted" id="style-item">
+    <div class="policy-info">
+      <span class="policy-name">StyleChecker</span>
+      <span class="policy-desc" style="margin-left: 8px;">Scores authenticity against your style guide</span>
+      <div class="policy-config" id="style-config">
+        <p>Custom LLM judge policy. Uses your pasted style guide as the judge prompt. Scores each response and retries if below threshold. Currently set to 7.0/10 with 2 max retries.</p>
+      </div>
+    </div>
+    <div class="policy-actions">
+      <button class="expand-btn" onclick="toggleConfig('style-config', this)">configure</button>
+      <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="policy-item" id="pkg-item">
+    <div class="policy-info">
+      <span class="policy-name">Package Standards</span>
+      <span class="policy-desc" style="margin-left: 8px;">Enforces your package manager</span>
+      <div class="policy-config" id="pkg-config">
+        <p>String replacement policy. Replaces default package manager commands (npm, pip) with your preferred tools (uv, pnpm, yarn).</p>
+      </div>
+    </div>
+    <div class="policy-actions">
+      <button class="expand-btn" onclick="toggleConfig('pkg-config', this)">configure</button>
+      <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <!-- Connect banner -->
+  <div class="setup-banner">
+    <strong style="color: #4ade80;">Connect your agent:</strong>
+    <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code> then run Claude Code normally.
+  </div>
+</div>
+
+<script>
+// How it works expand/collapse
+function toggleHow() {
+  var body = document.getElementById('how-body');
+  var arrow = document.getElementById('how-arrow');
+  body.classList.toggle('visible');
+  arrow.classList.toggle('open');
+}
+
+// Policy config expand/collapse
+function toggleConfig(id, btn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible');
+  btn.textContent = el.classList.contains('visible') ? 'collapse' : 'configure';
+}
+
+// Threshold slider
+function updateThreshold(val) {
+  var display = document.getElementById('threshold-value');
+  display.textContent = parseFloat(val).toFixed(1);
+}
+
+// Max retries radio
+function selectRetry(n, btn) {
+  var buttons = document.querySelectorAll('.radio-btn');
+  buttons.forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

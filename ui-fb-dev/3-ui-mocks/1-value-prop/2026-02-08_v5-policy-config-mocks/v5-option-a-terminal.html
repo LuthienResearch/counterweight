@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luthien v5A — Terminal Only</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+        header { margin-bottom: 32px; }
+        h1 { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .subtitle { font-size: 14px; color: #666; }
+        .option-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #1e40af;
+            color: #93c5fd;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .description {
+            font-size: 15px;
+            color: #999;
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        .terminal {
+            background: #1a1a2e;
+            border: 1px solid #262640;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .terminal-bar {
+            background: #12121f;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .terminal-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #22c55e; }
+        .terminal-title {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        .terminal-body {
+            padding: 20px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+        .prompt { color: #4ade80; }
+        .claude { color: #93c5fd; }
+        .dim { color: #555; }
+        .warn { color: #f59e0b; }
+        .block { color: #ef4444; }
+        .pass { color: #4ade80; }
+        .luthien-tag {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid #262640;
+            margin: 4px 0;
+        }
+        .section-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .pros, .cons {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .pros h3 { color: #4ade80; font-size: 14px; margin-bottom: 8px; }
+        .cons h3 { color: #f87171; font-size: 14px; margin-bottom: 8px; }
+        .pros li, .cons li {
+            font-size: 13px;
+            color: #999;
+            margin-left: 16px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Luthien</h1>
+            <p class="subtitle">Policy control for AI agents</p>
+        </header>
+
+        <span class="option-badge">Option A: Terminal Only</span>
+        <p class="description">Everything happens in the terminal where you already work. Luthien runs invisibly — you only see it when it blocks something.</p>
+
+        <!-- During coding -->
+        <p class="section-label">While you code</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <span class="terminal-dot dot-red"></span>
+                <span class="terminal-dot dot-yellow"></span>
+                <span class="terminal-dot dot-green"></span>
+                <span class="terminal-title">Claude Code</span>
+            </div>
+            <div class="terminal-body"><span class="prompt">you&gt;</span> refactor the auth module to use JWT tokens
+
+<span class="claude">claude&gt;</span> I'll update the auth module. Let me start by modifying the token generation...
+
+<span class="dim">  editing src/auth/tokens.js...</span>
+<span class="dim">  editing src/auth/middleware.js...</span>
+<span class="dim">  editing src/routes/login.js...</span>
+
+<span class="luthien-tag">luthien</span> <span class="warn">blocked</span>  <span class="dim">rm -rf dist/ && npm run build</span>
+<span class="dim">         rule: Flag destructive operations</span>
+<span class="dim">         ↳ agent retrying without destructive command</span>
+
+<span class="dim">  editing src/auth/tokens.js... ✓</span>
+<span class="dim">  running npm run build... ✓</span>
+<span class="dim">  running npm test... ✓</span>
+
+<span class="claude">claude&gt;</span> Done. Refactored auth module to use JWT. All tests passing.</div>
+        </div>
+
+        <!-- End of run summary -->
+        <p class="section-label">End of run</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <span class="terminal-dot dot-red"></span>
+                <span class="terminal-dot dot-yellow"></span>
+                <span class="terminal-dot dot-green"></span>
+                <span class="terminal-title">Claude Code</span>
+            </div>
+            <div class="terminal-body"><span class="claude">claude&gt;</span> Task complete. 4 files modified, all tests passing.
+
+<hr class="divider">
+<span class="luthien-tag">luthien summary</span>  <span class="pass">12 actions allowed</span>  <span class="block">2 blocked</span>
+
+  <span class="block">blocked</span>  rm -rf dist/ && npm run build    <span class="dim">Flag destructive → retried → passed</span>
+  <span class="block">blocked</span>  git push --force origin main     <span class="dim">Flag destructive → blocked</span>
+</div>
+        </div>
+
+        <div class="pros-cons">
+            <div class="pros">
+                <h3>Why this works</h3>
+                <ul>
+                    <li>Zero context switching</li>
+                    <li>Info appears where you already are</li>
+                    <li>Nothing to configure — just works</li>
+                    <li>Invisible until it matters</li>
+                </ul>
+            </div>
+            <div class="cons">
+                <h3>What you lose</h3>
+                <ul>
+                    <li>No visual overview of all rules</li>
+                    <li>Config lives in YAML file</li>
+                    <li>Hard to share blocked-action history</li>
+                    <li>No at-a-glance status</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

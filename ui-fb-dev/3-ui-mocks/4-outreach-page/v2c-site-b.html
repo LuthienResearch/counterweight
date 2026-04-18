@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon 2026</title>
+  <meta name="description" content="Build on Luthien at the Apart Research AI Control Hackathon. Open-source proxy for AI control research.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2309090b'/%3E%3Ctext x='16' y='23' font-family='Inter,system-ui,sans-serif' font-size='20' font-weight='700' fill='%236b9fff' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 17.6px; }
+    body {
+      background: #09090b;
+      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    h1, h2, h3 { font-family: 'Inter', sans-serif; color: #fafafa; line-height: 1.2; }
+    code, pre, .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { color: #93b8ff; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: none;
+      color: #a1a1aa;
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+
+    section { padding: 40px 0; }
+    @media (max-width: 640px) { section { padding: 28px 0; } }
+    hr.divider { border: none; border-top: 1px solid #27272a; margin: 0; }
+
+    /* ========== BUTTONS ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: #fafafa; color: #09090b; }
+    .btn-primary:hover { background: #d4d4d8; color: #09090b; }
+    .btn-secondary { background: transparent; color: #fafafa; border: 1px solid #3f3f46; }
+    .btn-secondary:hover { border-color: #6b9fff; color: #6b9fff; }
+
+    /* ========== TOP NAV -- "site pages" variant ========== */
+    .top-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(9, 9, 11, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1a1a1e;
+      padding: 0 24px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-wordmark {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #c8c8d0;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .nav-right { display: flex; align-items: center; gap: 4px; }
+    .nav-tab {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #52525b;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-tab:hover { color: #a1a1aa; background: rgba(255,255,255,0.04); }
+    .nav-tab.active {
+      color: #fafafa;
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-divider {
+      width: 1px;
+      height: 20px;
+      background: #27272a;
+      margin: 0 8px;
+    }
+    .nav-gh {
+      display: flex;
+      background: #fafafa;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    .nav-gh svg { fill: #09090b; }
+    .nav-gh:hover { background: #d4d4d8; }
+    @media (max-width: 640px) {
+      .nav-tab { font-size: 0.75rem; padding: 4px 8px; }
+      .nav-divider { margin: 0 4px; }
+    }
+
+    /* ========== HERO ========== */
+    .hero { padding-top: 80px; padding-bottom: 20px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      align-items: start;
+      max-width: 760px;
+    }
+    .hero-photos {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hero-photos img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #27272a;
+      object-fit: cover;
+    }
+    .hero-text h1 {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .hero-text p { font-size: 0.95rem; color: #a1a1aa; line-height: 1.7; margin-bottom: 10px; }
+    .hero-text .honesty { color: #71717a; font-size: 0.85rem; font-style: italic; margin-bottom: 0; }
+    @media (max-width: 640px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-photos { flex-direction: row; }
+    }
+
+    /* ========== PITCH CARD ========== */
+    .pitch-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 24px 28px;
+      max-width: 760px;
+      margin-top: 24px;
+    }
+    .pitch-card p {
+      font-size: 0.95rem;
+      color: #e4e4e7;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+    .pitch-card p:last-child { margin-bottom: 0; }
+    .pitch-card .pitch-note {
+      color: #71717a;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* ========== HELP BAR ========== */
+    .help-bar {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      max-width: 760px;
+      margin-top: 16px;
+    }
+    .help-bar strong { color: #e4e4e7; }
+
+    /* ========== IDEA CARDS ========== */
+    .ideas-inner { max-width: 760px; }
+    .idea-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .idea-card:hover { border-color: #3f3f46; }
+    .idea-quote {
+      color: #71717a;
+      font-size: 0.8rem;
+      font-style: italic;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .idea-quote a { color: #71717a; }
+    .idea-quote a:hover { color: #a1a1aa; }
+    .idea-name { color: #fafafa; font-weight: 600; font-size: 1rem; margin-bottom: 6px; }
+    .idea-desc { color: #a1a1aa; font-size: 0.88rem; line-height: 1.6; }
+    .track-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .track-2 { color: #6b9fff; background: rgba(107,159,255,0.1); border: 1px solid rgba(107,159,255,0.2); }
+    .track-3 { color: #f87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); }
+
+    /* ========== GET STARTED ========== */
+    .start-inner { max-width: 760px; }
+    .cli-install {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      white-space: nowrap;
+      max-width: 500px;
+      margin: 16px 0;
+    }
+    .cli-install:hover { border-color: #6b9fff; }
+    .cli-prompt { color: #6b9fff; user-select: none; }
+    .cli-copy { color: #52525b; margin-left: auto; flex-shrink: 0; transition: color 0.2s; }
+    .cli-install:hover .cli-copy { color: #a1a1aa; }
+
+    /* ========== TEAM ========== */
+    .team-row {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      max-width: 760px;
+    }
+    .team-person {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      flex: 1;
+    }
+    .team-person img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #27272a;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .team-person-name { color: #fafafa; font-weight: 600; font-size: 0.95rem; }
+    .team-person-detail { color: #a1a1aa; font-size: 0.82rem; line-height: 1.5; margin-top: 2px; }
+    .team-person-links { margin-top: 6px; display: flex; gap: 10px; }
+    .team-person-links a { color: #52525b; display: flex; transition: color 0.2s; }
+    .team-person-links a:hover { color: #a1a1aa; }
+    @media (max-width: 640px) {
+      .team-row { flex-direction: column; }
+    }
+
+    /* ========== FOOTER ========== */
+    footer { border-top: 1px solid #1a1a1e; padding: 32px 0; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: #a1a1aa; font-size: 0.85rem; }
+    .footer-links a:hover { color: #d4d4d8; }
+    .footer-meta { color: #71717a; font-size: 0.8rem; }
+    @media (max-width: 640px) {
+      .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -- "site pages" variant -->
+  <nav class="top-nav">
+    <a href="https://luthienresearch.github.io/luthien-pbc-site/" class="nav-left">
+      <span class="nav-wordmark">Luthien</span>
+    </a>
+    <div class="nav-right">
+      <a href="https://luthienresearch.github.io/luthien-pbc-site/" class="nav-tab">home</a>
+      <a href="#" class="nav-tab active">hackathon</a>
+      <a href="https://luthienresearch.github.io/luthien-pbc-site/feedback/" class="nav-tab">feedback</a>
+      <div class="nav-divider"></div>
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="nav-gh" target="_blank" rel="noopener" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-photos">
+          <img src="https://avatars.githubusercontent.com/jdhyani" alt="Jai Dhyani">
+          <img src="https://avatars.githubusercontent.com/scottwofford" alt="Scott Wofford">
+        </div>
+        <div class="hero-text">
+          <h1>Build on Luthien at the AI&nbsp;Control&nbsp;Hackathon</h1>
+          <p>Open-source proxy that sits between AI coding agents and the Anthropic API. Logs every request. Enforces your rules. We're building this for the <a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22" target="_blank" rel="noopener">Apart Research AI Control Hackathon</a> (Mar 20-22).</p>
+          <p class="honesty">We're early-stage and things are rough around the edges. Your feedback makes it better.</p>
+        </div>
+      </div>
+
+      <!-- Personal pitch card -->
+      <div class="pitch-card">
+        <p>We're working backwards from a demo on April 16. We're rapidly iterating and collecting feedback, so we'd really appreciate anything you have on what we've built so far. We'd love to hear what you'd like us to build next. And if you're so inclined, help us build it.</p>
+      </div>
+
+      <!-- Help bar -->
+      <div class="help-bar">
+        <strong>Jai</strong> is a speaker and judge &mdash; he's around all weekend. <strong>Scott</strong> is on Discord too. DM us, tag <strong>@luthien</strong>, or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6" target="_blank" rel="noopener">book a 15-min call</a>.
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PROJECT IDEAS -->
+  <section id="ideas" style="padding-top: 32px;">
+    <div class="section-label">project ideas</div>
+    <div class="container">
+      <div class="ideas-inner">
+
+        <div class="idea-card">
+          <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22" target="_blank" rel="noopener">The hackathon calls for</a> "control protocols that involve traditional security measures, such as giving the trusted model access to a firewall."</div>
+          <div class="idea-name">Proxy-level monitor for BashArena <span class="track-badge track-2">Track 2</span></div>
+          <div class="idea-desc">Write a Luthien policy that flags suspicious sysadmin commands before they run. Ctrl-Z showed resample protocols cut attack success from 58% to 7%. Can a proxy-level monitor do better? Eligible for the $1K Equistamp LinuxArena prize.</div>
+        </div>
+
+        <div class="idea-card">
+          <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22" target="_blank" rel="noopener">The hackathon calls for</a> "a dataset of sneaky transcripts of AIs doing very bad things that a prompted instance of Opus 4.6 can't catch."</div>
+          <div class="idea-name">Red team our policies <span class="track-badge track-3">Track 3</span></div>
+          <div class="idea-desc">Try to get harmful actions past Luthien's built-in defenses (command blocking, DLP, LLM judge). Document which evasion strategies work, which don't, and why. Build a dataset of adversarial transcripts.</div>
+        </div>
+
+        <div class="idea-card">
+          <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22" target="_blank" rel="noopener">The hackathon calls for</a> "interrogation protocols in which the trusted model asks the untrusted model questions before executing the action."</div>
+          <div class="idea-name">LLM-as-judge interrogation protocol <span class="track-badge track-2">Track 2</span></div>
+          <div class="idea-desc">Before the untrusted model's action runs, a trusted model reviews it and asks clarifying questions. Extend Luthien's built-in LLM-as-judge policy. Measure the safety vs. usefulness tradeoff at different depths.</div>
+        </div>
+
+        <div class="idea-card">
+          <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22" target="_blank" rel="noopener">The hackathon calls for</a> "red-teaming protocols like trusted editing harder, such that the editor preserves the bad code."</div>
+          <div class="idea-name">Trusted editing via proxy rewrite <span class="track-badge track-2">Track 2</span></div>
+          <div class="idea-desc">Luthien intercepts suspicious code suggestions and has a trusted model rewrite them before they reach the developer. Does the editor keep the code working while removing sabotage? Build it AND red-team it.</div>
+        </div>
+
+        <p style="color: #71717a; font-size: 0.82rem; margin-top: 8px;">
+          <a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md" target="_blank" rel="noopener">More ideas + full details &rarr;</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- GET STARTED -->
+  <section id="start" style="padding-top: 32px;">
+    <div class="section-label">get started</div>
+    <div class="container">
+      <div class="start-inner">
+        <p style="color: #a1a1aa; font-size: 0.95rem; margin-bottom: 8px;">Install via CLI (Docker required):</p>
+        <div class="cli-install" onclick="navigator.clipboard.writeText('pipx install luthien-cli && luthien up && luthien claude')" title="Click to copy">
+          <span class="cli-prompt">$</span> pipx install luthien-cli && luthien up && luthien claude
+          <span class="cli-copy"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>
+        </div>
+        <p style="color: #71717a; font-size: 0.85rem;">Or follow the <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start" target="_blank" rel="noopener">Quick Start guide</a> (~5 min).</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TEAM (compact row variant) -->
+  <section id="team" style="padding-top: 32px; padding-bottom: 32px;">
+    <div class="section-label">team</div>
+    <div class="container">
+      <div class="team-row">
+
+        <div class="team-person">
+          <img src="https://avatars.githubusercontent.com/jdhyani" alt="Jai Dhyani">
+          <div>
+            <div class="team-person-name">Jai Dhyani</div>
+            <div class="team-person-detail">Co-Founder &amp; CEO. Speaker and judge at this hackathon. ML engineer, ex-Amazon, ex-Meta. <a href="https://www.matsprogram.org/" target="_blank" rel="noopener">MATS</a> alum, co-authored <a href="https://arxiv.org/abs/2411.15114" target="_blank" rel="noopener">RE-Bench</a>. Talk Friday at noon.</div>
+            <div class="team-person-links">
+              <a href="mailto:jai@luthienresearch.org" title="Email"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></a>
+              <a href="https://github.com/jaidhyani" target="_blank" rel="noopener" title="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-person">
+          <img src="https://avatars.githubusercontent.com/scottwofford" alt="Scott Wofford">
+          <div>
+            <div class="team-person-name">Scott Wofford</div>
+            <div class="team-person-detail">Co-Founder. Spent nearly a decade building the AI behind Amazon's cart, delivery and Prime experience. On Discord all weekend &mdash; DM me or tag @luthien.</div>
+            <div class="team-person-links">
+              <a href="mailto:scott@luthienresearch.org" title="Email"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></a>
+              <a href="https://github.com/scottwofford" target="_blank" rel="noopener" title="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="https://github.com/LuthienResearch/luthien-proxy" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://linkedin.com/company/luthien-control" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:contact@luthienresearch.org">Contact</a>
+        </div>
+        <div class="footer-meta">Luthien &middot; 2026</div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

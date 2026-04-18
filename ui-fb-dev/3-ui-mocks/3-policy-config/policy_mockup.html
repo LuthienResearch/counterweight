@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luthien - Policy Control</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+        /* Header */
+        header { margin-bottom: 32px; }
+        h1 { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .subtitle { font-size: 14px; color: #666; }
+
+        /* Section styling */
+        .section {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .section-badge {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .badge-connected { background: #166534; color: #4ade80; }
+        .badge-pending { background: #854d0e; color: #fbbf24; }
+
+        /* Connection section */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+        .status-dot.disconnected { background: #666; }
+        .status-text { font-size: 14px; color: #888; }
+        .status-text strong { color: #4ade80; }
+
+        .connect-steps {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .connect-steps p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+        .step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        .step:last-child { margin-bottom: 0; }
+        .step-num {
+            background: #262626;
+            color: #888;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-label { font-size: 13px; color: #e5e5e5; margin-bottom: 4px; }
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            color: #4ade80;
+            overflow-x: auto;
+        }
+
+        /* Policies section */
+        .policy-list { display: flex; flex-direction: column; gap: 12px; }
+        .policy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .policy-item:hover { border-color: #333; }
+        .policy-item.active { border-color: #166534; }
+        .policy-info { flex: 1; }
+        .policy-name { font-size: 14px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+        .policy-desc { font-size: 12px; color: #666; }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #333;
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #888;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .toggle input:checked + .toggle-slider { background: #166534; }
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background: #4ade80;
+        }
+
+        /* Blocked items section */
+        .blocked-list { display: flex; flex-direction: column; gap: 8px; }
+        .blocked-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border-left: 3px solid #ef4444;
+        }
+        .blocked-item.retried { border-left-color: #f59e0b; }
+        .blocked-item.passed { border-left-color: #4ade80; }
+        .blocked-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+        .blocked-content { flex: 1; min-width: 0; }
+        .blocked-action {
+            font-size: 13px;
+            color: #e5e5e5;
+            margin-bottom: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        .blocked-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #666;
+        }
+        .blocked-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .status-blocked { background: #450a0a; color: #f87171; }
+        .status-retrying { background: #451a03; color: #fbbf24; }
+        .status-passed { background: #14532d; color: #4ade80; }
+        .status-needs-human { background: #1e1b4b; color: #a78bfa; }
+
+        /* Retry concept callout */
+        .concept-callout {
+            background: #1e1b4b;
+            border: 1px solid #3730a3;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .concept-callout-icon { font-size: 14px; }
+        .concept-callout-text { font-size: 12px; color: #a5b4fc; }
+        .concept-callout-text strong { color: #c7d2fe; }
+
+        /* Notifications section */
+        .notif-options { display: flex; gap: 12px; flex-wrap: wrap; }
+        .notif-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+        .notif-option:hover { border-color: #4ade80; }
+        .notif-option.selected { border-color: #4ade80; background: #0f1f0f; }
+        .notif-icon { font-size: 20px; }
+        .notif-label { font-size: 13px; color: #e5e5e5; }
+        .notif-desc { font-size: 11px; color: #666; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: #666;
+        }
+        .empty-state-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+        .empty-state-text { font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Luthien</h1>
+            <p class="subtitle">Policy control for AI agents</p>
+        </header>
+
+        <!-- 1. Connection -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Connect Your Agent</span>
+                <span class="section-badge badge-connected">Connected</span>
+            </div>
+            <div class="connection-status">
+                <div class="status-dot"></div>
+                <span class="status-text">Claude Code is <strong>connected</strong> · Last activity 2 min ago</span>
+            </div>
+            <div class="connect-steps">
+                <p>Point Claude Code at Luthien in 2 steps:</p>
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="step-label">Set the API endpoint</div>
+                        <div class="code-block">export ANTHROPIC_BASE_URL=https://your-luthien.example.com</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="step-label">Launch Claude Code</div>
+                        <div class="code-block">claude</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Policies -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Active Policies</span>
+            </div>
+            <div class="policy-list">
+                <div class="policy-item active">
+                    <div class="policy-info">
+                        <div class="policy-name">Block scope creep</div>
+                        <div class="policy-desc">Prevent edits to files outside the current task</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="policy-item active">
+                    <div class="policy-info">
+                        <div class="policy-name">Flag destructive operations</div>
+                        <div class="policy-desc">Block rm -rf, DROP TABLE, force push, etc.</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-info">
+                        <div class="policy-name">Enforce tests</div>
+                        <div class="policy-desc">Require tests for new functions</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-info">
+                        <div class="policy-name">Limit token spend</div>
+                        <div class="policy-desc">Alert when approaching budget threshold</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. What Got Blocked -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">What Got Blocked</span>
+                <span class="section-badge badge-pending">3 items</span>
+            </div>
+
+            <div class="concept-callout">
+                <span class="concept-callout-icon">🧪</span>
+                <span class="concept-callout-text"><strong>Testing:</strong> Auto-retry — when Luthien blocks an action, it can ask the agent to try again within scope. We're testing if this is useful.</span>
+            </div>
+
+            <div class="blocked-list">
+                <div class="blocked-item passed">
+                    <span class="blocked-icon">🔄</span>
+                    <div class="blocked-content">
+                        <div class="blocked-action">Edit src/utils/helpers.js</div>
+                        <div class="blocked-meta">
+                            <span>Block scope creep</span>
+                            <span>14:32</span>
+                        </div>
+                    </div>
+                    <span class="blocked-status status-passed">Retried → Passed</span>
+                </div>
+                <div class="blocked-item retried">
+                    <span class="blocked-icon">⏳</span>
+                    <div class="blocked-content">
+                        <div class="blocked-action">rm -rf node_modules && npm install</div>
+                        <div class="blocked-meta">
+                            <span>Flag destructive</span>
+                            <span>14:28</span>
+                        </div>
+                    </div>
+                    <span class="blocked-status status-needs-human">Needs human</span>
+                </div>
+                <div class="blocked-item">
+                    <span class="blocked-icon">🛑</span>
+                    <div class="blocked-content">
+                        <div class="blocked-action">git push --force origin main</div>
+                        <div class="blocked-meta">
+                            <span>Flag destructive</span>
+                            <span>14:15</span>
+                        </div>
+                    </div>
+                    <span class="blocked-status status-blocked">Blocked</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Notifications -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Notify me when a run finishes</span>
+            </div>
+            <div class="notif-options">
+                <div class="notif-option selected">
+                    <span class="notif-icon">📧</span>
+                    <div>
+                        <div class="notif-label">Email</div>
+                        <div class="notif-desc">scott@luthien.ai</div>
+                    </div>
+                </div>
+                <div class="notif-option">
+                    <span class="notif-icon">💬</span>
+                    <div>
+                        <div class="notif-label">Slack</div>
+                        <div class="notif-desc">Not configured</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

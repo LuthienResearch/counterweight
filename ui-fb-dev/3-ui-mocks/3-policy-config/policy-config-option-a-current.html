@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option A: Current (from main) - Policy Configuration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a; color: #e5e5e5; line-height: 1.6;
+        }
+        .option-label {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: #2563eb; color: white; text-align: center;
+            padding: 8px; font-size: 14px; font-weight: 600;
+        }
+        .option-label a { color: white; margin-left: 16px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 48px 24px 24px; }
+        header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+        h1 { font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #888; }
+        .header-links { display: flex; gap: 16px; }
+        .header-links a { color: #888; text-decoration: none; font-size: 14px; }
+        .current-policy-banner {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 16px 20px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .current-policy-label { font-size: 13px; color: #888; }
+        .current-policy-name { font-size: 16px; font-weight: 600; color: #4ade80; margin-left: 12px; }
+        .current-policy-config {
+            font-size: 12px; color: #888;
+            font-family: 'SF Mono', Monaco, monospace;
+            background: #0a0a0a; padding: 6px 10px; border-radius: 4px; margin-top: 8px;
+        }
+        .test-panel {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 20px; margin-bottom: 24px;
+        }
+        .test-panel h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+        .test-panel-content { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .test-field label { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+        .test-input, .test-select {
+            width: 100%; padding: 8px 12px; background: #0a0a0a;
+            border: 1px solid #333; border-radius: 6px; color: #e5e5e5; font-size: 13px;
+        }
+        textarea.test-input { min-height: 80px; resize: vertical; font-family: inherit; }
+        .test-response {
+            background: #0a0a0a; border: 1px solid #333; border-radius: 6px;
+            padding: 12px; min-height: 120px; font-size: 13px; color: #666; font-style: italic;
+        }
+        button {
+            padding: 8px 16px; background: #1a1a1a; border: 1px solid #333;
+            border-radius: 6px; color: #e5e5e5; font-size: 13px; cursor: pointer; margin-top: 8px;
+        }
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
+        .policy-list { display: flex; flex-direction: column; gap: 8px; }
+        .policy-list h2, .config-panel h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .policy-item {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 16px; cursor: pointer; transition: all 0.2s;
+        }
+        .policy-item:hover { border-color: #333; }
+        .policy-item.active { border-left: 3px solid #4ade80; }
+        .policy-item-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .policy-item-desc { font-size: 13px; color: #888; margin-bottom: 4px; }
+        .policy-item-path { font-size: 12px; color: #666; font-family: monospace; }
+        .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #0a3d0a; color: #4ade80; float: right; }
+        .config-panel {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 20px; position: sticky; top: 60px;
+        }
+        .config-panel-empty { color: #666; font-size: 14px; text-align: center; padding: 40px 20px; }
+    </style>
+</head>
+<body>
+    <div class="option-label">
+        Option A: Current policy config (from main)
+        <a href="policy-config-option-b-terminal.html">B: Terminal</a>
+        <a href="policy-config-option-c-browser-ui.html">C: Browser UI</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Policy Configuration</h1>
+                <p class="subtitle">Configure and activate gateway policies</p>
+            </div>
+            <div class="header-links">
+                <a href="#">Activity Monitor</a>
+                <a href="#">Diff Viewer</a>
+                <a href="#">Sign Out</a>
+            </div>
+        </header>
+
+        <div class="current-policy-banner">
+            <div>
+                <span class="current-policy-label">Active Policy:</span>
+                <span class="current-policy-name">SimpleJudgePolicy</span>
+                <div class="current-policy-config">config/policy_config.yaml</div>
+            </div>
+        </div>
+
+        <div class="test-panel">
+            <h3>Test Active Policy</h3>
+            <div class="test-panel-content">
+                <div>
+                    <div class="test-field">
+                        <label>Model</label>
+                        <input type="text" class="test-select" value="claude-sonnet-4-5-20250929" readonly>
+                    </div>
+                    <div class="test-field" style="margin-top: 12px;">
+                        <label>Message</label>
+                        <textarea class="test-input">Hello! Please respond with a short greeting.</textarea>
+                    </div>
+                    <button>Send Message</button>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #888;">Response</label>
+                    <div class="test-response">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="policy-list">
+                <h2>Available Policies</h2>
+                <div class="policy-item active">
+                    <div class="policy-item-name">SimpleJudgePolicy <span class="badge">Active</span></div>
+                    <div class="policy-item-desc">LLM-based judge that evaluates tool calls against plain English rules</div>
+                    <div class="policy-item-path">luthien_proxy.policies.simple_judge_policy:SimpleJudgePolicy</div>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-item-name">EventBasedNoOpPolicy</div>
+                    <div class="policy-item-desc">Passes everything through unchanged</div>
+                    <div class="policy-item-path">luthien_proxy.policies.event_based_noop:EventBasedNoOpPolicy</div>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-item-name">AllCapsPolicy</div>
+                    <div class="policy-item-desc">Converts all response text to uppercase (demo/test only)</div>
+                    <div class="policy-item-path">luthien_proxy.policies.all_caps:AllCapsPolicy</div>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-item-name">PipBlockPolicy</div>
+                    <div class="policy-item-desc">Blocks pip install commands, suggests uv add</div>
+                    <div class="policy-item-path">luthien_proxy.policies.pip_block_policy:PipBlockPolicy</div>
+                </div>
+            </div>
+
+            <div class="config-panel">
+                <div class="config-panel-empty">Select a policy to configure</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

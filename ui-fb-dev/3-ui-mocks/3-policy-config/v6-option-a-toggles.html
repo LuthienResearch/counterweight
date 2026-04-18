@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option A: Toggles + Blocked Log</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .container { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Setup banner */
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+  .setup-banner h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #4ade80;
+    margin-bottom: 12px;
+  }
+  .setup-step {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .setup-step .num {
+    color: #4ade80;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    min-width: 18px;
+  }
+  .setup-step code {
+    background: #1a1a1a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+
+  /* Section headers */
+  .section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+
+  /* Policy toggles */
+  .policy-list { margin-bottom: 40px; }
+  .policy-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .policy-item:hover { border-color: #333; }
+  .policy-item.active { border-left: 3px solid #4ade80; }
+  .policy-info { flex: 1; }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .policy-desc { font-size: 13px; color: #888; }
+  .policy-meta {
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 16px;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #666;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: #166534; }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Expand button */
+  .expand-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .expand-btn:hover { color: #e5e5e5; border-color: #555; }
+
+  /* Config panel (hidden by default) */
+  .policy-config {
+    display: none;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .policy-config.visible { display: block; }
+  .config-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .config-rules {
+    list-style: none;
+    margin-bottom: 12px;
+  }
+  .config-rules li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #1a1a1a;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .rule-from { color: #f87171; text-decoration: line-through; }
+  .rule-arrow { color: #555; }
+  .rule-to { color: #4ade80; }
+
+  /* Blocked log */
+  .log-list { list-style: none; }
+  .log-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+  }
+  .log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .log-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+    background: #0c1a0f;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .log-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+  }
+  .log-detail { font-size: 13px; color: #aaa; }
+  .log-detail .replaced { color: #f87171; text-decoration: line-through; }
+  .log-detail .replacement { color: #4ade80; }
+  .log-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #555;
+    font-size: 14px;
+  }
+  .empty-state code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #888;
+  }
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#">Activity</a>
+  <a href="#" style="color: #e5e5e5;">Policies</a>
+</div>
+
+<div class="container">
+  <a href="v6-landing.html" class="back-link">&larr; Back to all options</a>
+
+  <!-- Setup -->
+  <div class="setup-banner">
+    <h3>Connect your agent</h3>
+    <div class="setup-step">
+      <span class="num">1</span>
+      <span>Set your base URL: <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code></span>
+    </div>
+    <div class="setup-step">
+      <span class="num">2</span>
+      <span>Run Claude Code normally. Luthien intercepts requests automatically.</span>
+    </div>
+  </div>
+
+  <!-- Active Policies -->
+  <div class="policy-list">
+    <div class="section-header">Active Policies</div>
+
+    <div class="policy-item active" id="deslop-item">
+      <div class="policy-info">
+        <div class="policy-name">DeSlop</div>
+        <div class="policy-desc">Removes em-dashes, curly quotes, and other AI-isms from responses</div>
+        <div class="policy-meta">4 replacement rules active</div>
+        <div class="policy-config" id="deslop-config">
+          <div class="config-label">Replacement rules</div>
+          <ul class="config-rules">
+            <li><span class="rule-from">&mdash;</span> <span class="rule-arrow">&rarr;</span> <span class="rule-to">-</span></li>
+            <li><span class="rule-from">&ndash;</span> <span class="rule-arrow">&rarr;</span> <span class="rule-to">-</span></li>
+            <li><span class="rule-from">&ldquo; &rdquo;</span> <span class="rule-arrow">&rarr;</span> <span class="rule-to">" "</span></li>
+            <li><span class="rule-from">&lsquo; &rsquo;</span> <span class="rule-arrow">&rarr;</span> <span class="rule-to">' '</span></li>
+          </ul>
+          <div class="config-label">Options</div>
+          <label style="font-size: 13px; color: #aaa; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" checked> Match capitalization
+          </label>
+        </div>
+      </div>
+      <button class="expand-btn" onclick="toggleConfig('deslop-config', this)">configure</button>
+      <label class="toggle">
+        <input type="checkbox" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="policy-item">
+      <div class="policy-info">
+        <div class="policy-name">Block Dangerous Commands</div>
+        <div class="policy-desc">Prevents rm -rf, git push --force, and other destructive operations</div>
+        <div class="policy-meta">LLM judge policy</div>
+      </div>
+      <button class="expand-btn" onclick="toggleConfig('block-config', this)">configure</button>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="policy-item">
+      <div class="policy-info">
+        <div class="policy-name">Package Standards</div>
+        <div class="policy-desc">Enforces your package manager (uv, pnpm, yarn) instead of defaults</div>
+        <div class="policy-meta">String replacement policy</div>
+      </div>
+      <button class="expand-btn" onclick="toggleConfig('pkg-config', this)">configure</button>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Activity Log -->
+  <div class="section-header">What changed (last 24h)</div>
+  <ul class="log-list">
+    <li class="log-item">
+      <div class="log-header">
+        <span class="log-policy">DeSlop</span>
+        <span class="log-time">2 min ago</span>
+      </div>
+      <div class="log-detail">
+        <span class="replaced">&mdash;</span> &rarr; <span class="replacement">-</span> &nbsp;
+        <span class="replaced">&ldquo;</span> &rarr; <span class="replacement">"</span>
+      </div>
+      <div class="log-count">6 replacements in 1 response</div>
+    </li>
+    <li class="log-item">
+      <div class="log-header">
+        <span class="log-policy">DeSlop</span>
+        <span class="log-time">8 min ago</span>
+      </div>
+      <div class="log-detail">
+        <span class="replaced">&mdash;</span> &rarr; <span class="replacement">-</span> &nbsp;
+        <span class="replaced">&rsquo;</span> &rarr; <span class="replacement">'</span>
+      </div>
+      <div class="log-count">3 replacements in 1 response</div>
+    </li>
+    <li class="log-item">
+      <div class="log-header">
+        <span class="log-policy">DeSlop</span>
+        <span class="log-time">14 min ago</span>
+      </div>
+      <div class="log-detail">
+        <span class="replaced">&ndash;</span> &rarr; <span class="replacement">-</span>
+      </div>
+      <div class="log-count">1 replacement in 1 response</div>
+    </li>
+  </ul>
+</div>
+
+<script>
+function toggleConfig(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible');
+  btn.textContent = el.classList.contains('visible') ? 'collapse' : 'configure';
+}
+</script>
+</body>
+</html>

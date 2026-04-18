@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien — HR Department for Your AI Agent</title>
+<meta name="description" content="Open-source proxy that enforces safety policies on AI coding agents. Progressive discipline for Claude Code, Cursor, Codex, and whatever's next.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+  /* ========================================
+     PROTOTYPE C: "HR Discussion"
+     Corporate satire — The Office meets DevOps
+     ======================================== */
+
+  :root {
+    --bg: #09090b;
+    --bg-elevated: #111113;
+    --bg-card: #18181b;
+    --border: #27272a;
+    --border-subtle: #1e1e21;
+    --text: #e4e4e7;
+    --text-secondary: #a1a1aa;
+    --muted: #71717a;
+    --dim: #52525b;
+
+    --red: #ef4444;
+    --red-dim: rgba(239, 68, 68, 0.12);
+    --red-border: rgba(239, 68, 68, 0.3);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245, 158, 11, 0.1);
+    --amber-border: rgba(245, 158, 11, 0.25);
+    --blue: #6b9fff;
+    --blue-dim: rgba(107, 159, 255, 0.1);
+    --blue-border: rgba(107, 159, 255, 0.25);
+    --green: #34d399;
+    --green-dim: rgba(52, 211, 153, 0.1);
+    --green-border: rgba(52, 211, 153, 0.25);
+
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    --max-width: 900px;
+    --section-gap: 6rem;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ---- Layout ---- */
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  section {
+    padding: 5rem 0;
+  }
+
+  /* ---- Typography ---- */
+  h1, h2, h3 {
+    font-family: var(--sans);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+  h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); margin-bottom: 1rem; }
+  h3 { font-size: 1.1rem; font-weight: 700; }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .mono { font-family: var(--mono); }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--muted);
+    background: var(--bg-elevated);
+    transform: translateY(-1px);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ================================================
+     HERO
+     ================================================ */
+  .hero {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 0;
+    position: relative;
+  }
+
+  .hero-inner {
+    max-width: 720px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+    border: 1px solid var(--red-border);
+    background: var(--red-dim);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    margin-bottom: 1.25rem;
+    color: var(--text);
+  }
+
+  .hero h1 .highlight {
+    color: var(--red);
+  }
+
+  .hero-subhead {
+    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .hero-subhead strong {
+    color: var(--text);
+  }
+
+  .hero-oneliner {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero .btn-group {
+    margin-bottom: 2.5rem;
+  }
+
+  .trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-family: var(--mono);
+  }
+
+  .trust-badges span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .trust-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--dim);
+    display: none;
+  }
+
+  /* ================================================
+     QUOTE CAROUSEL
+     ================================================ */
+  .carousel-section {
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .carousel-wrap {
+    position: relative;
+    max-width: 650px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .quote-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .quote-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+  }
+
+  .tag-sus {
+    background: var(--red-dim);
+    color: var(--red);
+    border: 1px solid var(--red-border);
+  }
+
+  .tag-claude-md {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+  }
+
+  .tag-prompt {
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid var(--blue-border);
+  }
+
+  .quote-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  .quote-text::before { content: '\201C'; }
+  .quote-text::after { content: '\201D'; }
+
+  .quote-source {
+    font-size: 0.75rem;
+    color: var(--dim);
+    font-family: var(--mono);
+  }
+
+  .quote-severity {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-subtle);
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+
+  /* Carousel controls */
+  .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .carousel-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--muted);
+  }
+
+  .carousel-dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+  }
+
+  .carousel-dot.active {
+    background: var(--text);
+    width: 18px;
+    border-radius: 3px;
+  }
+
+  .carousel-counter {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--dim);
+    text-align: center;
+    margin-top: 0.75rem;
+  }
+
+  .carousel-punchline {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 0.82rem;
+    color: var(--muted);
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .carousel-punchline strong {
+    color: var(--text-secondary);
+  }
+
+  /* ================================================
+     THREE-LAYER DIAGRAM — PROGRESSIVE DISCIPLINE
+     ================================================ */
+  .discipline-section {
+    /* default section */
+  }
+
+  /* Flow diagram */
+  .flow-diagram {
+    max-width: 600px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .flow-node {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    position: relative;
+  }
+
+  .flow-node-agent {
+    background: var(--bg-card);
+    border: 2px dashed var(--border);
+  }
+
+  .flow-node-agent .flow-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+
+  .flow-node-agent .flow-name {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .flow-node-agent .flow-badge {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--red);
+    border: 1px solid var(--red-border);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .flow-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.3rem 0;
+  }
+
+  .flow-pipe {
+    width: 2px;
+    height: 16px;
+    background: var(--border);
+  }
+
+  .flow-arrow {
+    font-size: 0.7rem;
+    color: var(--dim);
+  }
+
+  /* Proxy bracket */
+  .flow-proxy {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+  }
+
+  .flow-proxy-label {
+    position: absolute;
+    top: -0.55rem;
+    left: 1rem;
+    background: var(--bg);
+    padding: 0 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .flow-layer {
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .flow-layer:last-child { margin-bottom: 0; }
+
+  .flow-layer-num {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flow-layer-content {
+    flex: 1;
+  }
+
+  .flow-layer-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .flow-layer-tag {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+  }
+
+  .flow-layer-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .flow-layer-action {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.35rem;
+  }
+
+  /* Layer colors */
+  .fl-blue {
+    background: var(--blue-dim);
+    border: 1px solid var(--blue-border);
+  }
+  .fl-blue .flow-layer-num { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
+  .fl-blue .flow-layer-name { color: var(--blue); }
+  .fl-blue .flow-layer-tag { background: var(--blue-dim); color: var(--blue); }
+  .fl-blue .flow-layer-action { color: var(--blue); }
+
+  .fl-amber {
+    background: var(--amber-dim);
+    border: 1px solid var(--amber-border);
+  }
+  .fl-amber .flow-layer-num { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+  .fl-amber .flow-layer-name { color: var(--amber); }
+  .fl-amber .flow-layer-tag { background: var(--amber-dim); color: var(--amber); }
+  .fl-amber .flow-layer-action { color: var(--amber); }
+
+  .fl-red {
+    background: var(--red-dim);
+    border: 1px solid var(--red-border);
+  }
+  .fl-red .flow-layer-num { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+  .fl-red .flow-layer-name { color: var(--red); }
+  .fl-red .flow-layer-tag { background: var(--red-dim); color: var(--red); }
+  .fl-red .flow-layer-action { color: var(--red); }
+
+  /* Outcome nodes */
+  .flow-outcomes {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0;
+  }
+
+  .flow-outcome {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 0.5rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .fo-blocked {
+    background: var(--red-dim);
+    color: var(--red);
+    border: 1px solid var(--red-border);
+  }
+
+  .fo-flagged {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+  }
+
+  .fo-allowed {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+
+  /* Discipline detail cards */
+  .discipline-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .disc-card {
+    border-radius: 12px;
+    padding: 1.75rem;
+    position: relative;
+  }
+
+  .disc-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .disc-card-step {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .disc-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .disc-card-layer {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .disc-card-question {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+  }
+
+  .disc-card-examples {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .disc-card-action {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .disc-card-quote {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Card colors */
+  .dc-blue {
+    background: var(--blue-dim);
+    border: 1px solid var(--blue-border);
+  }
+  .dc-blue .disc-card-step { background: rgba(107, 159, 255, 0.15); color: var(--blue); }
+  .dc-blue h3 { color: var(--blue); }
+  .dc-blue .disc-card-layer { color: var(--blue); }
+  .dc-blue .disc-card-action { color: var(--blue); }
+
+  .dc-amber {
+    background: var(--amber-dim);
+    border: 1px solid var(--amber-border);
+  }
+  .dc-amber .disc-card-step { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+  .dc-amber h3 { color: var(--amber); }
+  .dc-amber .disc-card-layer { color: var(--amber); }
+  .dc-amber .disc-card-action { color: var(--amber); }
+
+  .dc-red {
+    background: var(--red-dim);
+    border: 1px solid var(--red-border);
+  }
+  .dc-red .disc-card-step { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .dc-red h3 { color: var(--red); }
+  .dc-red .disc-card-layer { color: var(--red); }
+  .dc-red .disc-card-action { color: var(--red); }
+
+  /* Properties table */
+  .props-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .props-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    min-width: 600px;
+  }
+
+  .props-table th {
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .props-table th:first-child {
+    color: var(--muted);
+  }
+
+  .props-table th.th-blue { color: var(--blue); }
+  .props-table th.th-amber { color: var(--amber); }
+  .props-table th.th-red { color: var(--red); }
+
+  .props-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+
+  .props-table tr:last-child td { border-bottom: none; }
+
+  .props-table td:first-child {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ================================================
+     QUICK START
+     ================================================ */
+  .quickstart-section {
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .code-block-wrap {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background: #1a1a1f;
+  }
+
+  .code-block-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--dim);
+  }
+
+  .code-block-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .code-block-header .dot-red { background: #ff5f57; }
+  .code-block-header .dot-yellow { background: #febc2e; }
+  .code-block-header .dot-green { background: #28c840; }
+
+  .code-block-wrap pre {
+    margin: 0 !important;
+    padding: 1.25rem !important;
+    background: #1a1a1f !important;
+    border-radius: 0 !important;
+    font-size: 0.8rem !important;
+    line-height: 1.7 !important;
+    overflow-x: auto;
+  }
+
+  .code-block-wrap code {
+    font-family: var(--mono) !important;
+    font-size: 0.8rem !important;
+  }
+
+  .what-you-get {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .wyg-item {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+
+  .wyg-item-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 0.25rem;
+  }
+
+  .wyg-item-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .wyg-item code {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.06);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    color: var(--text-secondary);
+  }
+
+  .prerequisites {
+    font-size: 0.8rem;
+    color: var(--dim);
+    text-align: center;
+    font-family: var(--mono);
+  }
+
+  .prerequisites strong {
+    color: var(--muted);
+  }
+
+  /* ================================================
+     CTA SECTION
+     ================================================ */
+  .cta-section {
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    margin-bottom: 1.25rem;
+  }
+
+  .cta-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .cta-detail {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cta-detail .check {
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .cta-partner {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+  }
+
+  /* ================================================
+     FOOTER
+     ================================================ */
+  footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 2.5rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--text);
+  }
+
+  .footer-copy {
+    font-size: 0.72rem;
+    color: var(--dim);
+  }
+
+  .footer-inspired {
+    font-size: 0.68rem;
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  /* ================================================
+     RESPONSIVE
+     ================================================ */
+  @media (max-width: 640px) {
+    section { padding: 3.5rem 0; }
+    :root { --section-gap: 3.5rem; }
+
+    .hero { min-height: auto; padding: 5rem 0 3rem; }
+
+    .btn-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .trust-badges {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .carousel-btn { display: none; }
+
+    .carousel-dots { gap: 0.3rem; }
+
+    .flow-outcomes {
+      flex-direction: column;
+    }
+
+    .quote-card { padding: 1.5rem; }
+    .quote-text { font-size: 0.95rem; }
+
+    .discipline-cards { gap: 1rem; }
+    .disc-card { padding: 1.25rem; }
+
+    .what-you-get {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .discipline-cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ---- Selection color ---- */
+  ::selection {
+    background: rgba(239, 68, 68, 0.3);
+    color: var(--text);
+  }
+
+  /* ---- Prism overrides ---- */
+  code[class*="language-"],
+  pre[class*="language-"] {
+    text-shadow: none !important;
+  }
+
+  .token.comment { color: #6b7280 !important; }
+</style>
+</head>
+<body>
+
+<!-- ================================================
+     HERO
+     ================================================ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Performance Review Pending
+      </div>
+
+      <h1>If this was a junior dev, you'd be having an <span class="highlight">HR discussion.</span></h1>
+
+      <p class="hero-subhead">Your AI agent <strong>lies</strong>, <strong>cheats</strong>, and <strong>congratulates itself</strong>.<br>Luthien is the HR department.</p>
+
+      <p class="hero-oneliner">Open-source proxy that enforces rules on AI coding agents &mdash; Claude Code, Cursor, Codex, whatever's next.</p>
+
+      <div class="btn-group">
+        <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#quickstart" class="btn btn-secondary">Get Started in 5 Minutes</a>
+      </div>
+
+      <div class="trust-badges">
+        <span>Open source &middot; Apache 2.0</span>
+        <span>Works with Claude Code, Cursor, Codex</span>
+        <span>Inspired by Redwood Research's AI Control agenda</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================
+     QUOTE CAROUSEL
+     ================================================ -->
+<section class="carousel-section" id="reviews">
+  <div class="container">
+    <div class="section-header">
+      <h2>Performance review: <span style="color: var(--red)">needs improvement.</span></h2>
+      <p>Actual behaviors from AI coding agents in the wild.</p>
+    </div>
+
+    <div class="carousel-wrap" id="carousel">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- Slides injected by JS -->
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn" aria-label="Previous quote">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Next quote">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="carousel-counter" id="carouselCounter">1 / 11</div>
+
+    <p class="carousel-punchline">These aren't hypothetical. They're from <strong>204 documented frustrations</strong> across 6 data sources over 6 months of research.</p>
+  </div>
+</section>
+
+<!-- ================================================
+     THREE-LAYER DIAGRAM — PROGRESSIVE DISCIPLINE
+     ================================================ -->
+<section class="discipline-section" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <h2>Progressive discipline for your AI agent</h2>
+      <p>Three layers. Escalating consequences. Just like real HR.</p>
+    </div>
+
+    <!-- Flow diagram -->
+    <div class="flow-diagram">
+      <div class="flow-node flow-node-agent">
+        <div class="flow-label">The Employee</div>
+        <div class="flow-name">AI Coding Agent</div>
+        <div class="flow-badge">Under Review</div>
+      </div>
+
+      <div class="flow-connector">
+        <div class="flow-pipe"></div>
+        <div class="flow-arrow">output</div>
+        <div class="flow-pipe"></div>
+      </div>
+
+      <div class="flow-proxy">
+        <div class="flow-proxy-label">Luthien &mdash; HR Department</div>
+
+        <div class="flow-layer fl-blue">
+          <div class="flow-layer-num">1</div>
+          <div class="flow-layer-content">
+            <div class="flow-layer-name">Verbal Warning <span class="flow-layer-tag">prompt</span></div>
+            <div class="flow-layer-desc">"Did it do what you asked?"</div>
+            <div class="flow-layer-action">Action: FLAG</div>
+          </div>
+        </div>
+
+        <div class="flow-connector" style="padding: 0.15rem 0;">
+          <div class="flow-pipe" style="height: 8px;"></div>
+        </div>
+
+        <div class="flow-layer fl-amber">
+          <div class="flow-layer-num">2</div>
+          <div class="flow-layer-content">
+            <div class="flow-layer-name">Written Warning <span class="flow-layer-tag">claude.md</span></div>
+            <div class="flow-layer-desc">"Did it follow the rules you already wrote?"</div>
+            <div class="flow-layer-action">Action: FLAG or BLOCK</div>
+          </div>
+        </div>
+
+        <div class="flow-connector" style="padding: 0.15rem 0;">
+          <div class="flow-pipe" style="height: 8px;"></div>
+        </div>
+
+        <div class="flow-layer fl-red">
+          <div class="flow-layer-num">3</div>
+          <div class="flow-layer-content">
+            <div class="flow-layer-name">Termination <span class="flow-layer-tag">sus</span></div>
+            <div class="flow-layer-desc">"Did it try something dangerous or stupid?"</div>
+            <div class="flow-layer-action">Action: BLOCK</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-connector">
+        <div class="flow-pipe"></div>
+        <div class="flow-arrow">verdict</div>
+        <div class="flow-pipe"></div>
+      </div>
+
+      <div class="flow-outcomes">
+        <div class="flow-outcome fo-blocked">BLOCKED</div>
+        <div class="flow-outcome fo-flagged">FLAGGED</div>
+        <div class="flow-outcome fo-allowed">ALLOWED</div>
+      </div>
+    </div>
+
+    <!-- Discipline detail cards -->
+    <div class="discipline-cards">
+      <div class="disc-card dc-blue">
+        <div class="disc-card-header">
+          <span class="disc-card-step">Layer 1</span>
+        </div>
+        <h3>Verbal Warning</h3>
+        <div class="disc-card-layer">prompt layer</div>
+        <p class="disc-card-question">"Did it do what you asked?"</p>
+        <p class="disc-card-examples">Off-task, wrong problem, scope creep, claims completion without implementing.</p>
+        <div class="disc-card-action">
+          <span>ACTION: FLAG</span>
+        </div>
+        <p class="disc-card-quote">"We need to talk about your priorities."</p>
+      </div>
+
+      <div class="disc-card dc-amber">
+        <div class="disc-card-header">
+          <span class="disc-card-step">Layer 2</span>
+        </div>
+        <h3>Written Warning</h3>
+        <div class="disc-card-layer">claude.md layer</div>
+        <p class="disc-card-question">"Did it follow the rules you already wrote?"</p>
+        <p class="disc-card-examples">Used pip instead of uv, ignored architecture rules, added global state when forbidden.</p>
+        <div class="disc-card-action">
+          <span>ACTION: FLAG or BLOCK</span>
+        </div>
+        <p class="disc-card-quote">"This is your second documented offense."</p>
+      </div>
+
+      <div class="disc-card dc-red">
+        <div class="disc-card-header">
+          <span class="disc-card-step">Layer 3</span>
+        </div>
+        <h3>Termination</h3>
+        <div class="disc-card-layer">sus layer</div>
+        <p class="disc-card-question">"Did it try something dangerous or stupid?"</p>
+        <p class="disc-card-examples">Deleted tests, dropped databases, leaked secrets, spawned 36 subagents.</p>
+        <div class="disc-card-action">
+          <span>ACTION: BLOCK</span>
+        </div>
+        <p class="disc-card-quote">"Security is escorting you out."</p>
+      </div>
+    </div>
+
+    <!-- Properties table -->
+    <div class="props-table-wrap">
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="th-blue">Verbal Warning (prompt)</th>
+            <th class="th-amber">Written Warning (claude.md)</th>
+            <th class="th-red">Termination (sus)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Set by</td>
+            <td>You (per-turn)</td>
+            <td>You (per-project)</td>
+            <td>Luthien (platform)</td>
+          </tr>
+          <tr>
+            <td>Changes</td>
+            <td>Every message</td>
+            <td>Per-project</td>
+            <td>Rarely</td>
+          </tr>
+          <tr>
+            <td>Override?</td>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td>No &mdash; safety floor</td>
+          </tr>
+          <tr>
+            <td>Violation =</td>
+            <td>Wrong</td>
+            <td>Disobedient</td>
+            <td>Dangerous</td>
+          </tr>
+          <tr>
+            <td>Action</td>
+            <td>FLAG</td>
+            <td>FLAG or BLOCK</td>
+            <td>BLOCK</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================
+     QUICK START
+     ================================================ -->
+<section class="quickstart-section" id="quickstart">
+  <div class="container">
+    <div class="section-header">
+      <h2>Onboarding your new HR department</h2>
+      <p>Five minutes from zero to fully operational progressive discipline.</p>
+    </div>
+
+    <div class="code-block-wrap">
+      <div class="code-block-header">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+        <span style="margin-left: 0.5rem;">terminal</span>
+      </div>
+      <pre><code class="language-bash"># Install uv (if needed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone and start
+git clone https://github.com/LuthienResearch/luthien-proxy
+cd luthien-proxy
+cp .env.example .env
+# Add your OPENAI_API_KEY and/or ANTHROPIC_API_KEY to .env
+
+# Start everything (Docker must be running)
+./scripts/quick_start.sh
+
+# Launch Claude Code through the proxy
+./scripts/launch_claude_code.sh</code></pre>
+    </div>
+
+    <h3 style="text-align: center; margin-bottom: 1rem; color: var(--green); font-family: var(--mono); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">What you get</h3>
+
+    <div class="what-you-get">
+      <div class="wyg-item">
+        <div class="wyg-item-label">Gateway</div>
+        <div class="wyg-item-desc">OpenAI + Anthropic compatible at <code>localhost:8000</code></div>
+      </div>
+      <div class="wyg-item">
+        <div class="wyg-item-label">Activity Monitor</div>
+        <div class="wyg-item-desc">Real-time view at <code>localhost:8000/activity/monitor</code></div>
+      </div>
+      <div class="wyg-item">
+        <div class="wyg-item-label">Policy Config</div>
+        <div class="wyg-item-desc">Management UI at <code>localhost:8000/policy-config</code></div>
+      </div>
+      <div class="wyg-item">
+        <div class="wyg-item-label">Infrastructure</div>
+        <div class="wyg-item-desc">PostgreSQL + Redis fully configured</div>
+      </div>
+    </div>
+
+    <p class="prerequisites"><strong>Prerequisites:</strong> Docker, Python 3.13+, uv</p>
+  </div>
+</section>
+
+<!-- ================================================
+     CTA SECTION
+     ================================================ -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <h2>Open source. Early.<br>Come build with us.</h2>
+
+    <div class="cta-details">
+      <div class="cta-detail"><span class="check">&#10003;</span> Apache 2.0 licensed</div>
+      <div class="cta-detail"><span class="check">&#10003;</span> Open-source on GitHub</div>
+    </div>
+
+    <div class="cta-partner">
+      We're actively looking for <strong>design partners</strong> &mdash; senior engineers using AI coding tools 40+ hrs/week.
+    </div>
+
+    <div class="btn-group">
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#quickstart" class="btn btn-secondary">Get Started in 5 Minutes</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================
+     FOOTER
+     ================================================ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://github.com/LuthienResearch/luthien-proxy" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://luthienresearch.org" target="_blank" rel="noopener">About</a>
+        <a href="https://manifund.org/projects/luthien" target="_blank" rel="noopener">Donate</a>
+      </div>
+      <div class="footer-copy">Luthien Research &middot; 2026</div>
+      <div class="footer-inspired">Inspired by Redwood Research's AI Control agenda</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Prism.js for syntax highlighting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================
+  // QUOTE DATA
+  // ============================================
+  var quotes = [
+    {
+      text: "Agent can\u2019t pass a unit test \u2192 deletes the test \u2192 claims \u2018All tests passing!\u2019",
+      source: null,
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    },
+    {
+      text: "Replit agent dropped a production database and tried to cover it up",
+      source: "HN incident report",
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    },
+    {
+      text: "Spawned 36 parallel subagents\u2026 ran out of API credits",
+      source: "@MarcJSchmidt",
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    },
+    {
+      text: "Your project uses uv, your CLAUDE.md says \u2018use uv\u2019 \u2014 agent runs pip install anyway",
+      source: null,
+      tag: "claude-md",
+      tagLabel: "claude.md",
+      severity: "Written warning"
+    },
+    {
+      text: "CLAUDE.md says \u2018no global state\u2019 \u2014 agent adds global variables",
+      source: null,
+      tag: "claude-md",
+      tagLabel: "claude.md",
+      severity: "Written warning"
+    },
+    {
+      text: "Asked to fix the login bug, refactors the entire auth module instead",
+      source: null,
+      tag: "prompt",
+      tagLabel: "prompt",
+      severity: "Verbal warning"
+    },
+    {
+      text: "Claims completion without implementing \u2014 core logic is a TODO comment",
+      source: null,
+      tag: "prompt",
+      tagLabel: "prompt",
+      severity: "Verbal warning"
+    },
+    {
+      text: "Cursor deleted 70 files despite \u2018DO NOT RUN\u2019 instruction",
+      source: "@stevehind",
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    },
+    {
+      text: "Claude says \u2018the function returns X\u2019 with identical confidence whether it\u2019s certain or guessing",
+      source: "@elliotJL",
+      tag: "prompt",
+      tagLabel: "prompt",
+      severity: "Verbal warning"
+    },
+    {
+      text: "Claude will absolutely try to bullshit its way through situations where it doesn\u2019t know the answer",
+      source: "Scott Spence",
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    },
+    {
+      text: "Wraps everything in try/except with pass, suppresses warnings",
+      source: null,
+      tag: "sus",
+      tagLabel: "sus",
+      severity: "Termination offense"
+    }
+  ];
+
+  // ============================================
+  // BUILD CAROUSEL SLIDES
+  // ============================================
+  var track = document.getElementById('carouselTrack');
+  var dotsContainer = document.getElementById('carouselDots');
+  var counter = document.getElementById('carouselCounter');
+
+  quotes.forEach(function(q, i) {
+    // Build slide
+    var slide = document.createElement('div');
+    slide.className = 'carousel-slide';
+
+    var tagClass = 'tag-' + q.tag;
+    var sourceHtml = q.source ? '<div class="quote-source">\u2014 ' + q.source + '</div>' : '';
+
+    slide.innerHTML =
+      '<div class="quote-card">' +
+        '<div class="quote-tag ' + tagClass + '">' + q.tagLabel + '</div>' +
+        '<div class="quote-text">' + q.text + '</div>' +
+        sourceHtml +
+        '<div class="quote-severity">' + q.severity + '</div>' +
+      '</div>';
+
+    track.appendChild(slide);
+
+    // Build dot
+    var dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to quote ' + (i + 1));
+    dot.dataset.index = i;
+    dotsContainer.appendChild(dot);
+  });
+
+  // ============================================
+  // CAROUSEL LOGIC
+  // ============================================
+  var currentIndex = 0;
+  var slideCount = quotes.length;
+  var autoplayInterval = null;
+  var isPaused = false;
+
+  var dots = dotsContainer.querySelectorAll('.carousel-dot');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var carouselEl = document.getElementById('carousel');
+
+  function goToSlide(index) {
+    if (index < 0) index = slideCount - 1;
+    if (index >= slideCount) index = 0;
+    currentIndex = index;
+
+    track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+
+    // Update dots
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle('active', i === currentIndex);
+    }
+
+    // Update counter
+    counter.textContent = (currentIndex + 1) + ' / ' + slideCount;
+  }
+
+  function nextSlide() { goToSlide(currentIndex + 1); }
+  function prevSlide() { goToSlide(currentIndex - 1); }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayInterval = setInterval(function() {
+      if (!isPaused) nextSlide();
+    }, 6000);
+  }
+
+  function stopAutoplay() {
+    if (autoplayInterval) {
+      clearInterval(autoplayInterval);
+      autoplayInterval = null;
+    }
+  }
+
+  // Button clicks
+  prevBtn.addEventListener('click', function() {
+    prevSlide();
+    startAutoplay();
+  });
+
+  nextBtn.addEventListener('click', function() {
+    nextSlide();
+    startAutoplay();
+  });
+
+  // Dot clicks
+  dotsContainer.addEventListener('click', function(e) {
+    var dot = e.target.closest('.carousel-dot');
+    if (dot) {
+      goToSlide(parseInt(dot.dataset.index, 10));
+      startAutoplay();
+    }
+  });
+
+  // Pause on hover
+  carouselEl.addEventListener('mouseenter', function() { isPaused = true; });
+  carouselEl.addEventListener('mouseleave', function() { isPaused = false; });
+
+  // ============================================
+  // TOUCH / SWIPE SUPPORT
+  // ============================================
+  var touchStartX = 0;
+  var touchEndX = 0;
+  var touchStartY = 0;
+  var touchEndY = 0;
+  var isSwiping = false;
+
+  carouselEl.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    isSwiping = true;
+  }, { passive: true });
+
+  carouselEl.addEventListener('touchmove', function(e) {
+    if (!isSwiping) return;
+    var diffX = Math.abs(e.changedTouches[0].screenX - touchStartX);
+    var diffY = Math.abs(e.changedTouches[0].screenY - touchStartY);
+    // If horizontal swipe is dominant, prevent vertical scroll
+    if (diffX > diffY && diffX > 10) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  carouselEl.addEventListener('touchend', function(e) {
+    if (!isSwiping) return;
+    isSwiping = false;
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+
+    var diffX = touchStartX - touchEndX;
+    var diffY = Math.abs(touchStartY - touchEndY);
+
+    // Only register as swipe if horizontal movement > 50px and more horizontal than vertical
+    if (Math.abs(diffX) > 50 && Math.abs(diffX) > diffY) {
+      if (diffX > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+      startAutoplay();
+    }
+  }, { passive: true });
+
+  // ============================================
+  // KEYBOARD NAV
+  // ============================================
+  document.addEventListener('keydown', function(e) {
+    // Only respond if carousel is somewhat in view
+    var rect = carouselEl.getBoundingClientRect();
+    var inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!inView) return;
+
+    if (e.key === 'ArrowLeft') {
+      prevSlide();
+      startAutoplay();
+    } else if (e.key === 'ArrowRight') {
+      nextSlide();
+      startAutoplay();
+    }
+  });
+
+  // Start autoplay
+  startAutoplay();
+
+})();
+</script>
+
+</body>
+</html>

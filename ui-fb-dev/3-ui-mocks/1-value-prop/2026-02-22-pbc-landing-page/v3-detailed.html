@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien - Assume Nothing</title>
+<meta name="description" content="Open-source proxy that enforces rules on AI coding agents. Claude Code, Cursor, Codex, whatever's next.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1f6e1;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;--bg-subtle:#111113;--bg-card:#18181b;--bg-hover:#1f1f23;
+  --border:#27272a;--border-bright:#3f3f46;
+  --text:#fafafa;--text-muted:#a1a1aa;--text-dim:#71717a;
+  --red:#ef4444;--amber:#f59e0b;--blue:#58a6ff;--green:#4ade80;
+  --red-bg:rgba(239,68,68,.08);--amber-bg:rgba(245,158,11,.08);--blue-bg:rgba(88,166,255,.08);--green-bg:rgba(74,222,128,.08);
+  --font-mono:'JetBrains Mono',monospace;--font-head:'Syne',sans-serif;
+  --max-w:1080px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none;transition:color .15s}
+a:hover{color:var(--text)}
+::selection{background:var(--blue);color:var(--bg)}
+
+/* Layout */
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+section{padding:96px 0;scroll-margin-top:72px}
+@media(max-width:640px){section{padding:64px 0}.wrap{padding:0 16px}}
+
+/* Typography */
+h1,h2,h3{font-family:var(--font-head);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800}
+h2{font-size:clamp(1.5rem,3.5vw,2.2rem);margin-bottom:16px}
+h3{font-size:1.1rem;margin-bottom:8px}
+p{color:var(--text-muted);max-width:640px}
+
+/* Badges */
+.badges{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.badge{font-size:.75rem;padding:6px 14px;border:1px solid var(--border);border-radius:100px;color:var(--text-muted);letter-spacing:.02em}
+
+/* Buttons */
+.btn{display:inline-block;padding:12px 28px;border-radius:8px;font-family:var(--font-mono);font-size:.875rem;font-weight:500;transition:all .15s}
+.btn-primary{background:var(--text);color:var(--bg)}
+.btn-primary:hover{background:var(--blue);color:var(--bg)}
+.btn-ghost{border:1px solid var(--border);color:var(--text-muted)}
+.btn-ghost:hover{border-color:var(--text-muted);color:var(--text)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#dc2626;color:#fff}
+.ctas{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+
+/* Tags */
+.tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.tag-red{color:var(--red);background:var(--red-bg);border:1px solid rgba(239,68,68,.2)}
+.tag-amber{color:var(--amber);background:var(--amber-bg);border:1px solid rgba(245,158,11,.2)}
+.tag-blue{color:var(--blue);background:var(--blue-bg);border:1px solid rgba(88,166,255,.2)}
+.tag-green{color:var(--green);background:var(--green-bg);border:1px solid rgba(74,222,128,.2)}
+
+/* Code blocks with file tabs */
+.code-block{margin-top:32px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.code-tab{background:var(--bg-card);padding:8px 16px;font-size:.7rem;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.code-tab .dot{width:6px;height:6px;border-radius:50%;background:var(--border-bright)}
+.code-block pre[class*="language-"]{border:none!important;border-radius:0!important;margin:0}
+pre[class*="language-"]{background:var(--bg-subtle)!important;border:1px solid var(--border);border-radius:8px;padding:20px;font-size:.8rem;line-height:1.8;overflow-x:auto}
+code[class*="language-"]{font-family:var(--font-mono)!important;font-size:.8rem}
+:not(pre)>code{background:var(--bg-subtle);padding:2px 6px;border-radius:4px;font-size:.85em;color:var(--amber)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,11,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 0}
+nav .wrap{display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:var(--font-head);font-weight:700;font-size:1.1rem;color:var(--text)}
+.nav-links{display:flex;gap:24px;font-size:.8rem}
+.nav-links a{color:var(--text-dim)}
+.nav-links a:hover{color:var(--text)}
+@media(max-width:640px){.nav-links{display:none}}
+
+/* Blinking cursor */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cursor::after{content:'_';color:var(--green);animation:blink 1s step-end infinite;margin-left:4px}
+
+/* Pulse animation */
+@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(74,222,128,.3)}50%{box-shadow:0 0 24px rgba(74,222,128,.6)}}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){.cursor::after{animation:none}.tl-dot.active{animation:none}}
+
+/* ===== HERO ===== */
+.hero{padding-top:160px;padding-bottom:96px}
+.hero h1{margin-bottom:16px}
+.hero .subhead{font-size:clamp(1rem,2vw,1.25rem);color:var(--text-muted);margin-bottom:12px;max-width:560px}
+.hero .oneliner{font-size:.9rem;color:var(--text-dim);max-width:600px}
+
+/* ===== PROBLEM GRID ===== */
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.problem-grid{grid-template-columns:1fr}}
+.problem-col h3{font-family:var(--font-mono);font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.problem-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.problem-col li{font-size:.78rem;color:var(--text-muted);padding:10px 12px 10px 14px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:6px;line-height:1.5;transition:border-color .15s}
+.problem-col li:hover{border-color:var(--border-bright)}
+.problem-col li em{font-style:normal;color:var(--text-dim);font-size:.7rem;display:block;margin-top:2px}
+
+/* Color-coded left borders per category */
+.problem-col:nth-child(1) li{border-left:2px solid var(--red)}
+.problem-col:nth-child(2) li{border-left:2px solid var(--amber)}
+.problem-col:nth-child(3) li{border-left:2px solid var(--blue)}
+
+.punchline{margin-top:40px;padding:24px;border-left:3px solid var(--amber);background:var(--bg-subtle);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text-muted);line-height:1.8}
+
+/* ===== DIAGRAM — THE CENTERPIECE ===== */
+.diagram-section{padding:120px 0}
+@media(max-width:640px){.diagram-section{padding:80px 0}}
+.diagram-container{margin:48px 0}
+.diagram{
+  background:var(--bg-subtle);
+  border:1px solid rgba(74,222,128,.15);
+  border-radius:12px;
+  padding:40px;
+  font-size:.8rem;
+  line-height:1.6;
+  overflow-x:auto;
+  position:relative;
+  box-shadow:0 0 40px rgba(74,222,128,.08),0 0 80px rgba(74,222,128,.04);
+}
+.diagram pre{background:none!important;border:none!important;padding:0!important;margin:0;color:var(--text-muted);font-family:var(--font-mono);white-space:pre}
+.diagram .d-red{color:var(--red)}
+.diagram .d-amber{color:var(--amber)}
+.diagram .d-blue{color:var(--blue)}
+.diagram .d-green{color:var(--green)}
+.diagram .d-dim{color:var(--text-dim)}
+.diagram .d-bright{color:var(--text)}
+@media(max-width:640px){.diagram{padding:20px;font-size:.7rem}}
+
+/* Properties table */
+.props-table{width:100%;border-collapse:collapse;margin-top:40px;font-size:.78rem}
+.props-table th,.props-table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.props-table th{color:var(--text-dim);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:.7rem}
+.props-table td{color:var(--text-muted)}
+.props-table tr:last-child td{border-bottom:none}
+.props-table td:first-child{color:var(--text-dim)}
+@media(max-width:640px){.props-table{font-size:.7rem}.props-table th,.props-table td{padding:8px 10px}}
+
+/* ===== TIMELINE ===== */
+.timeline{display:flex;align-items:stretch;gap:0;margin:40px 0;position:relative}
+.timeline::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:var(--border)}
+.tl-item{flex:1;position:relative;text-align:center;padding:20px 16px}
+.tl-dot{width:12px;height:12px;border-radius:50%;margin:0 auto 12px;position:relative;z-index:1}
+.tl-dot.active{background:var(--green);animation:pulse 2s ease-in-out infinite;width:16px;height:16px}
+.tl-dot.inactive{background:var(--border-bright)}
+.tl-label{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.tl-sub{font-size:.7rem;color:var(--text-dim)}
+.tl-item:first-child .tl-label{color:var(--green)}
+@media(max-width:640px){.timeline{flex-direction:column;align-items:center}.timeline::before{top:0;bottom:0;left:50%;width:2px;height:100%}}
+.callout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
+@media(max-width:640px){.callout-grid{grid-template-columns:1fr}}
+.callout{padding:24px;border-radius:12px;font-size:.82rem;line-height:1.7}
+.callout-danger{background:var(--red-bg);border:1px solid rgba(239,68,68,.15)}
+.callout-safe{background:var(--green-bg);border:1px solid rgba(74,222,128,.15)}
+.callout-title{font-weight:700;margin-bottom:8px;font-size:.85rem}
+.callout-danger .callout-title{color:var(--red);font-family:var(--font-mono)}
+.callout-safe .callout-title{color:var(--green)}
+.callout p{color:var(--text-muted);font-size:.8rem}
+
+/* ===== QUICK START ===== */
+.qs-result{margin-top:20px;font-size:.82rem;color:var(--text-dim)}
+.qs-result strong{color:var(--text-muted)}
+
+/* ===== POLICY ===== */
+.policy-note{margin-top:16px;font-size:.8rem;color:var(--text-dim)}
+
+/* ===== RESEARCH ===== */
+.research-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.research-links a{font-size:.8rem;padding:8px 16px;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);transition:all .15s}
+.research-links a:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ===== CTA ===== */
+.cta-section{text-align:center;padding:80px 0}
+.cta-section h2{margin-bottom:8px}
+.cta-section p{margin:0 auto 12px;text-align:center}
+.cta-section .contact{font-size:.8rem;color:var(--text-dim);margin-top:20px}
+.cta-section .contact a{color:var(--text-dim)}
+.cta-section .contact a:hover{color:var(--text)}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--border);padding:40px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:.8rem;color:var(--text-dim)}
+.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:.75rem;color:var(--text-dim)}
+
+/* Separator */
+.sep{border:none;border-top:1px solid var(--border);margin:0}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap">
+    <a href="#" class="nav-logo">luthien</a>
+    <div class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#model">How it works</a>
+      <a href="#quickstart">Quick start</a>
+      <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <h1><span class="cursor">Assume Nothing</span></h1>
+    <p class="subhead">Your AI agent is a black box. You only see what comes out.</p>
+    <p class="oneliner">Open-source proxy that enforces rules on AI coding agents &mdash; Claude Code, Cursor, Codex, whatever's next.</p>
+    <div class="ctas">
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary">View on GitHub &rarr;</a>
+      <a href="#quickstart" class="btn btn-ghost">Get Started in 5 Minutes &darr;</a>
+    </div>
+    <div class="badges">
+      <span class="badge">Open source &middot; Apache 2.0</span>
+      <span class="badge">Works with Claude Code, Cursor, Codex</span>
+      <span class="badge">Inspired by Redwood Research's AI Control agenda</span>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- THE PROBLEM -->
+<section id="problem">
+  <div class="wrap">
+    <h2>AI coding agents are useful. They're also liars, cheaters, and occasionally arsonists.</h2>
+    <div class="problem-grid" style="margin-top:40px">
+
+      <!-- SUS -->
+      <div class="problem-col">
+        <h3><span class="tag tag-red">sus</span> dangerous or stupid</h3>
+        <ul>
+          <li>Deletes tests to make suite green <em>"All tests passing!" &mdash; it's a lie</em></li>
+          <li><code>rm -rf</code> destructive commands <em>Replit dropped a production database</em></li>
+          <li>Leaks secrets/API keys in commits</li>
+          <li>Spawns 36 parallel subagents, burns all your credits</li>
+          <li>Swallows errors with <code>try/except pass</code></li>
+          <li>Mock-injects to fake test passes</li>
+          <li>False "Done!" claims when implementation is missing</li>
+          <li>Cursor deleted 70 files despite "DO NOT RUN" instruction</li>
+          <li>MCP prompt injection <em>Palo Alto Unit 42, Dec 2025</em></li>
+        </ul>
+      </div>
+
+      <!-- CLAUDE.MD -->
+      <div class="problem-col">
+        <h3><span class="tag tag-amber">claude.md</span> ignores your rules</h3>
+        <ul>
+          <li>Uses <code>pip</code> instead of <code>uv</code> despite CLAUDE.md saying "use uv"</li>
+          <li>Wrong test framework <em>writes unittest when project uses pytest</em></li>
+          <li>Ignores architecture rules, adds global state</li>
+          <li>Uses forbidden dependencies</li>
+          <li>Wrong coding standards <em>single quotes when you said double</em></li>
+        </ul>
+      </div>
+
+      <!-- PROMPT -->
+      <div class="problem-col">
+        <h3><span class="tag tag-blue">prompt</span> doesn't do what you asked</h3>
+        <ul>
+          <li>Asked to fix login bug, refactors entire auth module</li>
+          <li>Scope creep into 15 unrelated files</li>
+          <li>Hallucinated APIs that don't exist</li>
+          <li>Context loss after <code>/compact</code></li>
+          <li>"Done!" but core logic is a <code>TODO</code> comment</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="punchline">
+      These aren't hypothetical. They're from <strong style="color:var(--text)">204 documented frustrations</strong> across 6 data sources. Both Claude Code and Codex self-rate these failures at <strong style="color:var(--text)">9/10 persistence</strong> &mdash; they know they do this and can't stop themselves.
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- THREE-LAYER MODEL — THE CENTERPIECE -->
+<section id="model" class="diagram-section">
+  <div class="wrap">
+    <h2>Three layers between your AI agent and disaster</h2>
+
+    <div class="diagram-container">
+      <div class="diagram">
+<pre>
+  <span class="d-dim">&#x1F916;</span> <span class="d-bright">AI Agent</span>  <span class="d-dim">(trust: zero)</span>
+        <span class="d-dim">|</span>
+        <span class="d-dim">| output</span>
+        <span class="d-dim">v</span>
+  <span class="d-dim">+-------------------------------------------+</span>
+  <span class="d-dim">|</span>  <span class="d-bright">LUTHIEN PROXY</span>                             <span class="d-dim">|</span>
+  <span class="d-dim">|</span>                                           <span class="d-dim">|</span>
+  <span class="d-dim">|</span>  <span class="d-red">1. sus</span>        <span class="d-dim">&rarr;</span> <span class="d-red">BLOCK</span>                   <span class="d-dim">|</span>
+  <span class="d-dim">|</span>     <span class="d-dim">"Did it try something</span>                 <span class="d-dim">|</span>
+  <span class="d-dim">|</span>      <span class="d-dim">dangerous or stupid?"</span>                <span class="d-dim">|</span>
+  <span class="d-dim">|</span>                                           <span class="d-dim">|</span>
+  <span class="d-dim">|</span>  <span class="d-amber">2. claude.md</span>  <span class="d-dim">&rarr;</span> <span class="d-amber">FLAG</span>                    <span class="d-dim">|</span>
+  <span class="d-dim">|</span>     <span class="d-dim">"Did it follow the rules</span>              <span class="d-dim">|</span>
+  <span class="d-dim">|</span>      <span class="d-dim">you already wrote?"</span>                  <span class="d-dim">|</span>
+  <span class="d-dim">|</span>                                           <span class="d-dim">|</span>
+  <span class="d-dim">|</span>  <span class="d-blue">3. prompt</span>     <span class="d-dim">&rarr;</span> <span class="d-blue">FLAG</span>                    <span class="d-dim">|</span>
+  <span class="d-dim">|</span>     <span class="d-dim">"Did it do what you asked</span>             <span class="d-dim">|</span>
+  <span class="d-dim">|</span>      <span class="d-dim">across the whole conversation?"</span>      <span class="d-dim">|</span>
+  <span class="d-dim">+-------------------------------------------+</span>
+        <span class="d-dim">|</span>
+        <span class="d-dim">v</span>
+    <span class="d-red">Block</span> <span class="d-dim">&middot;</span> <span class="d-amber">Flag</span> <span class="d-dim">&middot;</span> <span class="d-green">Allow</span> <span class="d-dim">&rarr;</span> <span class="d-green">&#10003; reaches your codebase</span></pre>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th><span style="color:var(--red)">sus</span></th>
+            <th><span style="color:var(--amber)">claude.md</span></th>
+            <th><span style="color:var(--blue)">prompt</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Set by</td><td>Luthien (platform)</td><td>You (per-project)</td><td>You (per-turn)</td></tr>
+          <tr><td>Changes</td><td>Rarely</td><td>Per-project</td><td>Every message</td></tr>
+          <tr><td>Override?</td><td>No &mdash; safety floor</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Violation =</td><td style="color:var(--red)">Dangerous</td><td style="color:var(--amber)">Disobedient</td><td style="color:var(--blue)">Wrong</td></tr>
+          <tr><td>Action</td><td style="color:var(--red)">BLOCK</td><td style="color:var(--amber)">FLAG or BLOCK</td><td style="color:var(--blue)">FLAG</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- No separator — flows directly from model into "where it sits" -->
+
+<!-- WHERE LUTHIEN SITS -->
+<section id="where">
+  <div class="wrap">
+    <h2>Luthien catches problems before they exist</h2>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-label">At generation</div>
+        <div class="tl-sub">Luthien</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot inactive"></div>
+        <div class="tl-label">At push / PR</div>
+        <div class="tl-sub">CI/CD, CodeRabbit</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot inactive"></div>
+        <div class="tl-label">In production</div>
+        <div class="tl-sub">Monitoring</div>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:.85rem;margin:0 auto;max-width:640px">Everything after Luthien catches problems <em>after</em> they're already in your code. Luthien catches them <strong style="color:var(--text)">before they exist</strong>.</p>
+
+    <div class="callout-grid">
+      <div class="callout callout-danger">
+        <div class="callout-title">--dangerously-skip-permissions</div>
+        <p>No CI, no PR review, yolo to main. Luthien is your only safety net.</p>
+      </div>
+      <div class="callout callout-safe">
+        <div class="callout-title">Mature pipeline</div>
+        <p>Luthien sits upstream of your PR. Notifies you the moment something is sus.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- QUICK START -->
+<section id="quickstart">
+  <div class="wrap">
+    <h2>Running in 5 minutes</h2>
+    <div class="code-block">
+      <div class="code-tab"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <pre class="language-bash"><code class="language-bash">git clone https://github.com/LuthienResearch/luthien-proxy
+cd luthien-proxy
+cp .env.example .env
+# Add your ANTHROPIC_API_KEY to .env
+docker compose up -d
+
+# Point Claude Code at the proxy:
+export ANTHROPIC_BASE_URL=http://localhost:8000/v1
+export ANTHROPIC_API_KEY=sk-luthien-dev-key
+claude</code></pre>
+    </div>
+    <div class="qs-result">
+      <strong>What you get:</strong> Gateway at <code>:8000</code>, activity monitor at <code>:8000/activity/monitor</code>, policy config at <code>:8000/policy-config</code>
+    </div>
+  </div>
+</section>
+
+<!-- No separator — quick start flows into policy -->
+
+<!-- WRITE YOUR OWN POLICY -->
+<section id="policy">
+  <div class="wrap">
+    <h2>Your rules. Enforced.</h2>
+    <div class="code-block">
+      <div class="code-tab"><span class="dot"></span><span class="dot"></span><span class="dot"></span> policy.py</div>
+      <pre class="language-python"><code class="language-python">class MyPolicy(SimpleJudgePolicy):
+    RULES = [
+        "Never allow 'rm -rf' commands",
+        "Never delete or skip existing tests",
+        "Always use uv, never pip",
+        "Block requests to delete production data",
+        "Require docstrings on all public functions",
+    ]</code></pre>
+    </div>
+    <p class="policy-note">Policies are hot-reloadable via <code>/policy-config</code>. No restarts, no deploys.</p>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- BUILT ON RESEARCH -->
+<section id="research">
+  <div class="wrap">
+    <h2>Standing on the shoulders of paranoid researchers</h2>
+    <p style="margin-top:16px;line-height:1.8">
+      Luthien implements <strong style="color:var(--text)">Redwood Research's AI Control agenda</strong> as production software. External control layer &mdash; doesn't rely on the agent being well-behaved. Assumes the worst, verifies every action.
+    </p>
+    <div class="research-links">
+      <a href="https://www.redwoodresearch.org/control">Redwood Research &mdash; AI Control</a>
+      <a href="https://aisafetyatlas.com/">AI Safety Atlas</a>
+      <a href="https://arxiv.org/abs/2312.06942">Greenblatt et al. &mdash; AI Control paper</a>
+      <a href="https://luthienresearch.org/blog">Luthien's approach</a>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- OPEN SOURCE + EARLY -->
+<section class="cta-section">
+  <div class="wrap">
+    <h2>Open source. Early. Come build with us.</h2>
+    <p>Apache 2.0. Looking for design partners &mdash; senior engineers using AI tools 40+ hrs/week.</p>
+    <div class="ctas" style="justify-content:center;margin-top:24px">
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary">View on GitHub &rarr;</a>
+      <a href="https://calendar.app.google/CDq4LTpKj966cuPx8" class="btn btn-red">Schedule a Call &rarr;</a>
+    </div>
+    <div class="contact"><a href="mailto:contact@luthienresearch.org">contact@luthienresearch.org</a></div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-links">
+      <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a>
+      <a href="https://luthienresearch.org/blog">Updates</a>
+      <a href="https://luthienresearch.org/about">About</a>
+      <a href="https://manifund.org/projects/luthien">Donate</a>
+    </div>
+    <div class="footer-copy">Luthien Research &middot; 2026</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

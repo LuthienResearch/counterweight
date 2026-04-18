@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien</title>
+<meta name="description" content="Open-source proxy that checks every AI-generated response before it touches your code.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1f6e1;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;--bg-subtle:#111113;--bg-card:#18181b;
+  --border:#27272a;--border-bright:#3f3f46;
+  --text:#fafafa;--text-muted:#a1a1aa;--text-dim:#71717a;
+  --red:#ef4444;--amber:#f59e0b;--blue:#58a6ff;--green:#4ade80;
+  --red-bg:rgba(239,68,68,.07);--amber-bg:rgba(245,158,11,.07);--blue-bg:rgba(88,166,255,.07);
+  --font-mono:'JetBrains Mono',monospace;--font-head:'Syne',sans-serif;
+  --max-w:980px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none;transition:color .15s}
+a:hover{color:var(--text)}
+::selection{background:var(--blue);color:var(--bg)}
+
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+section{padding:100px 0;scroll-margin-top:72px}
+@media(max-width:640px){section{padding:64px 0}.wrap{padding:0 16px}}
+
+h1,h2{font-family:var(--font-head);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+h1{font-size:clamp(2.2rem,5.5vw,3.8rem)}
+h2{font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:24px;font-weight:700}
+p{color:var(--text-muted);max-width:600px}
+
+.btn{display:inline-block;padding:12px 28px;border-radius:8px;font-family:var(--font-mono);font-size:.875rem;font-weight:500;transition:all .15s}
+.btn-primary{background:var(--text);color:var(--bg)}
+.btn-primary:hover{background:var(--blue);color:var(--bg)}
+.btn-ghost{border:1px solid var(--border);color:var(--text-muted)}
+.btn-ghost:hover{border-color:var(--text-muted);color:var(--text)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#dc2626;color:#fff}
+.ctas{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+
+/* Code blocks */
+.code-block{border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.code-tab{background:var(--bg-card);padding:8px 16px;font-size:.7rem;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.code-tab .dot{width:6px;height:6px;border-radius:50%;background:var(--border-bright)}
+.code-block pre[class*="language-"]{border:none!important;border-radius:0!important;margin:0}
+pre[class*="language-"]{background:var(--bg-subtle)!important;border:1px solid var(--border);border-radius:8px;padding:20px;font-size:.8rem;line-height:1.8;overflow-x:auto}
+code[class*="language-"]{font-family:var(--font-mono)!important;font-size:.8rem}
+:not(pre)>code{background:var(--bg-subtle);padding:2px 6px;border-radius:4px;font-size:.85em;color:var(--amber)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,11,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 0}
+nav .wrap{display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:var(--font-head);font-weight:700;font-size:1.1rem;color:var(--text)}
+.nav-link{font-size:.8rem;color:var(--text-dim)}
+.nav-link:hover{color:var(--text)}
+
+/* Hero */
+.hero{padding-top:160px;padding-bottom:80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:100px;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(74,222,128,.06),transparent 70%);pointer-events:none}
+.hero .wrap{position:relative}
+.hero h1{margin-bottom:20px;text-shadow:0 0 80px rgba(74,222,128,.12)}
+.hero .sub{font-size:clamp(.9rem,1.8vw,1.1rem);color:var(--text-muted);max-width:560px;line-height:1.8}
+
+/* Quotes */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:800px){.quotes{grid-template-columns:1fr}}
+.quote{padding:24px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:10px;margin:0}
+.quote p{font-size:.85rem;color:var(--text-muted);line-height:1.7;max-width:none}
+.quote.q-red{border-left:3px solid var(--red)}
+.quote.q-amber{border-left:3px solid var(--amber)}
+.quote.q-blue{border-left:3px solid var(--blue)}
+.quote-note{font-size:.78rem;color:var(--text-dim);margin-top:20px;text-align:center}
+
+/* Flow diagram */
+.flow{max-width:460px;margin:40px auto}
+.flow-proxy-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:14px;opacity:.7}
+.flow-node{text-align:center;padding:10px;font-size:.85rem;color:var(--text-muted)}
+.flow-node strong{color:var(--text)}
+.flow-node.result{color:var(--green)}
+.flow-arrow{text-align:center;color:var(--border-bright);font-size:1.1rem;padding:4px 0}
+.flow-proxy{border:1px solid rgba(74,222,128,.15);border-radius:12px;padding:20px;background:var(--bg-subtle);box-shadow:0 0 30px rgba(74,222,128,.06)}
+.flow-check{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:6px;margin-bottom:8px;border-left:3px solid;font-size:.82rem}
+.flow-check:last-child{margin-bottom:0}
+.flow-check.red{border-color:var(--red);background:var(--red-bg)}
+.flow-check.amber{border-color:var(--amber);background:var(--amber-bg)}
+.flow-check.blue{border-color:var(--blue);background:var(--blue-bg)}
+.check-q{color:var(--text-muted)}
+.check-a{font-weight:700}
+.flow-check.red .check-a{color:var(--red)}
+.flow-check.amber .check-a{color:var(--amber)}
+.flow-check.blue .check-a{color:var(--blue)}
+
+/* Sections */
+.sep{border:none;border-top:1px solid var(--border);margin:0}
+.section-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:32px}
+.start-note{margin-top:16px;font-size:.8rem;color:var(--text-dim)}
+
+/* CTA */
+.cta-section{text-align:center;padding:80px 0}
+.cta-section h2{margin-bottom:12px}
+.cta-section p{margin:0 auto 8px;text-align:center;font-size:.85rem}
+.cta-section .contact{font-size:.8rem;color:var(--text-dim);margin-top:20px}
+.cta-section .contact a{color:var(--text-dim)}
+.cta-section .contact a:hover{color:var(--text)}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:32px 0}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:.8rem;color:var(--text-dim)}
+.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:.75rem;color:var(--text-dim)}
+
+@media(prefers-reduced-motion:reduce){.hero::before{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="nav-logo">luthien</a>
+    <a href="https://github.com/LuthienResearch/luthien-proxy" class="nav-link">GitHub &rarr;</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <h1>Assume the model will mess up your repo.</h1>
+    <p class="sub">Luthien is an open-source proxy that checks every AI-generated response before it touches your code.</p>
+    <div class="ctas">
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary">View on GitHub &rarr;</a>
+      <a href="#start" class="btn btn-ghost">Get started &darr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTES — the problem, told through voices -->
+<section>
+  <div class="wrap">
+    <div class="quotes">
+      <blockquote class="quote q-red">
+        <p>&ldquo;It deleted 70 files despite instructions explicitly saying DO NOT RUN rm commands. Two hours of work, gone.&rdquo;</p>
+      </blockquote>
+      <blockquote class="quote q-amber">
+        <p>&ldquo;I&rsquo;ve written &lsquo;always use uv, never pip&rsquo; in CLAUDE.md four times. It uses pip. Every. Single. Time.&rdquo;</p>
+      </blockquote>
+      <blockquote class="quote q-blue">
+        <p>&ldquo;Asked it to fix a login bug. Got back a PR touching 47 files with a refactored auth system nobody asked for.&rdquo;</p>
+      </blockquote>
+    </div>
+    <p class="quote-note">From 204 documented frustrations across 6 data sources.</p>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-label">How it works</div>
+    <div class="flow">
+      <div class="flow-node"><strong>AI Agent</strong></div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-proxy">
+        <div class="flow-proxy-label">Luthien Proxy</div>
+        <div class="flow-check red">
+          <span class="check-q">Dangerous?</span>
+          <span class="check-a">Block</span>
+        </div>
+        <div class="flow-check amber">
+          <span class="check-q">Broke a rule?</span>
+          <span class="check-a">Flag</span>
+        </div>
+        <div class="flow-check blue">
+          <span class="check-q">Off-task?</span>
+          <span class="check-a">Flag</span>
+        </div>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-node result">&check; Your codebase</div>
+    </div>
+  </div>
+</section>
+
+<!-- GET STARTED -->
+<section id="start">
+  <div class="wrap">
+    <div class="section-label">Get started</div>
+    <div class="code-block">
+      <div class="code-tab"><span class="dot"></span><span class="dot"></span><span class="dot"></span> terminal</div>
+      <pre class="language-bash"><code class="language-bash">git clone https://github.com/LuthienResearch/luthien-proxy
+cd luthien-proxy
+cp .env.example .env       # add your ANTHROPIC_API_KEY
+docker compose up -d
+
+# Point Claude Code at the proxy:
+export ANTHROPIC_BASE_URL=http://localhost:8000/v1
+export ANTHROPIC_API_KEY=sk-luthien-dev-key
+claude</code></pre>
+    </div>
+    <div class="code-block" style="margin-top:20px">
+      <div class="code-tab"><span class="dot"></span><span class="dot"></span><span class="dot"></span> policy.py</div>
+      <pre class="language-python"><code class="language-python">class MyPolicy(SimpleJudgePolicy):
+    RULES = [
+        "Never allow rm -rf commands",
+        "Never delete or skip existing tests",
+        "Always use uv, never pip",
+    ]</code></pre>
+    </div>
+    <p class="start-note">Five minutes. Rules are hot-reloadable &mdash; no restarts, no deploys.</p>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="wrap">
+    <h2>Open source. Early.<br>Come build with us.</h2>
+    <p>Apache 2.0 &middot; Built on <a href="https://www.redwoodresearch.org/control">Redwood Research's AI Control</a> framework</p>
+    <div class="ctas" style="justify-content:center;margin-top:24px">
+      <a href="https://github.com/LuthienResearch/luthien-proxy" class="btn btn-primary">View on GitHub &rarr;</a>
+      <a href="https://calendar.app.google/CDq4LTpKj966cuPx8" class="btn btn-red">Schedule a Call &rarr;</a>
+    </div>
+    <div class="contact"><a href="mailto:contact@luthienresearch.org">contact@luthienresearch.org</a></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-links">
+      <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a>
+      <a href="https://luthienresearch.org/blog">Updates</a>
+      <a href="https://manifund.org/projects/luthien">Donate</a>
+    </div>
+    <div class="footer-copy">Luthien Research &middot; 2026</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

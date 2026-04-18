@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Config - Simplified Mockup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            line-height: 1.6;
+        }
+
+        /* Nav (simplified from nav.css) */
+        .luthien-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #141414;
+            border-bottom: 1px solid #262626;
+            font-size: 14px;
+        }
+        .nav-brand {
+            font-weight: 700;
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 15px;
+        }
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        .nav-link:hover { color: #e5e5e5; }
+        .nav-link.active { color: #e5e5e5; background: #262626; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        h1 { font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #888; }
+
+        /* Current Policy Banner */
+        .current-policy-banner {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .current-policy-header { display: flex; align-items: center; gap: 12px; }
+        .current-policy-label { font-size: 13px; color: #888; }
+        .current-policy-name { font-size: 16px; font-weight: 600; color: #4ade80; }
+        .current-policy-config {
+            font-size: 12px; color: #888;
+            font-family: 'SF Mono', Monaco, monospace;
+            background: #0a0a0a;
+            padding: 10px 14px; border-radius: 4px;
+            margin-top: 8px;
+        }
+        .current-policy-meta { font-size: 12px; color: #666; font-family: 'SF Mono', Monaco, monospace; }
+
+        /* Gateway Settings (collapsible) */
+        .collapsible-section {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsible-header:hover { background: #161616; }
+        .collapsible-label { font-size: 13px; color: #888; }
+        .collapsible-arrow {
+            color: #555;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        .collapsible-arrow.open { transform: rotate(90deg); }
+        .collapsible-content {
+            display: none;
+            padding: 0 20px 16px;
+        }
+        .collapsible-content.visible { display: block; }
+
+        .checkbox-wrapper { display: flex; align-items: center; gap: 8px; }
+        .config-checkbox { width: 16px; height: 16px; }
+
+        /* Test Panel */
+        .test-panel {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .test-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-panel-header.has-content { margin-bottom: 16px; }
+        .test-panel h3 { font-size: 14px; font-weight: 600; color: #e5e5e5; margin: 0; }
+        .test-panel-toggle {
+            font-size: 12px; padding: 4px 10px;
+            background: transparent; border: 1px solid #333;
+            color: #888; border-radius: 6px; cursor: pointer;
+        }
+        .test-panel-content { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .test-panel-content.collapsed { display: none; }
+        .test-input-section { display: flex; flex-direction: column; gap: 12px; }
+        .test-output-section { display: flex; flex-direction: column; }
+        .test-field { display: flex; flex-direction: column; gap: 4px; }
+        .test-field label { font-size: 12px; color: #888; }
+        .test-field-row { display: flex; gap: 12px; }
+        .test-field-row .test-field { flex: 1; }
+        .test-select, .test-input {
+            padding: 8px 12px;
+            background: #0a0a0a; border: 1px solid #333;
+            border-radius: 6px; color: #e5e5e5; font-size: 13px;
+            font-family: inherit;
+        }
+        .test-input { min-height: 80px; resize: vertical; flex: 1; }
+        .test-send-btn { align-self: flex-start; padding: 8px 20px; }
+        .test-response-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+        .test-response {
+            background: #0a0a0a; border: 1px solid #333;
+            border-radius: 6px; padding: 12px; min-height: 120px;
+            font-size: 13px; color: #666; font-style: italic; flex: 1;
+        }
+        button {
+            padding: 8px 16px; background: #1a1a1a; border: 1px solid #333;
+            border-radius: 6px; color: #e5e5e5; font-size: 13px;
+            cursor: pointer; font-family: inherit;
+        }
+        button:hover { border-color: #4ade80; background: #141414; }
+
+        /* Main Layout */
+        .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
+        @media (max-width: 1000px) { .main-layout { grid-template-columns: 1fr; } }
+
+        .policy-list-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #e5e5e5; }
+        .policy-list { display: flex; flex-direction: column; gap: 8px; }
+
+        .policy-item {
+            background: #141414; border: 1px solid #262626;
+            border-radius: 8px; padding: 16px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .policy-item:hover { border-color: #333; background: #161616; }
+        .policy-item.selected { border-color: #2563eb; background: #0a1628; }
+        .policy-item.active { border-left: 3px solid #4ade80; }
+
+        .policy-item-header {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 8px;
+        }
+        .policy-item-name { font-size: 15px; font-weight: 600; color: #e5e5e5; }
+        .policy-item-badge {
+            font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+        }
+        .policy-item-badge.active { background: #0a3d0a; color: #4ade80; }
+        .policy-item-description { font-size: 13px; color: #888; margin-bottom: 8px; }
+        .policy-item-config { font-size: 12px; color: #666; font-family: 'SF Mono', Monaco, monospace; }
+
+        /* NEW: Example preview on policy cards */
+        .policy-item-example {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #1a1a1a;
+            font-size: 12px;
+            color: #666;
+        }
+        .policy-item-example-label {
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .policy-item-example-content {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .ex-remove {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
+            padding: 1px 3px; border-radius: 2px;
+            text-decoration: line-through;
+        }
+        .ex-add {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            padding: 1px 3px; border-radius: 2px;
+            font-weight: 600;
+        }
+        .ex-block {
+            background: rgba(248, 113, 113, 0.12);
+            color: #f87171;
+            padding: 2px 6px; border-radius: 3px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+        }
+
+        /* Config panel */
+        .config-panel {
+            background: #141414; border: 1px solid #262626;
+            border-radius: 8px; padding: 20px;
+            position: sticky; top: 24px;
+        }
+        .config-panel-empty {
+            color: #666; font-size: 14px;
+            text-align: center; padding: 40px 20px;
+        }
+        .config-panel-empty-hint {
+            font-size: 12px; color: #555; margin-top: 8px;
+        }
+
+        /* ================================================ */
+        /* CALLOUT BADGES                                   */
+        /* ================================================ */
+        .callout {
+            position: relative;
+            display: inline-block;
+        }
+        .callout-badge {
+            position: absolute;
+            width: 28px; height: 28px;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+            cursor: help;
+        }
+        .callout-badge:hover {
+            transform: scale(1.15);
+        }
+        .callout-badge.red {
+            background: #dc2626;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);
+        }
+        .callout-badge.green {
+            background: #16a34a;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.5);
+        }
+        .callout-tooltip {
+            display: none;
+            position: absolute;
+            top: 32px;
+            left: 0;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #ccc;
+            white-space: nowrap;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .callout-badge:hover + .callout-tooltip,
+        .callout-tooltip:hover {
+            display: block;
+        }
+
+        /* Hidden internal policies - strikethrough for comparison */
+        .policy-item.hidden-policy {
+            display: none;
+        }
+        .show-all .policy-item.hidden-policy {
+            display: block;
+            opacity: 0.35;
+            border-style: dashed;
+        }
+
+        /* Toggle for showing hidden policies */
+        .show-hidden-toggle {
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            margin-top: 8px;
+            user-select: none;
+        }
+        .show-hidden-toggle:hover { color: #888; }
+
+        /* Legend */
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px;
+            z-index: 100;
+            max-width: 380px;
+            font-size: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .legend h3 {
+            font-size: 13px;
+            color: #e5e5e5;
+            margin-bottom: 10px;
+        }
+        .legend-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+        .legend-num {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .legend-num.blue { background: #2563eb; }
+        .legend-num.green { background: #16a34a; }
+        .legend-num.red { background: #dc2626; }
+        .legend-text { color: #aaa; line-height: 1.4; }
+        .legend-close {
+            position: absolute;
+            top: 8px; right: 12px;
+            background: none; border: none;
+            color: #666; font-size: 18px;
+            cursor: pointer; padding: 0;
+        }
+        .legend-close:hover { color: #e5e5e5; background: none; border: none; }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="luthien-nav">
+    <a href="#" class="nav-brand">Luthien</a>
+    <a href="#" class="nav-link">Activity</a>
+    <a href="#" class="nav-link active">Policies</a>
+    <a href="#" class="nav-link">Diffs</a>
+</nav>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>Policy Configuration</h1>
+            <p class="subtitle">Configure and activate gateway policies</p>
+        </div>
+    </header>
+
+    <!-- ======================================== -->
+    <!-- Current Policy Banner                    -->
+    <!-- ======================================== -->
+    <div class="current-policy-banner" id="current-policy-banner">
+        <div>
+            <div class="current-policy-header">
+                <span class="current-policy-label">Active Policy:</span>
+                <span class="current-policy-name">NoOpPolicy</span>
+            </div>
+            <div class="current-policy-config">(no config)</div>
+        </div>
+        <div class="current-policy-meta">by startup &bull; 3/18/2026, 11:55:34 PM</div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- #2: Gateway Settings - NOW COLLAPSED     -->
+    <!-- ======================================== -->
+    <div class="collapsible-section" style="position: relative;">
+        <span class="callout" style="position: absolute; top: -10px; left: -10px;">
+            <span class="callout-badge">2</span>
+            <span class="callout-tooltip">Gateway Settings collapsed by default</span>
+        </span>
+        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="collapsible-label">Developer Settings</span>
+            <span class="collapsible-arrow" id="dev-settings-arrow">&#9654;</span>
+        </div>
+        <div class="collapsible-content" id="dev-settings-content">
+            <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-top: 8px;">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="config-checkbox" id="inject-policy-context" checked>
+                    <label for="inject-policy-context" style="font-size: 13px; color: #ccc;">Inject policy context into LLM requests</label>
+                </div>
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="config-checkbox" id="dogfood-mode">
+                    <label for="dogfood-mode" style="font-size: 13px; color: #ccc;">Dogfood mode</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- #3: Test Panel - NOW COLLAPSED           -->
+    <!-- ======================================== -->
+    <div class="test-panel" id="test-panel" style="position: relative;">
+        <span class="callout" style="position: absolute; top: -10px; left: -10px;">
+            <span class="callout-badge">3</span>
+            <span class="callout-tooltip">Test panel collapsed by default</span>
+        </span>
+        <div class="test-panel-header">
+            <h3>Test Active Policy</h3>
+            <button class="test-panel-toggle" id="test-panel-toggle" onclick="toggleTestPanel()">Show</button>
+        </div>
+        <!-- Content starts collapsed -->
+        <div class="test-panel-content collapsed" id="test-panel-content">
+            <div class="test-input-section">
+                <div class="test-field-row">
+                    <div class="test-field">
+                        <label>Model</label>
+                        <input type="text" class="test-select" value="claude-haiku-4-5-20251001">
+                    </div>
+                    <div class="test-field" style="justify-content:flex-end;">
+                        <div class="checkbox-wrapper" style="margin-top:auto;">
+                            <input type="checkbox" class="config-checkbox" checked>
+                            <label style="font-size:13px;color:#888;">Use real LLM <span style="font-size:11px;">(requires server-side API key)</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="test-field" style="flex: 1; display: flex; flex-direction: column;">
+                    <label>Message</label>
+                    <textarea class="test-input" placeholder="Enter a message to test the active policy...">Hello! Please respond with a short greeting.</textarea>
+                </div>
+                <button class="test-send-btn">Send Message</button>
+            </div>
+            <div class="test-output-section">
+                <div class="test-response-label">Response</div>
+                <div class="test-response">Response will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- Main Layout                              -->
+    <!-- ======================================== -->
+    <div class="main-layout">
+        <!-- Policy List -->
+        <div class="policy-list-section">
+            <h2 style="position: relative;">
+                Available Policies
+                <span class="callout" style="position: absolute; top: -14px; left: -34px;">
+                    <span class="callout-badge red">1</span>
+                    <span class="callout-tooltip">7 internal policies hidden (was 11, now 4)</span>
+                </span>
+            </h2>
+            <div class="policy-list" id="policy-list">
+
+                <!-- ============================== -->
+                <!-- VISIBLE: User-facing policies  -->
+                <!-- ============================== -->
+
+                <!-- DogfoodSafetyPolicy -->
+                <div class="policy-item" onclick="selectPolicy(this)" style="position: relative;">
+                    <span class="callout" style="position: absolute; bottom: -10px; right: -10px;">
+                        <span class="callout-badge green">4</span>
+                        <span class="callout-tooltip">New: inline example of what the policy catches</span>
+                    </span>
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">DogfoodSafetyPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Fast pattern-matching policy that blocks self-destructive commands.</div>
+                    <div class="policy-item-config">Config: config</div>
+                    <div class="policy-item-example">
+                        <div class="policy-item-example-label">Example</div>
+                        <div class="policy-item-example-content">
+                            Blocks: <span class="ex-block">rm -rf /</span>
+                            <span class="ex-block">git push --force</span>
+                            <span class="ex-block">DROP TABLE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SimpleLLMPolicy -->
+                <div class="policy-item" onclick="selectPolicy(this)">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">SimpleLLMPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Policy that applies plain-English instructions to Anthropic LLM response blocks.</div>
+                    <div class="policy-item-config">Config: config</div>
+                    <div class="policy-item-example">
+                        <div class="policy-item-example-label">Example</div>
+                        <div class="policy-item-example-content" style="color: #888;">
+                            Write a rule in plain English: "Never suggest deleting files without confirmation"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- StringReplacementPolicy -->
+                <div class="policy-item" onclick="selectPolicy(this)">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">StringReplacementPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Policy that replaces specified strings in response content.</div>
+                    <div class="policy-item-config">Config: config</div>
+                    <div class="policy-item-example">
+                        <div class="policy-item-example-label">Example (DeSlop)</div>
+                        <div class="policy-item-example-content">
+                            <span class="ex-remove">&mdash;</span> &rarr; <span class="ex-add">-</span> &nbsp;
+                            <span class="ex-remove">&ldquo; &rdquo;</span> &rarr; <span class="ex-add">" "</span> &nbsp;
+                            <span class="ex-remove">&lsquo;</span> &rarr; <span class="ex-add">'</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SamplePydanticPolicy (borderline - could hide) -->
+                <div class="policy-item" onclick="selectPolicy(this)">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">SamplePydanticPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Sample policy demonstrating Pydantic-based configuration.</div>
+                    <div class="policy-item-config">Config: config</div>
+                </div>
+
+                <!-- ============================== -->
+                <!-- HIDDEN: Internal policies      -->
+                <!-- ============================== -->
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">AllCapsPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Policy that converts all response content to uppercase.</div>
+                </div>
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">DebugLoggingPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Debug policy that logs request/response/streaming data.</div>
+                </div>
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">MultiParallelPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Run multiple policies in parallel and consolidate.</div>
+                    <div class="policy-item-config">Config: policies, consolidation_strategy, designated_policy_index</div>
+                </div>
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">MultiSerialPolicy</div>
+                    </div>
+                    <div class="policy-item-description">Run multiple policies sequentially.</div>
+                    <div class="policy-item-config">Config: policies</div>
+                </div>
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">NoOpPolicy</div>
+                    </div>
+                    <div class="policy-item-description">No-op policy that passes through all data unchanged.</div>
+                </div>
+                <div class="policy-item hidden-policy">
+                    <div class="policy-item-header">
+                        <div class="policy-item-name">SimpleNoOpPolicy</div>
+                    </div>
+                    <div class="policy-item-description">No-op policy using SimplePolicy base.</div>
+                </div>
+
+            </div>
+
+            <!-- Toggle to show/hide internal policies -->
+            <div class="show-hidden-toggle" onclick="toggleHiddenPolicies()">
+                <span id="hidden-toggle-text">Show 7 internal policies</span>
+            </div>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="config-panel" id="config-panel" style="position: relative;">
+            <span class="callout" style="position: absolute; top: -10px; right: -10px;">
+                <span class="callout-badge">5</span>
+                <span class="callout-tooltip">Improved empty state with guidance</span>
+            </span>
+            <div class="config-panel-empty">
+                Click a policy to configure it
+                <div class="config-panel-empty-hint">
+                    Try StringReplacementPolicy to clean AI-isms from responses,<br>
+                    or DogfoodSafetyPolicy to block dangerous commands.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- FLOATING LEGEND                          -->
+<!-- ======================================== -->
+<div class="legend" id="legend">
+    <button class="legend-close" onclick="document.getElementById('legend').style.display='none'">&times;</button>
+    <h3>Changes from current UI</h3>
+    <div class="legend-item">
+        <span class="legend-num red">1</span>
+        <span class="legend-text"><strong>Hide internal policies</strong> &mdash; 11 &rarr; 4. AllCaps, NoOp, Debug, Multi*, SimpleNoOp hidden. "Show 7 internal" link at bottom.</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-num blue">2</span>
+        <span class="legend-text"><strong>Collapse dev settings</strong> &mdash; "Inject policy context" and "Dogfood mode" hidden behind "Developer Settings" toggle.</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-num blue">3</span>
+        <span class="legend-text"><strong>Collapse test panel</strong> &mdash; Starts hidden. Already has Show/Hide button; just default to hidden.</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-num green">4</span>
+        <span class="legend-text"><strong>Add inline examples</strong> &mdash; Each policy card shows what it catches. Before/after for string replacement, blocked commands for safety.</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-num blue">5</span>
+        <span class="legend-text"><strong>Better empty state</strong> &mdash; Config panel suggests which policies to try instead of generic "Select a policy."</span>
+    </div>
+</div>
+
+<script>
+function toggleCollapsible(header) {
+    var content = header.nextElementSibling;
+    var arrow = header.querySelector('.collapsible-arrow');
+    content.classList.toggle('visible');
+    arrow.classList.toggle('open');
+}
+
+function toggleTestPanel() {
+    var content = document.getElementById('test-panel-content');
+    var btn = document.getElementById('test-panel-toggle');
+    var header = document.querySelector('.test-panel-header');
+    var isCollapsed = content.classList.toggle('collapsed');
+    btn.textContent = isCollapsed ? 'Show' : 'Hide';
+    if (isCollapsed) {
+        header.classList.remove('has-content');
+    } else {
+        header.classList.add('has-content');
+    }
+}
+
+function selectPolicy(el) {
+    document.querySelectorAll('.policy-item').forEach(function(item) {
+        item.classList.remove('selected');
+    });
+    el.classList.add('selected');
+
+    var name = el.querySelector('.policy-item-name').textContent;
+    var desc = el.querySelector('.policy-item-description').textContent;
+    var panel = document.getElementById('config-panel');
+
+    panel.innerHTML = '<div style="margin-bottom: 12px;">' +
+        '<div style="font-size: 18px; font-weight: 600; color: #e5e5e5; margin-bottom: 8px;">' + name + '</div>' +
+        '<div style="font-size: 13px; color: #888; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #262626;">' + desc + '</div>' +
+        '<div style="color: #666; font-style: italic; font-size: 13px; margin-bottom: 16px;">' +
+        'Configuration form would appear here' +
+        '</div>' +
+        '<div style="display: flex; gap: 8px;">' +
+        '<button style="background: #2563eb; border-color: #2563eb; color: white; flex: 1;">Activate Policy</button>' +
+        '</div>' +
+        '</div>';
+}
+
+var showingHidden = false;
+function toggleHiddenPolicies() {
+    var list = document.getElementById('policy-list');
+    var text = document.getElementById('hidden-toggle-text');
+    showingHidden = !showingHidden;
+    if (showingHidden) {
+        list.parentElement.classList.add('show-all');
+        text.textContent = 'Hide internal policies';
+    } else {
+        list.parentElement.classList.remove('show-all');
+        text.textContent = 'Show 7 internal policies';
+    }
+}
+</script>
+
+</body>
+</html>

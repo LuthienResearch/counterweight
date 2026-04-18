@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2: DeSlop + Judge Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Nav */
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .nav .active-link { color: #e5e5e5; }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* ========================================
+     HERO: DeSlop Before/After Demo
+     ======================================== */
+  .demo-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .demo-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .demo-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .demo-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #0c1a0f;
+    color: #4ade80;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #1a3a1f;
+  }
+  .demo-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* Sample selector buttons */
+  .samples {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .sample-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sample-btn:hover { border-color: #555; color: #e5e5e5; }
+  .sample-btn.active { border-color: #2563eb; color: #e5e5e5; background: #0c1425; }
+
+  /* Before/after compare panels */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .compare-panel {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 140px;
+  }
+  .compare-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .label-before { color: #f87171; }
+  .label-after { color: #4ade80; }
+  .compare-text {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.7;
+  }
+  .compare-text .highlight-remove {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    padding: 1px 3px;
+    border-radius: 2px;
+    text-decoration: line-through;
+  }
+  .compare-text .highlight-add {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    padding: 12px 0;
+    border-top: 1px solid #262626;
+  }
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .stat-value { color: #4ade80; font-weight: 600; }
+  .stat-value.red { color: #f87171; }
+  .stat-value.blue { color: #60a5fa; }
+
+  /* Expandable rules in hero */
+  .rules-toggle-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 12px;
+    transition: all 0.15s;
+  }
+  .rules-toggle-btn:hover { color: #e5e5e5; border-color: #555; }
+  .rules-toggle-btn .arrow { display: inline-block; transition: transform 0.2s; margin-right: 6px; font-size: 10px; }
+  .rules-toggle-btn.expanded .arrow { transform: rotate(90deg); }
+
+  .rules-section {
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #262626;
+    display: none;
+  }
+  .rules-section.visible { display: block; }
+  .rules-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .rules-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .add-rule-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .add-rule-btn:hover { color: #e5e5e5; border-color: #555; }
+  .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rule-input {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    color: #e5e5e5;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    width: 120px;
+  }
+  .rule-input:focus { outline: none; border-color: #2563eb; }
+  .rule-arrow { color: #555; font-size: 14px; }
+  .rule-remove {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+  }
+  .rule-remove:hover { color: #f87171; }
+
+  /* ========================================
+     SAFETY DEMO SECTION
+     ======================================== */
+  .safety-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .safety-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .safety-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .safety-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #1a0c0c;
+    color: #f87171;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #991b1b;
+  }
+  .safety-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* Scenario selector */
+  .scenarios {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .scenario-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .scenario-btn:hover { border-color: #555; color: #e5e5e5; }
+  .scenario-btn.active { border-color: #f87171; color: #e5e5e5; background: #1a0c0c; }
+
+  /* Blocked/retried demo panels */
+  .judge-demo {
+    margin-bottom: 16px;
+  }
+  .demo-panel {
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 8px;
+  }
+  .demo-panel.blocked {
+    background: #0a0a0a;
+    border: 1px solid #991b1b;
+  }
+  .demo-panel.retried {
+    background: #0a0a0a;
+    border: 1px solid #166534;
+  }
+  .panel-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-label.label-blocked { color: #f87171; }
+  .panel-label.label-retried { color: #4ade80; }
+
+  .command-box {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .command-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .command-text { color: #e5e5e5; }
+  .command-text.dangerous { color: #f87171; }
+  .command-text.safe { color: #4ade80; }
+
+  .status-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .status-banner.banner-blocked {
+    background: #1a0c0c;
+    border: 1px solid #991b1b;
+    color: #f87171;
+  }
+  .status-banner.banner-accepted {
+    background: #0c1a0f;
+    border: 1px solid #166534;
+    color: #4ade80;
+  }
+
+  .reasoning-panel {
+    background: #1a1a1a;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .reasoning-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .reasoning-text {
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.6;
+  }
+
+  .panel-arrow {
+    text-align: center;
+    color: #555;
+    font-size: 18px;
+    margin: 4px 0;
+  }
+
+  /* ========================================
+     SECTION HEADERS
+     ======================================== */
+  .section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+
+  /* ========================================
+     POLICY CARDS
+     ======================================== */
+  .policy-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .policy-card.active {
+    border-left: 3px solid #4ade80;
+  }
+  .policy-card-main {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .policy-info { flex: 1; }
+  .policy-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .policy-type-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge-string {
+    background: #0c1425;
+    color: #60a5fa;
+    border: 1px solid #1e3a5f;
+  }
+  .badge-judge {
+    background: #1a1408;
+    color: #facc15;
+    border: 1px solid #3a2f0a;
+  }
+  .policy-desc {
+    font-size: 13px;
+    color: #888;
+  }
+  .policy-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4ade80;
+    margin-top: 4px;
+  }
+  .policy-status.off { color: #555; }
+
+  .policy-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .configure-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+  .configure-btn:hover { color: #e5e5e5; border-color: #555; }
+  .configure-btn.hidden { display: none; }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #666;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: #166534; }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Config panels (inside policy cards) */
+  .config-panel {
+    display: none;
+    padding: 0 20px 16px 20px;
+    border-top: 1px solid #262626;
+  }
+  .config-panel.visible { display: block; }
+  .config-panel-inner {
+    padding-top: 14px;
+  }
+  .config-panel .rules-title {
+    margin-bottom: 10px;
+  }
+  .blocked-pattern {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .blocked-pattern code {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #f87171;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .blocked-pattern .pattern-desc {
+    font-size: 12px;
+    color: #666;
+  }
+  .config-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .config-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    min-width: 80px;
+  }
+  .config-value {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    color: #e5e5e5;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    flex: 1;
+  }
+  .config-value:focus { outline: none; border-color: #2563eb; }
+
+  /* ========================================
+     ACTIVITY LOG
+     ======================================== */
+  .activity-section {
+    margin-bottom: 32px;
+  }
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .activity-entry {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .activity-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+    min-width: 52px;
+    flex-shrink: 0;
+  }
+  .activity-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+  }
+  .activity-icon.icon-replace { color: #60a5fa; }
+  .activity-icon.icon-block { color: #f87171; }
+  .activity-icon.icon-accept { color: #4ade80; }
+  .activity-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    min-width: 120px;
+  }
+  .activity-policy.policy-deslop { color: #60a5fa; }
+  .activity-policy.policy-safety { color: #facc15; }
+  .activity-detail {
+    color: #888;
+    flex: 1;
+  }
+
+  /* ========================================
+     CONNECT BANNER
+     ======================================== */
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 32px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .setup-banner code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar -->
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#">Activity</a>
+  <a href="#" class="active-link">Policies</a>
+</div>
+
+<div class="container">
+  <a href="v7-landing.html" class="back-link">&larr; Back to all options</a>
+
+  <!-- ======================================== -->
+  <!-- 1. HERO: DeSlop Before/After Demo (R1)   -->
+  <!-- ======================================== -->
+  <div class="demo-section">
+    <div class="demo-header">
+      <span class="demo-title">DeSlop</span>
+      <span class="demo-badge">active - default policy</span>
+    </div>
+    <p class="demo-subtitle">Removes AI-isms from every response. See what it does:</p>
+
+    <!-- Sample selector buttons -->
+    <div class="samples">
+      <button class="sample-btn active" onclick="showSample(0, this)">Code comment</button>
+      <button class="sample-btn" onclick="showSample(1, this)">Git commit</button>
+      <button class="sample-btn" onclick="showSample(2, this)">PR description</button>
+    </div>
+
+    <!-- Before / After panels -->
+    <div class="compare">
+      <div class="compare-panel">
+        <div class="compare-label label-before">Before (raw LLM)</div>
+        <div class="compare-text" id="before-text"></div>
+      </div>
+      <div class="compare-panel">
+        <div class="compare-label label-after">After (DeSlop)</div>
+        <div class="compare-text" id="after-text"></div>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-value" id="stat-replacements">10</span> replacements</div>
+      <div class="stat"><span class="stat-value">4</span> rules active</div>
+      <div class="stat"><span class="stat-value">142</span> total today</div>
+    </div>
+
+    <!-- Expandable rules editor -->
+    <button class="rules-toggle-btn" id="hero-rules-toggle" onclick="toggleHeroRules()">
+      <span class="arrow">&#9654;</span>Show replacement rules
+    </button>
+    <div class="rules-section" id="hero-rules-panel">
+      <div class="rules-header">
+        <span class="rules-title">Replacement rules</span>
+        <button class="add-rule-btn" onclick="addHeroRule()">+ add rule</button>
+      </div>
+      <div id="hero-rules-list">
+        <div class="rule-row">
+          <input class="rule-input" value="&#8212;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="-" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8211;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="-" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8220; &#8221;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value='&quot; &quot;' readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8216; &#8217;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="' '" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- 2. SAFETY DEMO: LLM Judge (second act)   -->
+  <!-- ======================================== -->
+  <div class="safety-section">
+    <div class="safety-header">
+      <span class="safety-title">DogfoodSafety</span>
+      <span class="safety-badge">LLM judge</span>
+    </div>
+    <p class="safety-subtitle">Luthien also catches dangerous commands. An LLM judge evaluates every tool call and blocks risky operations before they run.</p>
+
+    <!-- Scenario selector -->
+    <div class="scenarios">
+      <button class="scenario-btn active" onclick="showScenario(0, this)">Delete database</button>
+      <button class="scenario-btn" onclick="showScenario(1, this)">Force push</button>
+      <button class="scenario-btn" onclick="showScenario(2, this)">Remove node_modules</button>
+    </div>
+
+    <!-- Blocked panel -->
+    <div class="judge-demo">
+      <div class="demo-panel blocked">
+        <div class="panel-label label-blocked">&#x2718; Blocked</div>
+        <div class="command-box">
+          <div class="command-label">Claude tried to run:</div>
+          <div class="command-text dangerous" id="blocked-command">rm -rf /var/lib/postgresql/data</div>
+        </div>
+        <div class="status-banner banner-blocked">
+          <span>Blocked by DogfoodSafety</span>
+        </div>
+        <div class="reasoning-panel">
+          <div class="reasoning-label">Why it was blocked</div>
+          <div class="reasoning-text" id="reasoning-text">This command would recursively delete the PostgreSQL data directory, destroying all databases. This is irreversible and affects production data.</div>
+        </div>
+      </div>
+
+      <div class="panel-arrow">&#x2193;</div>
+
+      <!-- Retried panel -->
+      <div class="demo-panel retried">
+        <div class="panel-label label-retried">&#x2714; Auto-retried</div>
+        <div class="command-box">
+          <div class="command-label">Claude retried with:</div>
+          <div class="command-text safe" id="retried-command">pg_dropdb old_database<br>createdb new_database</div>
+        </div>
+        <div class="status-banner banner-accepted">
+          <span id="accepted-text">Accepted by DogfoodSafety - uses proper database tools</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-value red">2</span> blocks today</div>
+      <div class="stat"><span class="stat-value blue">1</span> auto-retry</div>
+      <div class="stat"><span class="stat-value">47</span> requests scanned</div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- 3. ALL POLICIES (R5: toggles + config)    -->
+  <!-- ======================================== -->
+  <div class="section-header">All Policies</div>
+
+  <!-- Policy 1: DeSlop (ON by default) -->
+  <div class="policy-card active" id="policy-deslop">
+    <div class="policy-card-main">
+      <div class="policy-info">
+        <div class="policy-name-row">
+          <span class="policy-name">DeSlop</span>
+          <span class="policy-type-badge badge-string">string replacement</span>
+        </div>
+        <div class="policy-desc">Removes AI-isms from responses</div>
+        <div class="policy-status" id="status-deslop">4 rules active</div>
+      </div>
+      <div class="policy-actions">
+        <button class="configure-btn" id="config-btn-deslop" onclick="toggleConfig('deslop')">Configure</button>
+        <label class="toggle">
+          <input type="checkbox" checked onchange="togglePolicy('deslop', this)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="config-panel" id="config-panel-deslop">
+      <div class="config-panel-inner">
+        <div class="rules-title">Replacement rules</div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8212;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="-" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8211;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="-" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8220; &#8221;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value='&quot; &quot;' readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="&#8216; &#8217;" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="' '" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Policy 2: DogfoodSafety (ON by default) -->
+  <div class="policy-card active" id="policy-safety">
+    <div class="policy-card-main">
+      <div class="policy-info">
+        <div class="policy-name-row">
+          <span class="policy-name">DogfoodSafety</span>
+          <span class="policy-type-badge badge-judge">LLM judge</span>
+        </div>
+        <div class="policy-desc">Evaluates tool calls for dangerous operations</div>
+        <div class="policy-status" id="status-safety">monitoring active</div>
+      </div>
+      <div class="policy-actions">
+        <button class="configure-btn" id="config-btn-safety" onclick="toggleConfig('safety')">Configure</button>
+        <label class="toggle">
+          <input type="checkbox" checked onchange="togglePolicy('safety', this)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="config-panel" id="config-panel-safety">
+      <div class="config-panel-inner">
+        <div class="rules-title">Judge configuration</div>
+        <div class="config-row">
+          <span class="config-label">Model</span>
+          <input class="config-value" value="claude-sonnet-4-20250514" readonly>
+        </div>
+        <div class="config-row">
+          <span class="config-label">Action</span>
+          <input class="config-value" value="block + auto-retry" readonly>
+        </div>
+        <div class="config-row">
+          <span class="config-label">Scope</span>
+          <input class="config-value" value="tool_use blocks only" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Policy 3: Package Standards (OFF by default) -->
+  <div class="policy-card" id="policy-packages">
+    <div class="policy-card-main">
+      <div class="policy-info">
+        <div class="policy-name-row">
+          <span class="policy-name">Package Standards</span>
+          <span class="policy-type-badge badge-string">string replacement</span>
+        </div>
+        <div class="policy-desc">Enforces your package manager (uv, pnpm, yarn) instead of defaults</div>
+        <div class="policy-status off" id="status-packages">disabled</div>
+      </div>
+      <div class="policy-actions">
+        <button class="configure-btn hidden" id="config-btn-packages" onclick="toggleConfig('packages')">Configure</button>
+        <label class="toggle">
+          <input type="checkbox" onchange="togglePolicy('packages', this)">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="config-panel" id="config-panel-packages">
+      <div class="config-panel-inner">
+        <div class="rules-title">Package manager rules</div>
+        <div class="rule-row">
+          <input class="rule-input" value="pip install" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="uv add" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="npm install" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="pnpm add" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+        <div class="rule-row">
+          <input class="rule-input" value="python3" readonly>
+          <span class="rule-arrow">&rarr;</span>
+          <input class="rule-input" value="uv run python" readonly>
+          <button class="rule-remove" onclick="removeRule(this)">&times;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- 4. ACTIVITY LOG (R3: verify working)      -->
+  <!-- ======================================== -->
+  <div class="activity-section">
+    <div class="section-header">Activity</div>
+    <div class="activity-list">
+      <div class="activity-entry">
+        <span class="activity-time">2:14pm</span>
+        <span class="activity-icon icon-block">&#x2718;</span>
+        <span class="activity-policy policy-safety">DogfoodSafety</span>
+        <span class="activity-detail">Blocked <code style="background:#1a1a1a;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#f87171;">rm -rf /var/lib/postgresql/data</code></span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">2:14pm</span>
+        <span class="activity-icon icon-accept">&#x2714;</span>
+        <span class="activity-policy policy-safety">DogfoodSafety</span>
+        <span class="activity-detail">Accepted retry: <code style="background:#1a1a1a;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4ade80;">pg_dropdb old_database</code></span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">2:12pm</span>
+        <span class="activity-icon icon-replace">&#x21C4;</span>
+        <span class="activity-policy policy-deslop">DeSlop</span>
+        <span class="activity-detail">6 replacements in response (em dashes, smart quotes)</span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">2:09pm</span>
+        <span class="activity-icon icon-replace">&#x21C4;</span>
+        <span class="activity-policy policy-deslop">DeSlop</span>
+        <span class="activity-detail">3 replacements in response (curly quotes)</span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">2:05pm</span>
+        <span class="activity-icon icon-replace">&#x21C4;</span>
+        <span class="activity-policy policy-deslop">DeSlop</span>
+        <span class="activity-detail">8 replacements in response (em dashes, en dashes, smart quotes)</span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">1:58pm</span>
+        <span class="activity-icon icon-block">&#x2718;</span>
+        <span class="activity-policy policy-safety">DogfoodSafety</span>
+        <span class="activity-detail">Blocked <code style="background:#1a1a1a;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#f87171;">git push --force origin main</code></span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">1:58pm</span>
+        <span class="activity-icon icon-accept">&#x2714;</span>
+        <span class="activity-policy policy-safety">DogfoodSafety</span>
+        <span class="activity-detail">Accepted retry: <code style="background:#1a1a1a;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#4ade80;">git push --force-with-lease origin main</code></span>
+      </div>
+      <div class="activity-entry">
+        <span class="activity-time">1:52pm</span>
+        <span class="activity-icon icon-replace">&#x21C4;</span>
+        <span class="activity-policy policy-deslop">DeSlop</span>
+        <span class="activity-detail">4 replacements in response (smart quotes)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- 5. CONNECT BANNER (R2: setup)             -->
+  <!-- ======================================== -->
+  <div class="setup-banner">
+    <strong style="color: #4ade80;">Connect your agent:</strong>
+    <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code> then run Claude Code normally.
+  </div>
+</div>
+
+<script>
+// ============================================
+// DeSlop Sample content for Before/After demo
+// Same samples as B1 for consistency
+// ============================================
+var R = 'highlight-remove';
+var A = 'highlight-add';
+
+var samples = [
+  {
+    before:
+      '// This function validates the user<span class="' + R + '">\u2019</span>s OAuth token and refreshes it if expired.<br>' +
+      '// The refresh logic <span class="' + R + '">\u2014</span> which was rewritten in v3.2 <span class="' + R + '">\u2014</span> now handles the edge case<br>' +
+      '// where the token<span class="' + R + '">\u2019</span>s <span class="' + R + '">\u201c</span>scope<span class="' + R + '">\u201d</span> field contains whitespace-separated values instead<br>' +
+      '// of the comma-separated format described in the original RFC.<br>' +
+      '// Important: the retry delay <span class="' + R + '">\u2014</span> currently 500ms <span class="' + R + '">\u2014</span> should probably be configurable<br>' +
+      '// rather than hardcoded, since some OAuth providers <span class="' + R + '">\u2014</span> notably Azure AD <span class="' + R + '">\u2014</span> need<br>' +
+      '// longer backoff windows to avoid rate limiting.',
+    after:
+      '// This function validates the user<span class="' + A + '">\'</span>s OAuth token and refreshes it if expired.<br>' +
+      '// The refresh logic <span class="' + A + '">-</span> which was rewritten in v3.2 <span class="' + A + '">-</span> now handles the edge case<br>' +
+      '// where the token<span class="' + A + '">\'</span>s <span class="' + A + '">"</span>scope<span class="' + A + '">"</span> field contains whitespace-separated values instead<br>' +
+      '// of the comma-separated format described in the original RFC.<br>' +
+      '// Important: the retry delay <span class="' + A + '">-</span> currently 500ms <span class="' + A + '">-</span> should probably be configurable<br>' +
+      '// rather than hardcoded, since some OAuth providers <span class="' + A + '">-</span> notably Azure AD <span class="' + A + '">-</span> need<br>' +
+      '// longer backoff windows to avoid rate limiting.',
+    count: 10
+  },
+  {
+    before:
+      'fix: resolve race condition in WebSocket reconnection handler<br><br>' +
+      'The previous implementation didn<span class="' + R + '">\u2019</span>t wait for the existing connection<span class="' + R + '">\u2019</span>s<br>' +
+      '<span class="' + R + '">\u201c</span>close<span class="' + R + '">\u201d</span> event before opening a new socket. This caused duplicate message<br>' +
+      'delivery <span class="' + R + '">\u2014</span> especially under high load <span class="' + R + '">\u2014</span> because both the old and new<br>' +
+      'connections would briefly receive the same events.<br><br>' +
+      'The fix ensures we await the <span class="' + R + '">\u201c</span>disconnect<span class="' + R + '">\u201d</span> promise <span class="' + R + '">\u2014</span> with a 5s timeout <span class="' + R + '">\u2014</span><br>' +
+      'before initiating the new connection.',
+    after:
+      'fix: resolve race condition in WebSocket reconnection handler<br><br>' +
+      'The previous implementation didn<span class="' + A + '">\'</span>t wait for the existing connection<span class="' + A + '">\'</span>s<br>' +
+      '<span class="' + A + '">"</span>close<span class="' + A + '">"</span> event before opening a new socket. This caused duplicate message<br>' +
+      'delivery <span class="' + A + '">-</span> especially under high load <span class="' + A + '">-</span> because both the old and new<br>' +
+      'connections would briefly receive the same events.<br><br>' +
+      'The fix ensures we await the <span class="' + A + '">"</span>disconnect<span class="' + A + '">"</span> promise <span class="' + A + '">-</span> with a 5s timeout <span class="' + A + '">-</span><br>' +
+      'before initiating the new connection.',
+    count: 10
+  },
+  {
+    before:
+      '## Summary<br><br>' +
+      'This PR addresses the <span class="' + R + '">\u201c</span>stale cache<span class="' + R + '">\u201d</span> issue reported in #412. The root<br>' +
+      'cause was that the invalidation logic <span class="' + R + '">\u2014</span> which runs on a 5-minute<br>' +
+      'interval <span class="' + R + '">\u2014</span> didn<span class="' + R + '">\u2019</span>t account for concurrent writes to the same cache key.<br><br>' +
+      'When two requests hit the <span class="' + R + '">\u201c</span>update<span class="' + R + '">\u201d</span> endpoint simultaneously, the second<br>' +
+      'request<span class="' + R + '">\u2019</span>s write would be silently overwritten by the invalidation<br>' +
+      'worker<span class="' + R + '">\u2019</span>s stale read. We<span class="' + R + '">\u2019</span>ve added an atomic compare-and-swap <span class="' + R + '">\u2014</span> using<br>' +
+      'Redis<span class="' + R + '">\u2019</span>s WATCH/MULTI <span class="' + R + '">\u2014</span> to prevent this.<br><br>' +
+      '## Testing<br><br>' +
+      '- Added regression test for the concurrent write scenario<br>' +
+      '- Verified the fix doesn<span class="' + R + '">\u2019</span>t impact p99 latency <span class="' + R + '">\u2014</span> measured at 12ms<br>' +
+      '&nbsp;&nbsp;(unchanged from baseline)',
+    after:
+      '## Summary<br><br>' +
+      'This PR addresses the <span class="' + A + '">"</span>stale cache<span class="' + A + '">"</span> issue reported in #412. The root<br>' +
+      'cause was that the invalidation logic <span class="' + A + '">-</span> which runs on a 5-minute<br>' +
+      'interval <span class="' + A + '">-</span> didn<span class="' + A + '">\'</span>t account for concurrent writes to the same cache key.<br><br>' +
+      'When two requests hit the <span class="' + A + '">"</span>update<span class="' + A + '">"</span> endpoint simultaneously, the second<br>' +
+      'request<span class="' + A + '">\'</span>s write would be silently overwritten by the invalidation<br>' +
+      'worker<span class="' + A + '">\'</span>s stale read. We<span class="' + A + '">\'</span>ve added an atomic compare-and-swap <span class="' + A + '">-</span> using<br>' +
+      'Redis<span class="' + A + '">\'</span>s WATCH/MULTI <span class="' + A + '">-</span> to prevent this.<br><br>' +
+      '## Testing<br><br>' +
+      '- Added regression test for the concurrent write scenario<br>' +
+      '- Verified the fix doesn<span class="' + A + '">\'</span>t impact p99 latency <span class="' + A + '">-</span> measured at 12ms<br>' +
+      '&nbsp;&nbsp;(unchanged from baseline)',
+    count: 15
+  }
+];
+
+function showSample(idx, btn) {
+  document.querySelectorAll('.sample-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+
+  var sample = samples[idx];
+  document.getElementById('before-text').innerHTML = sample.before;
+  document.getElementById('after-text').innerHTML = sample.after;
+  document.getElementById('stat-replacements').textContent = sample.count;
+}
+
+// ============================================
+// Hero rules panel expand/collapse
+// ============================================
+function toggleHeroRules() {
+  var btn = document.getElementById('hero-rules-toggle');
+  var panel = document.getElementById('hero-rules-panel');
+  var isVisible = panel.classList.contains('visible');
+
+  if (isVisible) {
+    panel.classList.remove('visible');
+    btn.classList.remove('expanded');
+    btn.innerHTML = '<span class="arrow">&#9654;</span>Show replacement rules';
+  } else {
+    panel.classList.add('visible');
+    btn.classList.add('expanded');
+    btn.innerHTML = '<span class="arrow">&#9654;</span>Hide replacement rules';
+  }
+}
+
+// ============================================
+// Safety judge scenario selector
+// ============================================
+var scenarios = [
+  {
+    blockedCommand: 'rm -rf /var/lib/postgresql/data',
+    reasoning: 'This command would recursively delete the PostgreSQL data directory, destroying all databases. This is irreversible and affects production data.',
+    retriedCommand: 'pg_dropdb old_database<br>createdb new_database',
+    acceptedText: 'Accepted by DogfoodSafety - uses proper database tools'
+  },
+  {
+    blockedCommand: 'git push --force origin main',
+    reasoning: 'Force pushing to main rewrites shared history. Other developers will lose commits and have broken local checkouts. This is destructive to the entire team.',
+    retriedCommand: 'git push --force-with-lease origin main',
+    acceptedText: 'Accepted by DogfoodSafety - uses force-with-lease protection'
+  },
+  {
+    blockedCommand: 'rm -rf /',
+    reasoning: 'This command would delete the entire filesystem starting from root. The intended target appears to be node_modules but the path is wrong. This would destroy the operating system and all data.',
+    retriedCommand: 'rm -rf ./node_modules',
+    acceptedText: 'Accepted by DogfoodSafety - scoped to correct directory'
+  }
+];
+
+function showScenario(idx, btn) {
+  document.querySelectorAll('.scenario-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  var s = scenarios[idx];
+  document.getElementById('blocked-command').innerHTML = s.blockedCommand;
+  document.getElementById('reasoning-text').innerHTML = s.reasoning;
+  document.getElementById('retried-command').innerHTML = s.retriedCommand;
+  document.getElementById('accepted-text').innerHTML = s.acceptedText;
+}
+
+// ============================================
+// Policy card toggle ON/OFF
+// ============================================
+function togglePolicy(policyId, checkbox) {
+  var card = document.getElementById('policy-' + policyId);
+  var configBtn = document.getElementById('config-btn-' + policyId);
+  var configPanel = document.getElementById('config-panel-' + policyId);
+  var status = document.getElementById('status-' + policyId);
+
+  if (checkbox.checked) {
+    card.classList.add('active');
+    configBtn.classList.remove('hidden');
+    status.classList.remove('off');
+    if (policyId === 'deslop') {
+      status.textContent = '4 rules active';
+    } else if (policyId === 'safety') {
+      status.textContent = 'monitoring active';
+    } else if (policyId === 'packages') {
+      status.textContent = '3 rules active';
+    }
+  } else {
+    card.classList.remove('active');
+    configBtn.classList.add('hidden');
+    configPanel.classList.remove('visible');
+    status.classList.add('off');
+    status.textContent = 'disabled';
+  }
+}
+
+// ============================================
+// Policy card Configure expand/collapse
+// ============================================
+function toggleConfig(policyId) {
+  var panel = document.getElementById('config-panel-' + policyId);
+  panel.classList.toggle('visible');
+}
+
+// ============================================
+// Rule management
+// ============================================
+function removeRule(btn) {
+  var row = btn.closest('.rule-row');
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(-10px)';
+  row.style.transition = 'all 0.2s';
+  setTimeout(function() { row.remove(); }, 200);
+}
+
+function addHeroRule() {
+  var list = document.getElementById('hero-rules-list');
+  var row = document.createElement('div');
+  row.className = 'rule-row';
+  row.innerHTML = '<input class="rule-input" placeholder="from..." value="">' +
+    '<span class="rule-arrow">&rarr;</span>' +
+    '<input class="rule-input" placeholder="to..." value="">' +
+    '<button class="rule-remove" onclick="removeRule(this)">&times;</button>';
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(-10px)';
+  list.appendChild(row);
+  requestAnimationFrame(function() {
+    row.style.transition = 'all 0.2s';
+    row.style.opacity = '1';
+    row.style.transform = 'translateX(0)';
+  });
+  row.querySelector('.rule-input').focus();
+}
+
+// ============================================
+// Initialize on load
+// ============================================
+showSample(0, document.querySelector('.sample-btn'));
+</script>
+</body>
+</html>

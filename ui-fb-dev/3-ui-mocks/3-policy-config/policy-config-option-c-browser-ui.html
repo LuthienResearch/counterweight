@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option C: Browser UI - Policy Configuration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a; color: #e5e5e5; line-height: 1.6;
+        }
+        .option-label {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: #2563eb; color: white; text-align: center;
+            padding: 8px; font-size: 14px; font-weight: 600;
+        }
+        .option-label a { color: white; margin-left: 16px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 56px 24px 24px; }
+        header { margin-bottom: 32px; }
+        h1 { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .subtitle { font-size: 14px; color: #888; }
+        .nav { display: flex; gap: 16px; margin-top: 12px; }
+        .nav a { color: #888; text-decoration: none; font-size: 13px; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .nav a.active { color: #e5e5e5; border-bottom-color: #4ade80; }
+        .nav a:hover { color: #e5e5e5; }
+
+        /* Connect section */
+        .connect-box {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 16px 20px; margin-bottom: 24px;
+        }
+        .connect-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #4ade80; }
+        .connect-code {
+            font-family: 'SF Mono', Monaco, monospace; font-size: 13px;
+            background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 4px;
+            padding: 10px 14px; color: #d4d4d4;
+        }
+        .connect-code .dim { color: #666; }
+
+        /* Policies section */
+        .section-header {
+            font-size: 13px; font-weight: 600; color: #888;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a;
+        }
+        .policy-card {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 16px 20px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .policy-info { flex: 1; }
+        .policy-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .policy-desc { font-size: 13px; color: #888; }
+        .policy-rules { font-size: 12px; color: #666; margin-top: 4px; }
+        .toggle-container { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .toggle {
+            width: 44px; height: 24px; background: #333; border-radius: 12px;
+            position: relative; cursor: pointer; transition: background 0.2s;
+        }
+        .toggle.on { background: #166534; }
+        .toggle::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 18px; height: 18px; background: #888; border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .toggle.on::after { left: 23px; background: #4ade80; }
+        .toggle-label { font-size: 12px; font-weight: 600; min-width: 28px; }
+        .toggle-label.on { color: #4ade80; }
+        .toggle-label.off { color: #666; }
+
+        /* Blocked log */
+        .blocked-log {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 16px 20px;
+        }
+        .blocked-entry {
+            display: flex; align-items: baseline; gap: 12px;
+            padding: 6px 0; border-bottom: 1px solid #1a1a1a;
+            font-size: 13px;
+        }
+        .blocked-entry:last-child { border-bottom: none; }
+        .blocked-time { color: #555; font-size: 12px; font-family: monospace; min-width: 60px; }
+        .blocked-badge {
+            font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 3px;
+            min-width: 64px; text-align: center;
+        }
+        .blocked-badge.blocked { background: #3d0a0a; color: #f87171; }
+        .blocked-badge.retried { background: #0a1a3d; color: #60a5fa; }
+        .blocked-badge.passed { background: #0a3d0a; color: #4ade80; }
+        .blocked-command { color: #e5e5e5; font-family: monospace; }
+        .blocked-policy { color: #666; font-size: 12px; margin-left: auto; }
+
+        /* Stats row */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #141414; border: 1px solid #262626; border-radius: 8px;
+            padding: 12px 16px; text-align: center;
+        }
+        .stat-value { font-size: 24px; font-weight: 700; color: #fff; }
+        .stat-value.blocked-color { color: #f87171; }
+        .stat-value.retried-color { color: #60a5fa; }
+        .stat-value.latency-color { color: #facc15; }
+        .stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+
+        /* Expandable section */
+        details { margin-top: 24px; }
+        details summary {
+            cursor: pointer; font-size: 14px; font-weight: 600; color: #888;
+            padding: 12px 0; list-style: none;
+        }
+        details summary::before { content: '+ '; color: #4ade80; }
+        details[open] summary::before { content: '- '; }
+        details summary:hover { color: #e5e5e5; }
+        .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 12px 0; }
+        .example-card {
+            background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px;
+        }
+        .example-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #e5e5e5; }
+        .example-card p { font-size: 12px; color: #888; margin-bottom: 8px; }
+        .example-card code {
+            display: block; font-size: 12px; color: #d4d4d4; background: #141414;
+            padding: 8px; border-radius: 4px; white-space: pre; overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="option-label">
+        Option C: Browser UI with toggles + blocked log (v3B refined, Jack validated)
+        <a href="policy-config-option-a-current.html">A: Current</a>
+        <a href="policy-config-option-b-terminal.html">B: Terminal</a>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Luthien</h1>
+            <div class="nav">
+                <a href="#" class="active">Policies</a>
+                <a href="#">Activity</a>
+                <a href="#">History</a>
+            </div>
+        </header>
+
+        <!-- Connect instructions -->
+        <div class="connect-box">
+            <h3>Connect Claude Code</h3>
+            <div class="connect-code">
+                <span class="dim"># Add to your shell profile or run before starting Claude Code</span><br>
+                export ANTHROPIC_BASE_URL=http://localhost:8000/v1<br>
+                export ANTHROPIC_API_KEY=sk-luthien-dev-key
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">247</div>
+                <div class="stat-label">Requests today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blocked-color">12</div>
+                <div class="stat-label">Blocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value retried-color">9</div>
+                <div class="stat-label">Auto-retried</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value latency-color">45ms</div>
+                <div class="stat-label">Avg latency</div>
+            </div>
+        </div>
+
+        <!-- Built-in policies -->
+        <div class="section-header">Built-in: common failure modes</div>
+
+        <div class="policy-card">
+            <div class="policy-info">
+                <div class="policy-name">PipBlockPolicy</div>
+                <div class="policy-desc">Blocks pip install commands, suggests uv add instead</div>
+                <div class="policy-rules">3 rules &middot; 4 blocks today</div>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle on"></div>
+                <span class="toggle-label on">ON</span>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <div class="policy-info">
+                <div class="policy-name">SafetyPolicy</div>
+                <div class="policy-desc">Blocks rm -rf, git push --force, drop table, and other destructive operations</div>
+                <div class="policy-rules">5 rules &middot; 6 blocks today</div>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle on"></div>
+                <span class="toggle-label on">ON</span>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <div class="policy-info">
+                <div class="policy-name">PIIGuardPolicy</div>
+                <div class="policy-desc">Blocks responses that contain or request PII (emails, SSNs, API keys)</div>
+                <div class="policy-rules">4 rules &middot; 2 blocks today</div>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle on"></div>
+                <span class="toggle-label on">ON</span>
+            </div>
+        </div>
+
+        <!-- Custom policies -->
+        <div class="section-header">Custom policies for your use case</div>
+
+        <div class="policy-card">
+            <div class="policy-info">
+                <div class="policy-name">DeSlopPolicy</div>
+                <div class="policy-desc">Removes em-dashes, curly quotes, and other AI writing tics from output</div>
+                <div class="policy-rules">Response filter &middot; 89 modifications today</div>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle"></div>
+                <span class="toggle-label off">OFF</span>
+            </div>
+        </div>
+
+        <div class="policy-card">
+            <div class="policy-info">
+                <div class="policy-name">ScopeGuardPolicy</div>
+                <div class="policy-desc">Only allow changes to files mentioned in the original request</div>
+                <div class="policy-rules">2 rules &middot; 0 blocks today</div>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle"></div>
+                <span class="toggle-label off">OFF</span>
+            </div>
+        </div>
+
+        <!-- Blocked log -->
+        <div class="section-header">Recent activity</div>
+        <div class="blocked-log">
+            <div class="blocked-entry">
+                <span class="blocked-time">14:23</span>
+                <span class="blocked-badge blocked">BLOCKED</span>
+                <span class="blocked-command">pip install requests</span>
+                <span class="blocked-policy">PipBlockPolicy</span>
+            </div>
+            <div class="blocked-entry">
+                <span class="blocked-time">14:23</span>
+                <span class="blocked-badge retried">RETRIED</span>
+                <span class="blocked-command">uv add requests</span>
+                <span class="blocked-policy"></span>
+            </div>
+            <div class="blocked-entry">
+                <span class="blocked-time">14:21</span>
+                <span class="blocked-badge blocked">BLOCKED</span>
+                <span class="blocked-command">rm -rf __pycache__</span>
+                <span class="blocked-policy">SafetyPolicy</span>
+            </div>
+            <div class="blocked-entry">
+                <span class="blocked-time">14:21</span>
+                <span class="blocked-badge retried">RETRIED</span>
+                <span class="blocked-command">find . -name __pycache__ -type d -delete</span>
+                <span class="blocked-policy"></span>
+            </div>
+            <div class="blocked-entry">
+                <span class="blocked-time">14:19</span>
+                <span class="blocked-badge blocked">BLOCKED</span>
+                <span class="blocked-command">git push --force origin main</span>
+                <span class="blocked-policy">SafetyPolicy</span>
+            </div>
+            <div class="blocked-entry">
+                <span class="blocked-time">14:15</span>
+                <span class="blocked-badge passed">PASSED</span>
+                <span class="blocked-command">uv add pyjwt</span>
+                <span class="blocked-policy"></span>
+            </div>
+        </div>
+
+        <!-- What kinds of policies -->
+        <details>
+            <summary>What kinds of policies can I create?</summary>
+            <div class="example-grid">
+                <div class="example-card">
+                    <h4>Block dangerous commands</h4>
+                    <p>Write rules in plain English. An LLM judge evaluates them.</p>
+                    <code>class SafetyPolicy(SimpleJudgePolicy):
+    RULES = [
+        "Block rm -rf commands",
+        "Block git push --force",
+        "Block DROP TABLE statements",
+    ]</code>
+                </div>
+                <div class="example-card">
+                    <h4>Enforce package standards</h4>
+                    <p>Block pip, suggest uv. Claude Code retries automatically.</p>
+                    <code>class PipBlockPolicy(SimpleJudgePolicy):
+    RULES = [
+        "Block pip install. Suggest uv add.",
+        "Block python -m pip install.",
+        "Allow all other tool calls.",
+    ]</code>
+                </div>
+                <div class="example-card">
+                    <h4>Clean AI output</h4>
+                    <p>Transform responses with Python. No LLM judge needed.</p>
+                    <code>class DeSlop(SimplePolicy):
+    def simple_on_response_content(
+        self, content, context
+    ):
+        return content.replace(
+            "\u2014", "-"
+        ).replace("\u2013", "-")</code>
+                </div>
+                <div class="example-card">
+                    <h4>Domain-specific compliance</h4>
+                    <p>Use the LLM judge with your own rules.</p>
+                    <code>class CompliancePolicy(SimpleJudgePolicy):
+    RULES = [
+        "Responses must cite actual "
+        "policy documents, not "
+        "hallucinate guidance.",
+        "Block responses with PII.",
+    ]</code>
+                </div>
+            </div>
+        </details>
+    </div>
+</body>
+</html>

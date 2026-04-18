@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien Landing Page Prototypes — Round 4 (Humor/Relatability)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #09090b;
+      color: #e5e5e5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 720px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+    }
+    .subtitle code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #1a1a2e;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      color: #a78bfa;
+    }
+    .card {
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+    .card:hover {
+      border-color: #444;
+      background: #111;
+    }
+    .card-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .card-a .card-label { color: #ef4444; }
+    .card-b .card-label { color: #a78bfa; }
+    .card-c .card-label { color: #f59e0b; }
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #fff;
+    }
+    .card p {
+      color: #888;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .card .r9-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      margin-top: 0.75rem;
+    }
+    .card-a .r9-tag { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .card-b .r9-tag { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .card-c .r9-tag { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .footer {
+      margin-top: 2rem;
+      color: #555;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .footer a { color: #666; text-decoration: none; }
+    .footer a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Round 4: Humor / Relatability Prototypes</h1>
+    <p class="subtitle">
+      Three landing page directions exploring <code>R9</code> — funny, relatable copy that matches Jai's deadpan register.
+      Built Feb 24, 2026 from the dogfooding COE session.
+    </p>
+
+    <h2 style="font-size: 1rem; color: #ef4444; margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em;">Round 4 (rejected — too AI-sloppy)</h2>
+
+    <a href="a-escalation.html" class="card card-a" style="opacity: 0.4;">
+      <div class="card-label">Prototype A</div>
+      <h2>The Escalation Ladder</h2>
+      <p>"Polite correction — ignored. Firm correction — ignored. ALL CAPS — partially followed. Profanity — finally worked."</p>
+      <span class="r9-tag">R9 Option B: Developer solidarity</span>
+    </a>
+
+    <a href="b-parrot.html" class="card card-b" style="opacity: 0.4;">
+      <div class="card-label">Prototype B</div>
+      <h2>Product Manager for a Stochastic Parrot</h2>
+      <p>"You're a product manager for a mass-hallucinating stochastic parrot. You didn't sign up for this. But here we are."</p>
+      <span class="r9-tag">R9 Option C: Quote-led</span>
+    </a>
+
+    <a href="c-hr.html" class="card card-c" style="opacity: 0.4;">
+      <div class="card-label">Prototype C</div>
+      <h2>HR Discussion</h2>
+      <p>"If this was a junior dev, you'd be having an HR discussion."</p>
+      <span class="r9-tag">R9 Option A: Deadpan</span>
+    </a>
+
+    <h2 style="font-size: 1rem; color: #34d399; margin-top: 2rem; margin-bottom: 0.5rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em;">Round 4b (quotes speak for themselves)</h2>
+
+    <a href="a2-escalation.html" class="card card-a">
+      <div class="card-label">Prototype A2</div>
+      <h2>The Escalation Ladder</h2>
+      <p>"Polite correction — ignored. Profanity — finally worked." Zero filler. Quotes ARE the content.</p>
+      <span class="r9-tag">R9 Option B: Developer solidarity</span>
+    </a>
+
+    <a href="b2-parrot.html" class="card card-b">
+      <div class="card-label">Prototype B2</div>
+      <h2>Product Manager for a Stochastic Parrot</h2>
+      <p>"You're a product manager for a mass-hallucinating stochastic parrot." Zero filler. Quotes ARE the content.</p>
+      <span class="r9-tag">R9 Option C: Quote-led</span>
+    </a>
+
+    <a href="c2-hr.html" class="card card-c">
+      <div class="card-label">Prototype C2</div>
+      <h2>HR Discussion</h2>
+      <p>"If this was a junior dev, you'd be having an HR discussion." Zero filler. Quotes ARE the content.</p>
+      <span class="r9-tag">R9 Option A: Deadpan</span>
+    </a>
+
+    <div class="footer">
+      <p>Feb 24, 2026 &middot; <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a> &middot; <a href="../../2-versions-requirements/1-value-prop-requirements-live.md">Requirements</a></p>
+    </div>
+  </div>
+</body>
+</html>

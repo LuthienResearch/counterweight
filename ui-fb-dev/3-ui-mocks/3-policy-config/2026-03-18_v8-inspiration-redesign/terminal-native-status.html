@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien / Live Mirror</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  code, .mono {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #262626;
+  }
+
+  .nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: #e5e5e5;
+  }
+
+  .nav-title span {
+    color: #555;
+    font-weight: 400;
+  }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4ade80;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  /* Watching banner */
+  .watching-banner {
+    margin: 16px 24px 0;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .watching-banner .mono {
+    color: #888;
+  }
+
+  /* Status header */
+  .status-header {
+    padding: 24px 24px 0;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-item.session-active {
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+
+  .status-item .label {
+    color: #888;
+    font-size: 13px;
+  }
+
+  .catches-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #4ade80;
+    line-height: 1;
+  }
+
+  .catches-label {
+    font-size: 13px;
+    color: #888;
+    margin-left: 4px;
+  }
+
+  /* Main layout */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1200px;
+  }
+
+  /* Feed */
+  .feed-section h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feed-entry {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  .feed-entry:hover {
+    border-color: #333;
+  }
+
+  .feed-entry.highlighted {
+    border-color: #4ade8033;
+  }
+
+  .feed-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .feed-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #555;
+    flex-shrink: 0;
+  }
+
+  .feed-label {
+    font-size: 14px;
+    color: #e5e5e5;
+    font-weight: 500;
+  }
+
+  .feed-action {
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
+  .feed-action.green { color: #4ade80; }
+  .feed-action.red { color: #f87171; }
+  .feed-action.muted { color: #555; }
+
+  .feed-chevron {
+    color: #555;
+    font-size: 12px;
+    margin-left: 4px;
+    transition: transform 0.15s ease;
+  }
+
+  .feed-entry.expanded .feed-chevron {
+    transform: rotate(90deg);
+  }
+
+  .feed-detail {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #262626;
+  }
+
+  .feed-entry.expanded .feed-detail {
+    display: block;
+  }
+
+  .diff-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .diff-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .diff-label.before {
+    background: #f8717122;
+    color: #f87171;
+  }
+
+  .diff-label.after {
+    background: #4ade8022;
+    color: #4ade80;
+  }
+
+  .diff-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+  }
+
+  .diff-text .hl-red {
+    color: #f87171;
+    background: #f8717115;
+    padding: 1px 3px;
+    border-radius: 3px;
+    text-decoration: line-through;
+  }
+
+  .diff-text .hl-green {
+    color: #4ade80;
+    background: #4ade8015;
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+
+  .block-detail {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .block-detail strong {
+    color: #f87171;
+    font-weight: 500;
+  }
+
+  /* Sidebar */
+  .sidebar h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .policy-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+
+  .policy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e5e5e5;
+  }
+
+  .policy-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  .policy-badge.active {
+    background: #4ade8018;
+    color: #4ade80;
+  }
+
+  .policy-badge.inactive {
+    background: #55555518;
+    color: #555;
+  }
+
+  .policy-stat {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .policy-stat .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  .policy-stat .num.green { color: #4ade80; }
+  .policy-stat .num.red { color: #f87171; }
+
+  .policy-bar {
+    margin-top: 8px;
+    height: 4px;
+    background: #262626;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .policy-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .policy-bar-fill.green { background: #4ade80; }
+  .policy-bar-fill.red { background: #f87171; }
+
+  .sidebar-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .sidebar-note .mono {
+    color: #888;
+    font-size: 12px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-block;
+    margin: 24px;
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .back-link:hover {
+    color: #888;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .main {
+      grid-template-columns: 1fr;
+      padding: 16px;
+      gap: 20px;
+    }
+
+    .nav {
+      padding: 12px 16px;
+    }
+
+    .watching-banner {
+      margin: 12px 16px 0;
+    }
+
+    .status-header {
+      padding: 16px 16px 0;
+    }
+
+    .status-row {
+      gap: 16px;
+    }
+
+    .catches-count {
+      font-size: 24px;
+    }
+
+    .feed-header {
+      gap: 8px;
+    }
+
+    .feed-action {
+      margin-left: 0;
+    }
+
+    .back-link {
+      margin: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-title">luthien <span>/</span> Live Mirror</div>
+  <div class="nav-status">
+    <div class="live-dot"></div>
+    Connected
+  </div>
+</nav>
+
+<!-- Watching banner -->
+<div class="watching-banner">
+  This is a read-only mirror of your terminal session. Manage policies with <span class="mono">/luthien</span> in Claude Code.
+</div>
+
+<!-- Status header -->
+<div class="status-header">
+  <div class="status-row">
+    <div class="status-item session-active">
+      <div class="live-dot"></div>
+      Session active
+    </div>
+    <div class="status-item">
+      <span class="label">42 min</span>
+    </div>
+    <div class="status-item">
+      <span class="label">12 responses processed</span>
+    </div>
+    <div class="status-item">
+      <span class="catches-count">47</span>
+      <span class="catches-label">catches</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- Feed -->
+  <div class="feed-section">
+    <h2>Live Activity</h2>
+    <div class="feed">
+
+      <!-- Entry 1: most recent, highlighted, expanded by default -->
+      <div class="feed-entry highlighted expanded" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:42:03</span>
+          <span class="feed-label">Response #12</span>
+          <span class="feed-action green">DeSlop: 6 replacements</span>
+          <span class="feed-chevron mono">&#9654;</span>
+        </div>
+        <div class="feed-detail">
+          <div class="diff-row">
+            <span class="diff-label before">before</span>
+            <span class="diff-text">The implementation <span class="hl-red">&mdash;</span> which handles</span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-label after">after</span>
+            <span class="diff-text">The implementation <span class="hl-green">-</span> which handles</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry 2 -->
+      <div class="feed-entry" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:39:15</span>
+          <span class="feed-label">Response #11</span>
+          <span class="feed-action green">DeSlop: 3 replacements</span>
+          <span class="feed-chevron mono">&#9654;</span>
+        </div>
+        <div class="feed-detail">
+          <div class="diff-row">
+            <span class="diff-label before">before</span>
+            <span class="diff-text">This <span class="hl-red">ensures</span> the config loads correctly</span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-label after">after</span>
+            <span class="diff-text">This <span class="hl-green">makes</span> the config load correctly</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry 3: blocked -->
+      <div class="feed-entry" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:35:42</span>
+          <span class="feed-label">Response #10</span>
+          <span class="feed-action red">DogfoodSafety: blocked</span>
+          <span class="feed-chevron mono">&#9654;</span>
+        </div>
+        <div class="feed-detail">
+          <p class="block-detail">Detected <strong>rm -rf</strong> in tool call. Retried &mdash; clean response returned.</p>
+        </div>
+      </div>
+
+      <!-- Entry 4: collapsed one-liner -->
+      <div class="feed-entry" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:32:18</span>
+          <span class="feed-label">Response #9</span>
+          <span class="feed-action green">DeSlop: 2 replacements</span>
+          <span class="feed-chevron mono">&#9654;</span>
+        </div>
+        <div class="feed-detail">
+          <div class="diff-row">
+            <span class="diff-label before">before</span>
+            <span class="diff-text">I'll <span class="hl-red">leverage</span> the existing module</span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-label after">after</span>
+            <span class="diff-text">I'll <span class="hl-green">use</span> the existing module</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry 5: no changes -->
+      <div class="feed-entry" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:28:44</span>
+          <span class="feed-label">Response #8</span>
+          <span class="feed-action muted">No changes</span>
+        </div>
+      </div>
+
+      <!-- Entry 6: collapsed one-liner -->
+      <div class="feed-entry" onclick="toggleEntry(this)">
+        <div class="feed-header">
+          <span class="feed-time">10:25:09</span>
+          <span class="feed-label">Response #7</span>
+          <span class="feed-action green">DeSlop: 5 replacements</span>
+          <span class="feed-chevron mono">&#9654;</span>
+        </div>
+        <div class="feed-detail">
+          <div class="diff-row">
+            <span class="diff-label before">before</span>
+            <span class="diff-text">It's worth noting that <span class="hl-red">this approach is elegant</span></span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-label after">after</span>
+            <span class="diff-text"><span class="hl-green">This approach works</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Policy Status</h2>
+
+    <!-- DeSlop -->
+    <div class="policy-card">
+      <div class="policy-header">
+        <span class="policy-name">DeSlop</span>
+        <span class="policy-badge active">active</span>
+      </div>
+      <div class="policy-stat"><span class="num green">44</span> catches this session</div>
+      <div class="policy-bar">
+        <div class="policy-bar-fill green" style="width: 88%;"></div>
+      </div>
+    </div>
+
+    <!-- DogfoodSafety -->
+    <div class="policy-card">
+      <div class="policy-header">
+        <span class="policy-name">DogfoodSafety</span>
+        <span class="policy-badge active">active</span>
+      </div>
+      <div class="policy-stat"><span class="num red">2</span> blocks this session</div>
+      <div class="policy-bar">
+        <div class="policy-bar-fill red" style="width: 17%;"></div>
+      </div>
+    </div>
+
+    <!-- Package Standards -->
+    <div class="policy-card">
+      <div class="policy-header">
+        <span class="policy-name">Package Standards</span>
+        <span class="policy-badge inactive">inactive</span>
+      </div>
+      <div class="policy-stat" style="color: #555;">No activity</div>
+      <div class="policy-bar">
+        <div class="policy-bar-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <p class="sidebar-note">Manage policies from the terminal: <span class="mono">luthien configure</span></p>
+  </div>
+
+</div>
+
+<a href="index.html" class="back-link">&larr; Back to concepts</a>
+
+<script>
+  function toggleEntry(el) {
+    // Don't toggle entries that have no detail section
+    if (!el.querySelector('.feed-detail')) return;
+    el.classList.toggle('expanded');
+  }
+
+  // Auto-scroll simulation: periodically flash the top entry border
+  // to suggest new data arriving (purely visual, no actual WebSocket)
+  (function autoScrollSim() {
+    var entries = document.querySelectorAll('.feed-entry');
+    if (entries.length === 0) return;
+    var topEntry = entries[0];
+
+    setInterval(function() {
+      topEntry.style.borderColor = '#4ade8055';
+      setTimeout(function() {
+        topEntry.style.borderColor = '';
+      }, 600);
+    }, 8000);
+  })();
+</script>
+
+</body>
+</html>

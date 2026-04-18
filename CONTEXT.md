@@ -26,3 +26,10 @@ This is a deliberate choice of "ship the trial path that has the fewest moving p
 **Luthien eng spends zero scheduled hours per week on Railway.** Inbound Railway-related work routes to counterweight_. Luthien stays focused on the product (policies, the proxy itself, user research) and treats hosted deployment as a domain someone else owns.
 
 That's the shape of the engagement. The phases in `asks/` are how we get there.
+
+## Product context
+
+Two directories provide full product context for implementation decisions:
+
+- **[`user-stories/`](user-stories/)** — 6 canonical user stories with personas, scenarios, feature matrix, and implementation priority. Copied from `luthien-proxy/dev/user-stories/`.
+- **[`ui-fb-dev/`](ui-fb-dev/)** — Product feedback, requirements, design system, UI mocks, and agile plans. Includes user interview synthesis, version requirements, and the design system spec.

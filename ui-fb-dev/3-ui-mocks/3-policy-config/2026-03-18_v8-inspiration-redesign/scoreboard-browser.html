@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 1: The Scoreboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Nav */
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .nav .active-link { color: #e5e5e5; }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* Hero: Big Number */
+  .hero {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+  .hero-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 72px;
+    font-weight: 700;
+    color: #4ade80;
+    line-height: 1;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  .hero-label {
+    color: #888;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+  .hero-sublabel {
+    color: #555;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Activity Feed */
+  .feed-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+
+  .feed-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .feed-item:hover { border-color: #333; }
+
+  /* Collapsed feed item */
+  .feed-item-collapsed {
+    padding: 14px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #888;
+  }
+  .feed-item-collapsed .feed-time {
+    color: #555;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .feed-item-collapsed .feed-sep {
+    color: #333;
+  }
+  .feed-item-collapsed .feed-policy {
+    color: #4ade80;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .feed-item-collapsed .feed-policy.red {
+    color: #f87171;
+  }
+  .feed-item-collapsed .feed-summary {
+    color: #888;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .feed-item-collapsed .feed-expand {
+    color: #555;
+    font-size: 10px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  /* Expanded feed item */
+  .feed-item-expanded {
+    display: none;
+  }
+  .feed-item.open .feed-item-expanded {
+    display: block;
+  }
+  .feed-item.open .feed-item-collapsed .feed-expand {
+    transform: rotate(90deg);
+  }
+
+  .feed-expanded-header {
+    padding: 20px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .feed-expanded-time {
+    color: #555;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .feed-expanded-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4ade80;
+  }
+
+  /* Diff compare panels (inline) */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 20px 16px;
+  }
+  .compare-panel {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 100px;
+  }
+  .compare-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .label-before { color: #f87171; }
+  .label-after { color: #4ade80; }
+  .compare-text {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.7;
+  }
+  .compare-text .highlight-remove {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    padding: 1px 3px;
+    border-radius: 2px;
+    text-decoration: line-through;
+  }
+  .compare-text .highlight-add {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  .feed-stats {
+    padding: 0 20px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .feed-stats .stat-value {
+    color: #4ade80;
+    font-weight: 600;
+  }
+
+  /* Policy Drawer */
+  .drawer {
+    margin-top: 40px;
+    border-top: 1px solid #262626;
+    padding-top: 0;
+  }
+  .drawer-toggle {
+    background: none;
+    border: none;
+    color: #888;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 16px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.15s;
+  }
+  .drawer-toggle:hover { color: #e5e5e5; }
+  .drawer-toggle .arrow {
+    display: inline-block;
+    font-size: 10px;
+    transition: transform 0.2s;
+  }
+  .drawer-toggle.expanded .arrow {
+    transform: rotate(90deg);
+  }
+
+  .drawer-content {
+    display: none;
+    padding-bottom: 16px;
+  }
+  .drawer-content.visible {
+    display: block;
+  }
+
+  /* Policy Cards */
+  .policy-card {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .policy-card.active {
+    border-left: 3px solid #4ade80;
+  }
+  .policy-card-main {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .policy-info { flex: 1; }
+  .policy-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .policy-type-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge-string {
+    background: #0c1425;
+    color: #60a5fa;
+    border: 1px solid #1e3a5f;
+  }
+  .badge-judge {
+    background: #1a1408;
+    color: #facc15;
+    border: 1px solid #3a2f0a;
+  }
+  .policy-desc {
+    font-size: 13px;
+    color: #888;
+  }
+  .policy-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4ade80;
+    margin-top: 4px;
+  }
+  .policy-status.off { color: #555; }
+
+  .policy-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .configure-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+  .configure-btn:hover { color: #e5e5e5; border-color: #555; }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #888;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider {
+    background: #166534;
+  }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Setup Banner */
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .setup-banner .setup-label {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .setup-banner code {
+    color: #4ade80;
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 20px 16px; }
+
+    .hero { padding: 32px 0 28px; }
+    .hero-number { font-size: 48px; }
+    .hero-label { font-size: 14px; }
+    .hero-sublabel { font-size: 12px; }
+
+    .compare {
+      grid-template-columns: 1fr;
+      margin: 0 16px 12px;
+    }
+    .compare-panel { min-height: auto; }
+
+    .feed-expanded-header { padding: 16px 16px 0; }
+    .feed-item-collapsed { padding: 12px 16px; font-size: 12px; }
+    .feed-stats { padding: 0 16px 12px; }
+
+    .policy-card-main {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .policy-actions { width: 100%; justify-content: flex-end; }
+
+    .setup-banner { font-size: 11px; }
+    .setup-banner code { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar -->
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#" class="active-link">Scoreboard</a>
+</div>
+
+<div class="container">
+  <a href="index.html" class="back-link">&larr; Back to all concepts</a>
+
+  <!-- Hero: Big Number -->
+  <div class="hero">
+    <div class="hero-number" id="heroNumber">47</div>
+    <div class="hero-label">catches today</div>
+    <div class="hero-sublabel">3 in the last response</div>
+  </div>
+
+  <!-- Activity Feed -->
+  <div class="feed-header">Recent Activity</div>
+
+  <!-- Most recent: expanded by default -->
+  <div class="feed-item open" onclick="toggleFeedItem(this)">
+    <div class="feed-item-collapsed">
+      <span class="feed-time">2 min ago</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-policy">DeSlop</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-summary">6 replacements (em-dashes, curly quotes)</span>
+      <span class="feed-expand">&#9654;</span>
+    </div>
+    <div class="feed-item-expanded">
+      <div class="feed-expanded-header">
+        <span class="feed-expanded-time">2 min ago</span>
+        <span class="feed-expanded-policy">DeSlop</span>
+      </div>
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label label-before">&#9679; Before</div>
+          <div class="compare-text">
+            The implementation <span class="highlight-remove">&mdash;</span> which handles edge cases <span class="highlight-remove">&mdash;</span> didn<span class="highlight-remove">&rsquo;</span>t account for the user<span class="highlight-remove">&rsquo;</span>s <span class="highlight-remove">&ldquo;</span>scope<span class="highlight-remove">&rdquo;</span> field
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label label-after">&#9679; After</div>
+          <div class="compare-text">
+            The implementation <span class="highlight-add">-</span> which handles edge cases <span class="highlight-add">-</span> didn<span class="highlight-add">'</span>t account for the user<span class="highlight-add">'</span>s <span class="highlight-add">"</span>scope<span class="highlight-add">"</span> field
+          </div>
+        </div>
+      </div>
+      <div class="feed-stats"><span class="stat-value">6</span> replacements</div>
+    </div>
+  </div>
+
+  <!-- Collapsed items -->
+  <div class="feed-item" onclick="toggleFeedItem(this)">
+    <div class="feed-item-collapsed">
+      <span class="feed-time">5 min ago</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-policy">DeSlop</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-summary">3 replacements (em-dashes, curly quotes)</span>
+      <span class="feed-expand">&#9654;</span>
+    </div>
+    <div class="feed-item-expanded">
+      <div class="feed-expanded-header">
+        <span class="feed-expanded-time">5 min ago</span>
+        <span class="feed-expanded-policy">DeSlop</span>
+      </div>
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label label-before">&#9679; Before</div>
+          <div class="compare-text">
+            Let<span class="highlight-remove">&rsquo;</span>s refactor the <span class="highlight-remove">&ldquo;</span>handler<span class="highlight-remove">&rdquo;</span> module
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label label-after">&#9679; After</div>
+          <div class="compare-text">
+            Let<span class="highlight-add">'</span>s refactor the <span class="highlight-add">"</span>handler<span class="highlight-add">"</span> module
+          </div>
+        </div>
+      </div>
+      <div class="feed-stats"><span class="stat-value">3</span> replacements</div>
+    </div>
+  </div>
+
+  <div class="feed-item" onclick="toggleFeedItem(this)">
+    <div class="feed-item-collapsed">
+      <span class="feed-time">12 min ago</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-policy">DeSlop</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-summary">8 replacements</span>
+      <span class="feed-expand">&#9654;</span>
+    </div>
+    <div class="feed-item-expanded">
+      <div class="feed-expanded-header">
+        <span class="feed-expanded-time">12 min ago</span>
+        <span class="feed-expanded-policy">DeSlop</span>
+      </div>
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label label-before">&#9679; Before</div>
+          <div class="compare-text">
+            The config <span class="highlight-remove">&mdash;</span> which was previously hardcoded <span class="highlight-remove">&mdash;</span> now supports <span class="highlight-remove">&ldquo;</span>dynamic<span class="highlight-remove">&rdquo;</span> values. It<span class="highlight-remove">&rsquo;</span>s cleaner, and the team<span class="highlight-remove">&rsquo;</span>s <span class="highlight-remove">&ldquo;</span>feedback<span class="highlight-remove">&rdquo;</span> was positive.
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label label-after">&#9679; After</div>
+          <div class="compare-text">
+            The config <span class="highlight-add">-</span> which was previously hardcoded <span class="highlight-add">-</span> now supports <span class="highlight-add">"</span>dynamic<span class="highlight-add">"</span> values. It<span class="highlight-add">'</span>s cleaner, and the team<span class="highlight-add">'</span>s <span class="highlight-add">"</span>feedback<span class="highlight-add">"</span> was positive.
+          </div>
+        </div>
+      </div>
+      <div class="feed-stats"><span class="stat-value">8</span> replacements</div>
+    </div>
+  </div>
+
+  <div class="feed-item" onclick="toggleFeedItem(this)">
+    <div class="feed-item-collapsed">
+      <span class="feed-time">18 min ago</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-policy red">DogfoodSafety</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-summary">blocked rm -rf (retried successfully)</span>
+      <span class="feed-expand">&#9654;</span>
+    </div>
+    <div class="feed-item-expanded">
+      <div class="feed-expanded-header">
+        <span class="feed-expanded-time">18 min ago</span>
+        <span class="feed-expanded-policy" style="color: #f87171;">DogfoodSafety</span>
+      </div>
+      <div class="compare">
+        <div class="compare-panel" style="border-color: #3a1f1f;">
+          <div class="compare-label label-before">&#9679; Blocked</div>
+          <div class="compare-text">
+            Agent attempted <span class="highlight-remove">rm -rf /usr/local/lib</span> to clean up stale packages
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label label-after">&#9679; Retried</div>
+          <div class="compare-text">
+            Agent used <span class="highlight-add">pip uninstall package-name</span> instead
+          </div>
+        </div>
+      </div>
+      <div class="feed-stats">Dangerous command <span style="color: #f87171; font-weight: 600;">blocked</span>, agent retried with safe alternative</div>
+    </div>
+  </div>
+
+  <div class="feed-item" onclick="toggleFeedItem(this)">
+    <div class="feed-item-collapsed">
+      <span class="feed-time">25 min ago</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-policy">DeSlop</span>
+      <span class="feed-sep">&mdash;</span>
+      <span class="feed-summary">2 replacements</span>
+      <span class="feed-expand">&#9654;</span>
+    </div>
+    <div class="feed-item-expanded">
+      <div class="feed-expanded-header">
+        <span class="feed-expanded-time">25 min ago</span>
+        <span class="feed-expanded-policy">DeSlop</span>
+      </div>
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label label-before">&#9679; Before</div>
+          <div class="compare-text">
+            The user<span class="highlight-remove">&rsquo;</span>s <span class="highlight-remove">&ldquo;</span>input<span class="highlight-remove">&rdquo;</span> field
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label label-after">&#9679; After</div>
+          <div class="compare-text">
+            The user<span class="highlight-add">'</span>s <span class="highlight-add">"</span>input<span class="highlight-add">"</span> field
+          </div>
+        </div>
+      </div>
+      <div class="feed-stats"><span class="stat-value">2</span> replacements</div>
+    </div>
+  </div>
+
+  <!-- Policy Drawer -->
+  <div class="drawer">
+    <button class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()">
+      <span class="arrow">&#9654;</span> Policies (2 active)
+    </button>
+    <div class="drawer-content" id="drawerContent">
+
+      <!-- DeSlop -->
+      <div class="policy-card active" id="policy-deslop">
+        <div class="policy-card-main">
+          <div class="policy-info">
+            <div class="policy-name-row">
+              <span class="policy-name">DeSlop</span>
+              <span class="policy-type-badge badge-string">string replacement</span>
+            </div>
+            <div class="policy-desc">Removes curly quotes, em-dashes, and other LLM formatting artifacts</div>
+            <div class="policy-status">4 rules active</div>
+          </div>
+          <div class="policy-actions">
+            <button class="configure-btn">Configure</button>
+            <label class="toggle">
+              <input type="checkbox" checked onchange="togglePolicy('deslop', this)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- DogfoodSafety -->
+      <div class="policy-card active" id="policy-dogfood">
+        <div class="policy-card-main">
+          <div class="policy-info">
+            <div class="policy-name-row">
+              <span class="policy-name">DogfoodSafety</span>
+              <span class="policy-type-badge badge-judge">llm judge</span>
+            </div>
+            <div class="policy-desc">Blocks dangerous shell commands and file system operations</div>
+            <div class="policy-status">monitoring</div>
+          </div>
+          <div class="policy-actions">
+            <label class="toggle">
+              <input type="checkbox" checked onchange="togglePolicy('dogfood', this)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Package Standards (disabled) -->
+      <div class="policy-card" id="policy-packages">
+        <div class="policy-card-main">
+          <div class="policy-info">
+            <div class="policy-name-row">
+              <span class="policy-name">Package Standards</span>
+              <span class="policy-type-badge badge-string">string replacement</span>
+            </div>
+            <div class="policy-desc">Enforces approved package versions and import conventions</div>
+            <div class="policy-status off">disabled</div>
+          </div>
+          <div class="policy-actions">
+            <label class="toggle">
+              <input type="checkbox" onchange="togglePolicy('packages', this)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Setup Banner -->
+  <div class="setup-banner">
+    <div class="setup-label">Connect your agent:</div>
+    <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code>
+  </div>
+
+</div>
+
+<script>
+  // Toggle feed items expand/collapse
+  function toggleFeedItem(el) {
+    el.classList.toggle('open');
+  }
+
+  // Alias for clarity
+  function showSample(el) {
+    toggleFeedItem(el);
+  }
+
+  // Toggle policy drawer
+  function toggleDrawer() {
+    var btn = document.getElementById('drawerToggle');
+    var content = document.getElementById('drawerContent');
+    btn.classList.toggle('expanded');
+    content.classList.toggle('visible');
+  }
+
+  // Toggle individual policy
+  function togglePolicy(name, checkbox) {
+    var card = document.getElementById('policy-' + name);
+    var status = card.querySelector('.policy-status');
+    var configBtn = card.querySelector('.configure-btn');
+
+    if (checkbox.checked) {
+      card.classList.add('active');
+      if (name === 'deslop') {
+        status.textContent = '4 rules active';
+        status.classList.remove('off');
+      } else if (name === 'dogfood') {
+        status.textContent = 'monitoring';
+        status.classList.remove('off');
+      } else if (name === 'packages') {
+        status.textContent = 'active';
+        status.classList.remove('off');
+      }
+    } else {
+      card.classList.remove('active');
+      status.textContent = 'disabled';
+      status.classList.add('off');
+    }
+
+    // Update drawer label
+    var activeCount = document.querySelectorAll('.policy-card.active').length;
+    document.getElementById('drawerToggle').innerHTML =
+      '<span class="arrow">&#9654;</span> Policies (' + activeCount + ' active)';
+    // Restore expanded state if it was expanded
+    if (document.getElementById('drawerContent').classList.contains('visible')) {
+      document.getElementById('drawerToggle').classList.add('expanded');
+    }
+  }
+</script>
+</body>
+</html>

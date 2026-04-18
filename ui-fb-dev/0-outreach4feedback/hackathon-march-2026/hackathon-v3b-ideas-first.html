@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', sans-serif; line-height: 1.7; }
+    .container { max-width: 640px; margin: 0 auto; padding: 60px 24px 80px; }
+    h1 { color: #fafafa; font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .tagline { color: #71717a; font-size: 0.85rem; margin-bottom: 32px; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    p { margin-bottom: 14px; font-size: 0.95rem; }
+    .idea { border-left: 2px solid #27272a; padding: 8px 0 8px 16px; margin-bottom: 20px; }
+    .idea:hover { border-left-color: #6b9fff; }
+    .idea-name { color: #fafafa; font-weight: 600; font-size: 0.95rem; }
+    .idea-desc { color: #a1a1aa; font-size: 0.85rem; margin-top: 4px; }
+    .track { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #6b9fff; background: rgba(107,159,255,0.1); padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle; }
+    .footer { color: #52525b; font-size: 0.8rem; margin-top: 48px; padding-top: 24px; border-top: 1px solid #27272a; }
+    @media (max-width: 600px) { .container { padding: 40px 16px 60px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Build on Luthien this weekend</h1>
+    <p class="tagline">Open-source proxy that intercepts everything between AI agents and model APIs. <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a></p>
+
+    <div class="idea">
+      <div class="idea-name">Monitor for BashArena / LinuxArena <span class="track">Track 2</span></div>
+      <div class="idea-desc">Write a policy that flags suspicious commands before they run. Ctrl-Z got attack success from 58% to 7%. Can you do better? $1K LinuxArena prize eligible.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-name">Red team our policies <span class="track">Track 3</span></div>
+      <div class="idea-desc">Try to get harmful actions past Luthien's defenses (command blocking, DLP, LLM judge). Build a dataset of adversarial transcripts.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-name">Interrogation protocol <span class="track">Track 2</span></div>
+      <div class="idea-desc">Extend our LLM-as-judge: before the untrusted model's action runs, a trusted model asks it clarifying questions. Measure safety vs usefulness at different depths.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-name">Trusted editing via proxy rewrite <span class="track">Track 2</span></div>
+      <div class="idea-desc">Intercept suspicious code suggestions, have a trusted model rewrite them. Does the editor keep functionality while removing sabotage?</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-name">Code review with hidden vulnerabilities <span class="track">Track 1</span></div>
+      <div class="idea-desc">AI does code review (main task) while trying to sneak through vulnerable code (side task). Luthien watches and flags suspicious approvals.</div>
+    </div>
+
+    <p style="color: #71717a; font-size: 0.8rem; margin-top: 8px;"><a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md">3 more ideas + full details</a></p>
+
+    <p style="margin-top: 32px;"><strong>Setup:</strong> Docker + <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start">Quick Start</a> (~5 min). <strong>Help:</strong> Jai (speaker/judge) and Scott on Discord all weekend, or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6">book a call</a>.</p>
+
+    <div class="footer">
+      <a href="https://github.com/jdhyani">Jai Dhyani</a> (ex-AWS, ex-Meta) and Scott Wofford (ex-Amazon) at <a href="https://luthienresearch.org">Luthien Research</a> (nonprofit). Jai's talk: Friday noon PT.
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', sans-serif; line-height: 1.7; }
+    .container { max-width: 580px; margin: 0 auto; padding: 60px 24px 80px; }
+    h1 { color: #fafafa; font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+    p { margin-bottom: 14px; font-size: 0.95rem; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .muted { color: #71717a; }
+    .section { margin-top: 28px; }
+    .label { color: #a1a1aa; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .idea-list { list-style: none; padding: 0; }
+    .idea-list li { padding: 10px 0; border-bottom: 1px solid #1a1a1e; font-size: 0.9rem; }
+    .idea-list li:last-child { border-bottom: none; }
+    .idea-list strong { color: #fafafa; }
+    @media (max-width: 600px) { .container { padding: 40px 16px 60px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Luthien Proxy</h1>
+    <p>Open-source proxy that sits between AI agents and model APIs. Intercepts requests, runs policy checks (regex, DLP, LLM-as-judge), logs everything. The hackathon calls for "traditional security measures like giving the trusted model access to a firewall." We built that firewall.</p>
+    <p><a href="https://github.com/LuthienResearch/luthien-proxy">github.com/LuthienResearch/luthien-proxy</a></p>
+
+    <div class="section">
+      <div class="label">Who we are</div>
+      <p><strong style="color:#fafafa">Jai Dhyani</strong> (ex-AWS, ex-Meta) is a speaker and judge at this hackathon. His talk is Friday at noon PT. <strong style="color:#fafafa">Scott Wofford</strong> (ex-Amazon) is on Discord all weekend. We're a nonprofit. Ask us anything.</p>
+    </div>
+
+    <div class="section">
+      <div class="label">Project ideas</div>
+      <ul class="idea-list">
+        <li><strong>Monitor for BashArena/LinuxArena</strong> - flag suspicious commands before they run. $1K LinuxArena prize eligible. <span class="muted">(Track 2)</span></li>
+        <li><strong>Red team our policies</strong> - try to break Luthien's defenses, build adversarial dataset. <span class="muted">(Track 3)</span></li>
+        <li><strong>Interrogation protocol</strong> - trusted model asks the untrusted model questions before allowing actions. <span class="muted">(Track 2)</span></li>
+        <li><strong>Trusted editing</strong> - intercept bad code, have a trusted model rewrite it. <span class="muted">(Track 2)</span></li>
+        <li><strong>Code review sabotage</strong> - AI does review while sneaking in vulnerabilities. Luthien catches it. <span class="muted">(Track 1)</span></li>
+      </ul>
+      <p class="muted" style="font-size: 0.8rem;"><a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md">Full details + 3 more ideas</a></p>
+    </div>
+
+    <div class="section">
+      <div class="label">Get running</div>
+      <p>Docker required. <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start">Quick Start</a> (~5 min). Stuck? DM us on Discord or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6">book a call</a>.</p>
+    </div>
+
+  </div>
+</body>
+</html>

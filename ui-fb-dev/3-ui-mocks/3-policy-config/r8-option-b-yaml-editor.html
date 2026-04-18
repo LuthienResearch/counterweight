@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R8 Option B: YAML Config Editor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; padding: 24px; }
+        h1 { font-size: 20px; margin-bottom: 8px; color: #f0f6fc; }
+        .subtitle { color: #8b949e; font-size: 14px; margin-bottom: 24px; }
+        .design-note { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 13px; line-height: 1.5; }
+        .design-note strong { color: #58a6ff; }
+
+        .layout { display: grid; grid-template-columns: 260px 1fr; gap: 16px; height: calc(100vh - 160px); }
+
+        .sidebar { background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow-y: auto; }
+        .sidebar-header { padding: 12px 16px; border-bottom: 1px solid #30363d; font-size: 12px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .policy-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid #30363d; cursor: pointer; }
+        .policy-item:hover { background: #1c2128; }
+        .policy-item.active { background: #1c2128; border-left: 2px solid #58a6ff; }
+        .policy-item-name { font-size: 13px; color: #c9d1d9; }
+        .policy-item-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .status-on { background: #238636; color: #fff; }
+        .status-off { background: #30363d; color: #8b949e; }
+        .status-modified { background: #9e6a03; color: #fff; }
+
+        .editor-area { display: flex; flex-direction: column; gap: 12px; }
+        .editor-header { display: flex; align-items: center; justify-content: space-between; }
+        .editor-title { font-size: 16px; font-weight: 600; color: #f0f6fc; }
+        .editor-actions { display: flex; gap: 8px; }
+
+        .btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+        .btn-primary { background: #238636; color: #fff; }
+        .btn-danger { background: #da3633; color: #fff; }
+        .btn:hover { filter: brightness(1.1); }
+
+        .editor-tabs { display: flex; gap: 0; border-bottom: 1px solid #30363d; }
+        .tab { padding: 8px 16px; font-size: 13px; color: #8b949e; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab.active { color: #f0f6fc; border-bottom-color: #58a6ff; }
+        .tab:hover { color: #c9d1d9; }
+
+        .editor-container { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+        .editor-content { padding: 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; white-space: pre; overflow: auto; height: 100%; color: #c9d1d9; }
+        .yaml-key { color: #ff7b72; }
+        .yaml-value { color: #a5d6ff; }
+        .yaml-comment { color: #8b949e; }
+        .yaml-string { color: #a5d6ff; }
+        .yaml-bool { color: #d2a8ff; }
+        .yaml-number { color: #79c0ff; }
+
+        .diff-added { background: #1a4b2a; }
+        .diff-removed { background: #4b1a1a; }
+
+        .validation-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; font-size: 12px; }
+        .validation-ok { color: #3fb950; }
+        .validation-warn { color: #d29922; }
+    </style>
+</head>
+<body>
+    <h1>R8 Option B: YAML Config Editor</h1>
+    <p class="subtitle">Power-user policy customization via direct YAML editing (like VS Code settings.json)</p>
+
+    <div class="design-note">
+        <strong>Design rationale:</strong> Mirrors the developer mental model: policies are YAML config.
+        Shows the actual config file with syntax highlighting. Users who already edit <code>policy_config.yaml</code>
+        will feel at home. Supports full flexibility including creating custom policies.
+        <br><br>
+        <strong>Tradeoff:</strong> Higher learning curve. Non-technical users won't use this. But our users ARE
+        senior developers (Tyler, Quentin, Nico) who edit YAML daily. Diff view shows what changed vs defaults.
+        <br><br>
+        <strong>Key question:</strong> Is this too close to "just edit the file"? The value-add is:
+        (1) validation before save, (2) diff vs defaults, (3) no restart needed.
+    </div>
+
+    <div class="layout">
+        <!-- Sidebar: policy list -->
+        <div class="sidebar">
+            <div class="sidebar-header">Policies</div>
+            <div class="policy-item active">
+                <span class="policy-item-name">Package Manager Standards</span>
+                <span class="policy-item-status status-modified">modified</span>
+            </div>
+            <div class="policy-item">
+                <span class="policy-item-name">Block Dangerous Commands</span>
+                <span class="policy-item-status status-on">on</span>
+            </div>
+            <div class="policy-item">
+                <span class="policy-item-name">Clean AI Output (DeSlop)</span>
+                <span class="policy-item-status status-off">off</span>
+            </div>
+            <div class="policy-item">
+                <span class="policy-item-name">No Backward Compat Code</span>
+                <span class="policy-item-status status-off">off</span>
+            </div>
+            <div class="policy-item">
+                <span class="policy-item-name">Silent Failure Detection</span>
+                <span class="policy-item-status status-off">off</span>
+            </div>
+            <div class="policy-item" style="border-bottom: none; justify-content: center; padding: 16px;">
+                <button class="btn btn-secondary" style="width: 100%;">+ Create Custom Policy</button>
+            </div>
+        </div>
+
+        <!-- Editor area -->
+        <div class="editor-area">
+            <div class="editor-header">
+                <div class="editor-title">Package Manager Standards</div>
+                <div class="editor-actions">
+                    <button class="btn btn-secondary">Reset to default</button>
+                    <button class="btn btn-primary">Save & Apply</button>
+                </div>
+            </div>
+
+            <div class="editor-tabs">
+                <div class="tab active">Config</div>
+                <div class="tab">Diff vs default</div>
+                <div class="tab">Documentation</div>
+            </div>
+
+            <div class="editor-container">
+                <div class="editor-content"><span class="yaml-comment"># Package Manager Standards Policy</span>
+<span class="yaml-comment"># Blocks install commands using the wrong package manager.</span>
+<span class="yaml-comment"># Customize which package managers to enforce per language.</span>
+
+<span class="yaml-key">policy:</span>
+  <span class="yaml-key">class:</span> <span class="yaml-string">"luthien_proxy.policies.package_manager:PackageManagerPolicy"</span>
+  <span class="yaml-key">enabled:</span> <span class="yaml-bool">true</span>
+  <span class="yaml-key">config:</span>
+    <span class="yaml-comment"># Which package manager to enforce per ecosystem</span>
+    <span class="yaml-key">javascript:</span> <span class="yaml-string">"pnpm"</span>       <span class="yaml-comment"># options: npm, pnpm, yarn, bun</span>
+<div class="diff-added">    <span class="yaml-key">python:</span> <span class="yaml-string">"uv"</span>             <span class="yaml-comment"># options: pip, uv, poetry, conda</span></div>
+    <span class="yaml-comment"># What to do when a blocked command is detected</span>
+    <span class="yaml-key">action:</span> <span class="yaml-string">"block_and_notify"</span> <span class="yaml-comment"># options: block_and_notify, warn, log_only</span>
+
+    <span class="yaml-comment"># Additional commands to block (beyond package manager)</span>
+    <span class="yaml-key">extra_blocked_commands:</span>
+      - <span class="yaml-string">"npx"</span>              <span class="yaml-comment"># block npx when using pnpm</span>
+<div class="diff-added">      - <span class="yaml-string">"npm init"</span>          <span class="yaml-comment"># block npm init when using pnpm</span></div></div>
+            </div>
+
+            <div class="validation-bar">
+                <span class="validation-ok">&#10003;</span>
+                <span>Valid YAML</span>
+                <span style="color: #30363d; margin: 0 4px;">|</span>
+                <span class="validation-warn">&#9888;</span>
+                <span style="color: #d29922;">2 lines changed from default</span>
+                <span style="color: #30363d; margin: 0 4px;">|</span>
+                <span style="color: #8b949e;">Last saved: just now</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 2: The Diff Viewer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Nav */
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    position: relative;
+  }
+  .nav .brand {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .nav .page-name { color: #e5e5e5; }
+  .nav .catch-badge {
+    position: absolute;
+    right: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #0c1a0f;
+    color: #4ade80;
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid #1a3a1f;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 24px 48px; }
+
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* Diff viewer */
+  .diff-viewer {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .diff-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .diff-panel {
+    min-height: 280px;
+  }
+  .diff-panel-left {
+    border-right: 1px solid #262626;
+  }
+
+  .diff-panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #262626;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .diff-panel-label {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .label-raw { color: #f87171; }
+  .label-after { color: #4ade80; }
+
+  .diff-code {
+    padding: 12px 0;
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .diff-line {
+    display: flex;
+    padding: 0 16px;
+    min-height: 22px;
+    position: relative;
+  }
+  .diff-line.changed-remove {
+    background: rgba(248, 113, 113, 0.08);
+  }
+  .diff-line.changed-add {
+    background: rgba(74, 222, 128, 0.08);
+  }
+
+  .line-number {
+    color: #555;
+    min-width: 28px;
+    text-align: right;
+    margin-right: 16px;
+    user-select: none;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .line-content {
+    flex: 1;
+    white-space: pre;
+    color: #ccc;
+  }
+
+  .char-remove {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+    text-decoration: line-through;
+  }
+  .char-add {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+    font-weight: 600;
+  }
+
+  /* Annotation badges */
+  .annotation-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
+    padding-left: 12px;
+  }
+  .annotation-badge {
+    background: #0c1a0f;
+    color: #4ade80;
+    border: 1px solid #1a3a1f;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .annotation-badge:hover {
+    background: #122b17;
+    border-color: #2a5a3f;
+  }
+
+  .annotation-popover {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: Inter, -apple-system, sans-serif;
+    font-size: 12px;
+    color: #ccc;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .annotation-popover.visible { display: block; }
+  .annotation-popover .edit-rule {
+    color: #2563eb;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+  .annotation-popover .edit-rule:hover {
+    text-decoration: underline;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    padding: 14px 20px;
+    border-top: 1px solid #262626;
+    background: #141414;
+    border-radius: 0 0 12px 12px;
+  }
+  .stat {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .stat-value { color: #4ade80; font-weight: 600; }
+  .stat-sep { color: #333; margin: 0 -4px; }
+
+  /* Recent history */
+  .section-label {
+    font-family: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .history-item:hover {
+    border-color: #333;
+    color: #aaa;
+  }
+  .history-item.active {
+    border-color: #2563eb;
+    color: #e5e5e5;
+  }
+  .history-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #555;
+    min-width: 72px;
+    flex-shrink: 0;
+  }
+  .history-desc {
+    flex: 1;
+  }
+  .history-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .history-policy-deslop {
+    background: #0c1a0f;
+    color: #4ade80;
+    border: 1px solid #1a3a1f;
+  }
+  .history-policy-block {
+    background: #1a0c0c;
+    color: #f87171;
+    border: 1px solid #3a1f1f;
+  }
+
+  /* Policy drawer */
+  .policy-drawer {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .drawer-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    color: #888;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .drawer-toggle:hover { color: #e5e5e5; }
+  .drawer-toggle .arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 10px;
+    margin-right: 8px;
+  }
+  .drawer-toggle.expanded .arrow { transform: rotate(90deg); }
+  .drawer-content {
+    display: none;
+    padding: 0 20px 16px;
+    border-top: 1px solid #262626;
+  }
+  .drawer-content.visible { display: block; }
+
+  /* Policy cards in drawer */
+  .policy-card {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .policy-card.active {
+    border-left: 3px solid #4ade80;
+  }
+  .policy-info { flex: 1; }
+  .policy-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .policy-type-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge-string {
+    background: #0c1425;
+    color: #60a5fa;
+    border: 1px solid #1e3a5f;
+  }
+  .badge-judge {
+    background: #1a1408;
+    color: #facc15;
+    border: 1px solid #3a2f0a;
+  }
+  .policy-desc {
+    font-size: 12px;
+    color: #666;
+  }
+  .policy-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4ade80;
+    margin-top: 2px;
+  }
+  .policy-status.off { color: #555; }
+
+  .policy-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #666;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: #166534; }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Setup banner */
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .setup-banner strong { color: #4ade80; }
+  .setup-banner code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .diff-panels {
+      grid-template-columns: 1fr;
+    }
+    .diff-panel-left {
+      border-right: none;
+      border-bottom: 1px solid #262626;
+    }
+    .diff-panel {
+      min-height: 200px;
+    }
+    .stats-bar {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .nav .catch-badge {
+      position: static;
+      margin-left: auto;
+    }
+    .history-item {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .history-time {
+      min-width: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar -->
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <span class="page-name">Diff Viewer</span>
+  <span class="catch-badge">47 catches</span>
+</div>
+
+<div class="container">
+  <a href="index.html" class="back-link">&larr; Back</a>
+
+  <!-- ======================================== -->
+  <!-- Main Diff Viewer                         -->
+  <!-- ======================================== -->
+  <div class="diff-viewer">
+    <div class="diff-panels">
+
+      <!-- Left panel: Raw LLM -->
+      <div class="diff-panel diff-panel-left">
+        <div class="diff-panel-header">
+          <span class="diff-panel-label label-raw">RAW LLM</span>
+        </div>
+        <div class="diff-code">
+          <div class="diff-line changed-remove">
+            <span class="line-number">1</span>
+            <span class="line-content">// This function validates the user<span class="char-remove">&rsquo;</span>s OAuth token</span>
+          </div>
+          <div class="diff-line changed-remove">
+            <span class="line-number">2</span>
+            <span class="line-content">// and refreshes it if expired. The refresh logic <span class="char-remove">&mdash;</span></span>
+          </div>
+          <div class="diff-line changed-remove">
+            <span class="line-number">3</span>
+            <span class="line-content">// which was rewritten in v3.2 <span class="char-remove">&mdash;</span> now handles the</span>
+          </div>
+          <div class="diff-line changed-remove">
+            <span class="line-number">4</span>
+            <span class="line-content">// edge case where the token<span class="char-remove">&rsquo;</span>s <span class="char-remove">&ldquo;</span>scope<span class="char-remove">&rdquo;</span> field contains</span>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">5</span>
+            <span class="line-content">// whitespace-separated values instead of the</span>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">6</span>
+            <span class="line-content">// comma-separated format described in the RFC.</span>
+          </div>
+          <div class="diff-line changed-remove">
+            <span class="line-number">7</span>
+            <span class="line-content">// Important: the retry delay <span class="char-remove">&mdash;</span> currently 500ms <span class="char-remove">&mdash;</span></span>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">8</span>
+            <span class="line-content">// should probably be configurable.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel: After Luthien -->
+      <div class="diff-panel diff-panel-right">
+        <div class="diff-panel-header">
+          <span class="diff-panel-label label-after">AFTER LUTHIEN</span>
+        </div>
+        <div class="diff-code">
+          <div class="diff-line changed-add">
+            <span class="line-number">1</span>
+            <span class="line-content">// This function validates the user<span class="char-add">'</span>s OAuth token</span>
+            <div class="annotation-wrapper">
+              <span class="annotation-badge" onclick="toggleAnnotation('ann-1')">DeSlop</span>
+              <div class="annotation-popover" id="ann-1">DeSlop: smart apostrophe &rarr; straight apostrophe. <a class="edit-rule" onclick="event.stopPropagation()">Edit rule</a></div>
+            </div>
+          </div>
+          <div class="diff-line changed-add">
+            <span class="line-number">2</span>
+            <span class="line-content">// and refreshes it if expired. The refresh logic <span class="char-add">-</span></span>
+            <div class="annotation-wrapper">
+              <span class="annotation-badge" onclick="toggleAnnotation('ann-2')">DeSlop</span>
+              <div class="annotation-popover" id="ann-2">DeSlop: em-dash &rarr; hyphen. <a class="edit-rule" onclick="event.stopPropagation()">Edit rule</a></div>
+            </div>
+          </div>
+          <div class="diff-line changed-add">
+            <span class="line-number">3</span>
+            <span class="line-content">// which was rewritten in v3.2 <span class="char-add">-</span> now handles the</span>
+            <div class="annotation-wrapper">
+              <span class="annotation-badge" onclick="toggleAnnotation('ann-3')">DeSlop</span>
+              <div class="annotation-popover" id="ann-3">DeSlop: em-dash &rarr; hyphen. <a class="edit-rule" onclick="event.stopPropagation()">Edit rule</a></div>
+            </div>
+          </div>
+          <div class="diff-line changed-add">
+            <span class="line-number">4</span>
+            <span class="line-content">// edge case where the token<span class="char-add">'</span>s <span class="char-add">"</span>scope<span class="char-add">"</span> field contains</span>
+            <div class="annotation-wrapper">
+              <span class="annotation-badge" onclick="toggleAnnotation('ann-4')">DeSlop</span>
+              <div class="annotation-popover" id="ann-4">DeSlop: smart quotes &rarr; straight quotes, smart apostrophe &rarr; straight. <a class="edit-rule" onclick="event.stopPropagation()">Edit rule</a></div>
+            </div>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">5</span>
+            <span class="line-content">// whitespace-separated values instead of the</span>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">6</span>
+            <span class="line-content">// comma-separated format described in the RFC.</span>
+          </div>
+          <div class="diff-line changed-add">
+            <span class="line-number">7</span>
+            <span class="line-content">// Important: the retry delay <span class="char-add">-</span> currently 500ms <span class="char-add">-</span></span>
+            <div class="annotation-wrapper">
+              <span class="annotation-badge" onclick="toggleAnnotation('ann-7')">DeSlop</span>
+              <div class="annotation-popover" id="ann-7">DeSlop: em-dash &rarr; hyphen. <a class="edit-rule" onclick="event.stopPropagation()">Edit rule</a></div>
+            </div>
+          </div>
+          <div class="diff-line">
+            <span class="line-number">8</span>
+            <span class="line-content">// should probably be configurable.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <span class="stat"><span class="stat-value">6</span> changes by DeSlop</span>
+      <span class="stat-sep">|</span>
+      <span class="stat"><span class="stat-value">0</span> blocks</span>
+      <span class="stat-sep">|</span>
+      <span class="stat"><span class="stat-value">47</span> total today</span>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- Recent History                           -->
+  <!-- ======================================== -->
+  <div class="section-label">Recent</div>
+  <div class="history-list">
+    <div class="history-item active" onclick="toggleHistoryItem(this)">
+      <span class="history-time">2 min ago</span>
+      <span class="history-desc">3 changes</span>
+      <span class="history-policy history-policy-deslop">DeSlop</span>
+    </div>
+    <div class="history-item" onclick="toggleHistoryItem(this)">
+      <span class="history-time">8 min ago</span>
+      <span class="history-desc">1 block: rm -rf</span>
+      <span class="history-policy history-policy-block">DogfoodSafety</span>
+    </div>
+    <div class="history-item" onclick="toggleHistoryItem(this)">
+      <span class="history-time">15 min ago</span>
+      <span class="history-desc">5 changes</span>
+      <span class="history-policy history-policy-deslop">DeSlop</span>
+    </div>
+    <div class="history-item" onclick="toggleHistoryItem(this)">
+      <span class="history-time">22 min ago</span>
+      <span class="history-desc">2 changes</span>
+      <span class="history-policy history-policy-deslop">DeSlop</span>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- Policy Drawer                            -->
+  <!-- ======================================== -->
+  <div class="policy-drawer">
+    <button class="drawer-toggle" id="drawer-toggle" onclick="toggleDrawer()">
+      <span><span class="arrow">&#9654;</span> Policies (2 active)</span>
+    </button>
+    <div class="drawer-content" id="drawer-content">
+      <!-- DeSlop -->
+      <div class="policy-card active" id="policy-deslop">
+        <div class="policy-info">
+          <div class="policy-name-row">
+            <span class="policy-name">DeSlop</span>
+            <span class="policy-type-badge badge-string">string replacement</span>
+          </div>
+          <div class="policy-desc">Removes AI-isms from responses</div>
+          <div class="policy-status" id="status-deslop">4 rules active</div>
+        </div>
+        <div class="policy-actions">
+          <label class="toggle">
+            <input type="checkbox" checked onchange="togglePolicy('deslop', this)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <!-- DogfoodSafety -->
+      <div class="policy-card active" id="policy-dogfood">
+        <div class="policy-info">
+          <div class="policy-name-row">
+            <span class="policy-name">DogfoodSafety</span>
+            <span class="policy-type-badge badge-judge">LLM judge</span>
+          </div>
+          <div class="policy-desc">Blocks dangerous commands (rm -rf, git push --force)</div>
+          <div class="policy-status" id="status-dogfood">monitoring active</div>
+        </div>
+        <div class="policy-actions">
+          <label class="toggle">
+            <input type="checkbox" checked onchange="togglePolicy('dogfood', this)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================== -->
+  <!-- Setup Banner                             -->
+  <!-- ======================================== -->
+  <div class="setup-banner">
+    <strong>Connect your agent:</strong>
+    <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code>
+  </div>
+</div>
+
+<script>
+// ============================================
+// Annotation popovers
+// ============================================
+function toggleAnnotation(id) {
+  var popover = document.getElementById(id);
+  var wasVisible = popover.classList.contains('visible');
+
+  // Close all popovers first
+  var all = document.querySelectorAll('.annotation-popover');
+  for (var i = 0; i < all.length; i++) {
+    all[i].classList.remove('visible');
+  }
+
+  // Toggle the clicked one
+  if (!wasVisible) {
+    popover.classList.add('visible');
+  }
+}
+
+// Close popovers when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('annotation-badge') &&
+      !e.target.closest('.annotation-popover')) {
+    var all = document.querySelectorAll('.annotation-popover');
+    for (var i = 0; i < all.length; i++) {
+      all[i].classList.remove('visible');
+    }
+  }
+});
+
+// ============================================
+// History items
+// ============================================
+function toggleHistoryItem(el) {
+  var items = document.querySelectorAll('.history-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].classList.remove('active');
+  }
+  el.classList.add('active');
+}
+
+// ============================================
+// Policy drawer
+// ============================================
+function toggleDrawer() {
+  var toggle = document.getElementById('drawer-toggle');
+  var content = document.getElementById('drawer-content');
+  var isVisible = content.classList.contains('visible');
+
+  if (isVisible) {
+    content.classList.remove('visible');
+    toggle.classList.remove('expanded');
+  } else {
+    content.classList.add('visible');
+    toggle.classList.add('expanded');
+  }
+}
+
+// ============================================
+// Policy toggles
+// ============================================
+function togglePolicy(policyId, checkbox) {
+  var card = document.getElementById('policy-' + policyId);
+  var status = document.getElementById('status-' + policyId);
+
+  if (checkbox.checked) {
+    card.classList.add('active');
+    status.classList.remove('off');
+    if (policyId === 'deslop') {
+      status.textContent = '4 rules active';
+    } else if (policyId === 'dogfood') {
+      status.textContent = 'monitoring active';
+    }
+  } else {
+    card.classList.remove('active');
+    status.classList.add('off');
+    status.textContent = 'disabled';
+  }
+
+  // Update drawer label count
+  var activeCount = document.querySelectorAll('.policy-card.active').length;
+  var toggleBtn = document.getElementById('drawer-toggle');
+  var label = toggleBtn.querySelector('span');
+  var arrow = label.querySelector('.arrow');
+  label.innerHTML = '';
+  label.appendChild(arrow);
+  label.appendChild(document.createTextNode(' Policies (' + activeCount + ' active)'));
+}
+</script>
+</body>
+</html>

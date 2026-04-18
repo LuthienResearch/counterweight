@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option B: Live Demo First</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #09090b;
+    color: #e5e5e5;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+  .nav {
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .nav a { color: #888; text-decoration: none; }
+  .nav a:hover { color: #e5e5e5; }
+  .nav .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #e5e5e5;
+    font-size: 15px;
+  }
+  .nav .sep { color: #333; }
+  .container { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+  .back-link {
+    display: inline-block;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .back-link:hover { color: #e5e5e5; }
+
+  /* Hero demo */
+  .demo-section {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .demo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .demo-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .demo-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #0c1a0f;
+    color: #4ade80;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #1a3a1f;
+  }
+  .demo-subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* Sample buttons */
+  .samples {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .sample-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sample-btn:hover { border-color: #555; color: #e5e5e5; }
+  .sample-btn.active { border-color: #2563eb; color: #e5e5e5; background: #0c1425; }
+
+  /* Before/after panels */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .compare-panel {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 160px;
+  }
+  .compare-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .label-before { color: #f87171; }
+  .label-after { color: #4ade80; }
+  .compare-text {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.7;
+  }
+  .compare-text .highlight-remove {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  .compare-text .highlight-add {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    padding: 12px 0;
+    border-top: 1px solid #262626;
+  }
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .stat-value { color: #4ade80; font-weight: 600; }
+
+  /* Rules editor */
+  .rules-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #262626;
+  }
+  .rules-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .rules-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .add-rule-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .add-rule-btn:hover { color: #e5e5e5; border-color: #555; }
+  .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rule-input {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    color: #e5e5e5;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    width: 120px;
+  }
+  .rule-input:focus { outline: none; border-color: #2563eb; }
+  .rule-arrow { color: #555; font-size: 14px; }
+  .rule-remove {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+  }
+  .rule-remove:hover { color: #f87171; }
+
+  /* Setup + toggles section */
+  .section-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #262626;
+  }
+  .setup-banner {
+    background: #0c1a0f;
+    border: 1px solid #1a3a1f;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .setup-banner code {
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+  }
+  .policy-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .policy-item.active { border-left: 3px solid #4ade80; }
+  .policy-info { flex: 1; }
+  .policy-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .policy-desc { font-size: 13px; color: #888; }
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 16px;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #666;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: #166534; }
+  .toggle input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #4ade80;
+  }
+
+  /* Activity log */
+  .log-item {
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+  }
+  .log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .log-policy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ade80;
+    background: #0c1a0f;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .log-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+  }
+  .log-detail { font-size: 13px; color: #aaa; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <span class="brand">luthien</span>
+  <span class="sep">/</span>
+  <a href="#">Activity</a>
+  <a href="#" style="color: #e5e5e5;">Policies</a>
+</div>
+
+<div class="container">
+  <a href="v6-landing.html" class="back-link">&larr; Back to all options</a>
+
+  <!-- Hero: Live Demo -->
+  <div class="demo-section">
+    <div class="demo-header">
+      <span class="demo-title">DeSlop</span>
+      <span class="demo-badge">active - default policy</span>
+    </div>
+    <p class="demo-subtitle">Removes AI-isms from every response. See what it does:</p>
+
+    <div class="samples">
+      <button class="sample-btn active" onclick="showSample(0, this)">Code comment</button>
+      <button class="sample-btn" onclick="showSample(1, this)">Git commit</button>
+      <button class="sample-btn" onclick="showSample(2, this)">PR description</button>
+    </div>
+
+    <div class="compare">
+      <div class="compare-panel">
+        <div class="compare-label label-before">Before (raw LLM)</div>
+        <div class="compare-text" id="before-text">
+          This function handles the edge case where users don<span class="highlight-remove">&rsquo;</span>t provide a callback <span class="highlight-remove">&mdash;</span> it falls back to the default handler. Note that the timeout value <span class="highlight-remove">&mdash;</span> currently set to 30s <span class="highlight-remove">&mdash;</span> should be configurable.
+        </div>
+      </div>
+      <div class="compare-panel">
+        <div class="compare-label label-after">After (DeSlop)</div>
+        <div class="compare-text" id="after-text">
+          This function handles the edge case where users don<span class="highlight-add">'</span>t provide a callback <span class="highlight-add">-</span> it falls back to the default handler. Note that the timeout value <span class="highlight-add">-</span> currently set to 30s <span class="highlight-add">-</span> should be configurable.
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-value" id="stat-replacements">4</span> replacements</div>
+      <div class="stat"><span class="stat-value">4</span> rules active</div>
+      <div class="stat"><span class="stat-value">142</span> total today</div>
+    </div>
+
+    <!-- Inline rules editor -->
+    <div class="rules-section">
+      <div class="rules-header">
+        <span class="rules-title">Replacement rules</span>
+        <button class="add-rule-btn">+ add rule</button>
+      </div>
+      <div class="rule-row">
+        <input class="rule-input" value="&mdash;" readonly>
+        <span class="rule-arrow">&rarr;</span>
+        <input class="rule-input" value="-" readonly>
+        <button class="rule-remove">&times;</button>
+      </div>
+      <div class="rule-row">
+        <input class="rule-input" value="&ndash;" readonly>
+        <span class="rule-arrow">&rarr;</span>
+        <input class="rule-input" value="-" readonly>
+        <button class="rule-remove">&times;</button>
+      </div>
+      <div class="rule-row">
+        <input class="rule-input" value="&ldquo; &rdquo;" readonly>
+        <span class="rule-arrow">&rarr;</span>
+        <input class="rule-input" value='&quot; &quot;' readonly>
+        <button class="rule-remove">&times;</button>
+      </div>
+      <div class="rule-row">
+        <input class="rule-input" value="&lsquo; &rsquo;" readonly>
+        <span class="rule-arrow">&rarr;</span>
+        <input class="rule-input" value="' '" readonly>
+        <button class="rule-remove">&times;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <div class="setup-banner">
+    <strong style="color: #4ade80;">Connect your agent:</strong>
+    <code>export ANTHROPIC_BASE_URL=http://localhost:8000</code> then run Claude Code normally.
+  </div>
+
+  <!-- Other policies -->
+  <div class="section-header">All Policies</div>
+
+  <div class="policy-item active">
+    <div class="policy-info">
+      <span class="policy-name">DeSlop</span>
+      <span class="policy-desc" style="margin-left: 8px;">Removes AI-isms</span>
+    </div>
+    <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+  </div>
+  <div class="policy-item">
+    <div class="policy-info">
+      <span class="policy-name">Block Dangerous Commands</span>
+      <span class="policy-desc" style="margin-left: 8px;">Prevents destructive operations</span>
+    </div>
+    <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+  </div>
+  <div class="policy-item">
+    <div class="policy-info">
+      <span class="policy-name">Package Standards</span>
+      <span class="policy-desc" style="margin-left: 8px;">Enforces your package manager</span>
+    </div>
+    <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+  </div>
+
+  <!-- Recent activity -->
+  <div class="section-header" style="margin-top: 32px;">Recent activity</div>
+  <div class="log-item">
+    <div class="log-header">
+      <span class="log-policy">DeSlop</span>
+      <span class="log-time">2 min ago</span>
+    </div>
+    <div class="log-detail">6 replacements in 1 response</div>
+  </div>
+  <div class="log-item">
+    <div class="log-header">
+      <span class="log-policy">DeSlop</span>
+      <span class="log-time">8 min ago</span>
+    </div>
+    <div class="log-detail">3 replacements in 1 response</div>
+  </div>
+</div>
+
+<script>
+const samples = [
+  {
+    before: 'This function handles the edge case where users don<span class="highlight-remove">\u2019</span>t provide a callback <span class="highlight-remove">\u2014</span> it falls back to the default handler. Note that the timeout value <span class="highlight-remove">\u2014</span> currently set to 30s <span class="highlight-remove">\u2014</span> should be configurable.',
+    after: 'This function handles the edge case where users don<span class="highlight-add">\'</span>t provide a callback <span class="highlight-add">-</span> it falls back to the default handler. Note that the timeout value <span class="highlight-add">-</span> currently set to 30s <span class="highlight-add">-</span> should be configurable.',
+    count: 4
+  },
+  {
+    before: 'fix: resolve race condition in WebSocket reconnection <span class="highlight-remove">\u2014</span> the handler wasn<span class="highlight-remove">\u2019</span>t waiting for the previous connection to close before opening a new one',
+    after: 'fix: resolve race condition in WebSocket reconnection <span class="highlight-add">-</span> the handler wasn<span class="highlight-add">\'</span>t waiting for the previous connection to close before opening a new one',
+    count: 2
+  },
+  {
+    before: 'This PR addresses the <span class="highlight-remove">\u201c</span>stale cache<span class="highlight-remove">\u201d</span> issue reported in #412. The root cause was that the invalidation logic <span class="highlight-remove">\u2014</span> which runs on a 5-minute interval <span class="highlight-remove">\u2014</span> didn<span class="highlight-remove">\u2019</span>t account for concurrent writes.',
+    after: 'This PR addresses the <span class="highlight-add">"</span>stale cache<span class="highlight-add">"</span> issue reported in #412. The root cause was that the invalidation logic <span class="highlight-add">-</span> which runs on a 5-minute interval <span class="highlight-add">-</span> didn<span class="highlight-add">\'</span>t account for concurrent writes.',
+    count: 5
+  }
+];
+
+function showSample(idx, btn) {
+  document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('before-text').innerHTML = samples[idx].before;
+  document.getElementById('after-text').innerHTML = samples[idx].after;
+  document.getElementById('stat-replacements').textContent = samples[idx].count;
+}
+</script>
+</body>
+</html>

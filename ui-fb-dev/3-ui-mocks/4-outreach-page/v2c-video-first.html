@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2309090b'/%3E%3Ctext x='16' y='23' font-family='Inter,system-ui,sans-serif' font-size='20' font-weight='700' fill='%236b9fff' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', sans-serif; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 620px; margin: 0 auto; padding: 60px 24px 80px; }
+    h1 { color: #fafafa; font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+    p { margin-bottom: 14px; font-size: 0.95rem; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .muted { color: #71717a; font-size: 0.85rem; }
+
+    /* Hero section with photos */
+    .hero {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .hero-photos {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .hero-photos img {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid #27272a;
+    }
+    .hero-text { flex: 1; }
+    .hero-text h1 { margin-bottom: 8px; }
+
+    /* Video placeholder */
+    .video-placeholder {
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 40px 24px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .video-placeholder .play-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(107,159,255,0.15);
+      border: 2px solid #6b9fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .video-placeholder .play-icon svg { fill: #6b9fff; }
+    .video-placeholder p { color: #71717a; font-size: 0.85rem; margin-bottom: 0; }
+
+    /* Pitch */
+    .pitch {
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      font-size: 0.95rem;
+    }
+
+    /* Help bar */
+    .help-bar {
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+    }
+
+    /* Ideas (below fold) */
+    .ideas-label {
+      color: #a1a1aa;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    ul { padding-left: 20px; margin-bottom: 20px; }
+    li { margin-bottom: 10px; font-size: 0.9rem; }
+    li strong { color: #fafafa; }
+    .track { color: #6b9fff; font-size: 0.8rem; }
+
+    hr { border: none; border-top: 1px solid #27272a; margin: 36px 0; }
+    @media (max-width: 600px) {
+      .container { padding: 40px 16px 60px; }
+      h1 { font-size: 1.3rem; }
+      .hero { flex-direction: column; }
+      .hero-photos { flex-direction: row; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Hero with photos -->
+    <div class="hero">
+      <div class="hero-photos">
+        <img src="https://avatars.githubusercontent.com/jdhyani" alt="Jai Dhyani">
+        <img src="https://avatars.githubusercontent.com/scottwofford" alt="Scott Wofford">
+      </div>
+      <div class="hero-text">
+        <h1>We built an open-source firewall for AI agents</h1>
+        <p class="muted">Jai Dhyani (speaker/judge at this hackathon) and Scott Wofford. We're a nonprofit. We're on Discord all weekend.</p>
+      </div>
+    </div>
+
+    <!-- Video placeholder (swap for real embed when video exists) -->
+    <div class="video-placeholder">
+      <div class="play-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
+      <p>90-second intro coming before the hackathon starts.<br>For now: <a href="https://github.com/LuthienResearch/luthien-proxy">read the README</a> or catch Jai's talk Friday at noon.</p>
+    </div>
+
+    <!-- Personal pitch -->
+    <div class="pitch">
+      <p style="margin-bottom: 10px;">We're working backwards from a demo on April 16. We're rapidly iterating and collecting feedback, so we'd really appreciate anything you have on what we've built so far. We'd love to hear what you'd like us to build next. And if you're so inclined, help us build it.</p>
+      <p style="margin-bottom: 0; color: #71717a; font-size: 0.85rem;">We're early-stage and things are rough around the edges. That's the point -- your feedback makes it better.</p>
+    </div>
+
+    <!-- Help bar -->
+    <div class="help-bar">
+      Stuck? Jai is a speaker and judge -- he's around all weekend. Scott is on Discord too. DM us, tag <strong>@luthien</strong>, or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6">book a 15-min call</a>.
+    </div>
+
+    <!-- Ideas below the fold -->
+    <div class="ideas-label">Project ideas to build on Luthien</div>
+
+    <ul>
+      <li>
+        <strong>Proxy-level monitor for BashArena</strong> --
+        Write a policy that flags suspicious commands before they run. Can you beat Ctrl-Z's 58%-to-7%?
+        <br><span class="track">Track 2 -- $1K LinuxArena prize eligible</span>
+      </li>
+      <li>
+        <strong>Red team our policies</strong> --
+        Try to break Luthien's defenses. Build a dataset of adversarial transcripts.
+        <br><span class="track">Track 3</span>
+      </li>
+      <li>
+        <strong>Interrogation protocol</strong> --
+        Trusted model asks the untrusted model questions before allowing actions. Extend Luthien's LLM-as-judge.
+        <br><span class="track">Track 2</span>
+      </li>
+    </ul>
+    <p class="muted"><a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md">More ideas + full details</a></p>
+
+    <p style="margin-top: 24px;">Docker required. <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start">Quick Start</a> takes about 5 minutes.</p>
+
+    <hr>
+
+    <p class="muted"><a href="https://github.com/jdhyani">Jai Dhyani</a> (ex-AWS, ex-Meta) and <a href="https://scottwofford.com">Scott Wofford</a> (ex-Amazon) at <a href="https://luthienresearch.org">Luthien Research</a> (nonprofit).</p>
+
+  </div>
+</body>
+</html>

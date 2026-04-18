@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2309090b'/%3E%3Ctext x='16' y='23' font-family='Inter,system-ui,sans-serif' font-size='20' font-weight='700' fill='%236b9fff' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', sans-serif; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 640px; margin: 0 auto; padding: 60px 24px 80px; }
+    h1 { color: #fafafa; font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    p { margin-bottom: 14px; font-size: 0.95rem; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .muted { color: #71717a; }
+
+    /* Tagline */
+    .tagline { color: #a1a1aa; font-size: 0.9rem; margin-bottom: 10px; }
+    .honesty { color: #71717a; font-size: 0.85rem; margin-bottom: 8px; }
+    .help-line { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 32px; }
+
+    /* Idea cards */
+    .idea {
+      border-left: 2px solid #27272a;
+      padding: 12px 0 12px 16px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s;
+    }
+    .idea:hover { border-left-color: #6b9fff; }
+    .idea-quote {
+      color: #71717a;
+      font-size: 0.8rem;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .idea-quote a { color: #71717a; }
+    .idea-quote a:hover { color: #a1a1aa; }
+    .idea-name { color: #fafafa; font-weight: 600; font-size: 0.95rem; }
+    .idea-desc { color: #a1a1aa; font-size: 0.85rem; margin-top: 4px; }
+    .track {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: #6b9fff;
+      background: rgba(107,159,255,0.1);
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .track-3 {
+      color: #f87171;
+      background: rgba(248,113,113,0.1);
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #27272a;
+    }
+    .footer img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #27272a;
+    }
+    .footer-text { color: #52525b; font-size: 0.8rem; }
+    .footer-text a { color: #52525b; }
+    .footer-text a:hover { color: #a1a1aa; }
+
+    @media (max-width: 600px) { .container { padding: 40px 16px 60px; } h1 { font-size: 1.3rem; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Build on Luthien this weekend</h1>
+    <p class="tagline">Open-source proxy that intercepts everything between AI agents and model APIs. Runs policy checks, logs everything. <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a></p>
+    <p class="honesty">We're early-stage and things are rough around the edges. Your feedback makes it better.</p>
+    <p class="help-line">Jai (speaker/judge, talk Fri noon) and Scott are on Discord all weekend. DM us, tag <strong style="color:#d4d4d8">@luthien</strong>, or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6">book a call</a>.</p>
+
+    <!-- Ideas -->
+
+    <div class="idea">
+      <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22">The hackathon calls for</a> "control protocols that involve traditional security measures, such as giving the trusted model access to a firewall."</div>
+      <div class="idea-name">Proxy-level monitor for BashArena <span class="track">Track 2</span></div>
+      <div class="idea-desc">Write a Luthien policy that flags suspicious sysadmin commands before they run. Ctrl-Z showed resample protocols cut attack success from 58% to 7%. Can a proxy-level monitor do better? $1K LinuxArena prize eligible.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22">The hackathon calls for</a> "a dataset of sneaky transcripts of AIs doing very bad things that a prompted instance of Opus 4.6 can't catch."</div>
+      <div class="idea-name">Red team our policies <span class="track track-3">Track 3</span></div>
+      <div class="idea-desc">Try to get harmful actions past Luthien's built-in defenses (command blocking, DLP, LLM judge). Document which evasion strategies work, which don't, and why. Build a dataset of adversarial transcripts.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22">The hackathon calls for</a> "interrogation protocols in which the trusted model asks the untrusted model questions before executing the action."</div>
+      <div class="idea-name">LLM-as-judge interrogation protocol <span class="track">Track 2</span></div>
+      <div class="idea-desc">Before the untrusted model's action runs, a trusted model reviews it and asks clarifying questions. Extend Luthien's built-in LLM-as-judge policy. Measure the safety vs. usefulness tradeoff at different depths.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22">The hackathon calls for</a> "a control protocol where the trusted model can run actions in the environment to learn more about the action the agent is proposing."</div>
+      <div class="idea-name">Multi-policy firewall for LinuxArena <span class="track">Track 2</span></div>
+      <div class="idea-desc">Stack multiple Luthien policies (regex + DLP + LLM judge) into a layered defense. Test against LinuxArena tasks: does composing simple policies beat a single sophisticated one? $1K Equistamp LinuxArena prize eligible.</div>
+    </div>
+
+    <div class="idea">
+      <div class="idea-quote"><a href="https://apartresearch.com/sprints/ai-control-hackathon-2026-03-20-to-2026-03-22">The hackathon calls for</a> "red-teaming protocols like trusted editing harder, such that the editor preserves the bad code."</div>
+      <div class="idea-name">Trusted editing via proxy rewrite <span class="track">Track 2</span></div>
+      <div class="idea-desc">Luthien intercepts suspicious code suggestions and has a trusted model rewrite them before they reach the developer. Does the editor keep the code working while removing sabotage? Build it AND red-team it.</div>
+    </div>
+
+    <p class="muted" style="font-size: 0.8rem; margin-top: 8px;"><a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md">More ideas + full details</a></p>
+
+    <p style="margin-top: 28px;">Docker required. <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start">Quick Start</a> takes about 5 minutes.</p>
+
+    <!-- Footer -->
+    <div class="footer">
+      <img src="https://avatars.githubusercontent.com/jdhyani" alt="Jai Dhyani">
+      <img src="https://avatars.githubusercontent.com/scottwofford" alt="Scott Wofford">
+      <div class="footer-text">
+        <a href="https://github.com/jdhyani">Jai Dhyani</a> (ex-AWS, ex-Meta) and <a href="https://scottwofford.com">Scott Wofford</a> (ex-Amazon) at <a href="https://luthienresearch.org">Luthien Research</a> (nonprofit). Jai's talk: Friday noon PT.
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

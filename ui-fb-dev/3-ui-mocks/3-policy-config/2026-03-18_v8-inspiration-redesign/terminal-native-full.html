@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept 3: Terminal Native — Full Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #09090b;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ccc;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #2563eb;
+      font-size: 13px;
+      text-decoration: none;
+      margin-bottom: 24px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .description {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+    }
+
+    .svg-wrapper svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .description {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to all concepts</a>
+
+    <div class="description">
+      Luthien is a shell command, not an app. Install, configure, forget. Your terminal is the UI.
+    </div>
+
+    <div class="svg-wrapper">
+      <svg viewBox="0 0 620 1180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+            .mono { font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace; }
+            .mono-bold { font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace; font-weight: 700; }
+
+            @keyframes blink {
+              0%, 100% { opacity: 0.6; }
+              50% { opacity: 0; }
+            }
+            .cursor-blink { animation: blink 1.1s step-end infinite; }
+          </style>
+        </defs>
+
+        <!-- Terminal background -->
+        <rect width="620" height="1180" rx="8" fill="#1e1e1e"/>
+
+        <!-- Title bar -->
+        <rect width="620" height="32" rx="8" fill="#323233"/>
+        <!-- Square off bottom corners of title bar -->
+        <rect y="24" width="620" height="8" fill="#323233"/>
+
+        <!-- Traffic lights -->
+        <circle cx="20" cy="16" r="6" fill="#ff5f57"/>
+        <circle cx="40" cy="16" r="6" fill="#febc2e"/>
+        <circle cx="60" cy="16" r="6" fill="#28c840"/>
+
+        <!-- Title bar text -->
+        <text x="310" y="20" text-anchor="middle" class="mono" font-size="13">
+          <tspan fill="#808080">claude code +</tspan>
+          <tspan fill="#4ec9b0"> Luthien</tspan>
+        </text>
+
+        <!-- ============================================ -->
+        <!-- Scene 1: Startup (y=44 to ~140)              -->
+        <!-- ============================================ -->
+
+        <!-- $ luthien claude -->
+        <text x="20" y="62" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">$</tspan>
+          <tspan fill="#d4d4d4"> luthien claude</tspan>
+        </text>
+
+        <!-- Startup info -->
+        <text x="20" y="82" class="mono" font-size="12" fill="#808080">Connected to Luthien proxy (localhost:8000)</text>
+        <text x="20" y="100" class="mono" font-size="12">
+          <tspan fill="#808080">Policies: </tspan>
+          <tspan fill="#4ec9b0">DeSlop</tspan>
+          <tspan fill="#808080"> (default)</tspan>
+        </text>
+        <text x="20" y="118" class="mono" font-size="12">
+          <tspan fill="#808080">Config: </tspan>
+          <tspan fill="#d4d4d4">.claude/luthien.yaml</tspan>
+          <tspan fill="#808080"> (4 rules)</tspan>
+        </text>
+        <text x="20" y="140" class="mono" font-size="12">
+          <tspan fill="#808080">Tips: </tspan>
+          <tspan fill="#4ec9b0">/luthien</tspan>
+          <tspan fill="#808080"> to manage policies mid-session</tspan>
+        </text>
+
+        <!-- Scene separator 1 -->
+        <line x1="20" y1="158" x2="600" y2="158" stroke="#444444" stroke-width="1"/>
+
+        <!-- ============================================ -->
+        <!-- Scene 2: Coding with inline feedback         -->
+        <!-- ============================================ -->
+
+        <!-- First user prompt -->
+        <text x="20" y="182" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> Refactor the database connection pool</tspan>
+        </text>
+
+        <!-- Claude response 1 -->
+        <text x="20" y="206" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">&#9679;</tspan>
+          <tspan fill="#d4d4d4"> Edit</tspan>
+          <tspan fill="#808080"> (src/db/pool.py)</tspan>
+        </text>
+        <text x="36" y="224" class="mono" font-size="12" fill="#808080">&#9492; Modified connection timeout handling</text>
+
+        <!-- Luthien catch output 1 -->
+        <text x="20" y="250" class="mono" font-size="12">
+          <tspan fill="#febc2e">[Luthien]</tspan>
+          <tspan fill="#4ade80" class="mono-bold"> 3 catches</tspan>
+          <tspan fill="#d4a545">: em-dash x2, smart apostrophe x1</tspan>
+        </text>
+
+        <!-- Second user prompt -->
+        <text x="20" y="282" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> Add retry logic with exponential backoff</tspan>
+        </text>
+
+        <!-- Claude response 2 -->
+        <text x="20" y="306" class="mono" font-size="12">
+          <tspan fill="#4ec9b0">&#9679;</tspan>
+          <tspan fill="#d4d4d4"> Edit</tspan>
+          <tspan fill="#808080"> (src/db/retry.py)</tspan>
+        </text>
+        <text x="36" y="324" class="mono" font-size="12" fill="#808080">&#9492; Created new retry module</text>
+
+        <!-- Luthien catch output 2 (with running total) -->
+        <text x="20" y="350" class="mono" font-size="12">
+          <tspan fill="#febc2e">[Luthien]</tspan>
+          <tspan fill="#4ade80" class="mono-bold"> 5 catches</tspan>
+          <tspan fill="#808080"> (8 total)</tspan>
+          <tspan fill="#d4a545">: curly quotes x3, em-dash x2</tspan>
+        </text>
+
+        <!-- Scene separator 2 -->
+        <line x1="20" y1="372" x2="600" y2="372" stroke="#444444" stroke-width="1"/>
+
+        <!-- ============================================ -->
+        <!-- Scene 3: Interactive /luthien menu           -->
+        <!-- ============================================ -->
+
+        <!-- /luthien command -->
+        <text x="20" y="396" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> /luthien</tspan>
+        </text>
+
+        <!-- Menu title -->
+        <text x="36" y="424" class="mono-bold" font-size="13" fill="#d4d4d4">Luthien Policy Manager</text>
+
+        <!-- Policies header -->
+        <text x="36" y="450" class="mono" font-size="12" fill="#808080">Policies:</text>
+
+        <!-- Policy 1: DeSlop (active) -->
+        <text x="52" y="470" class="mono" font-size="12">
+          <tspan fill="#808080">1. </tspan>
+          <tspan fill="#4ec9b0">DeSlop</tspan>
+          <tspan fill="#808080">           </tspan>
+          <tspan fill="#28c840">active</tspan>
+          <tspan fill="#808080">    </tspan>
+          <tspan fill="#4ade80">8 catches</tspan>
+        </text>
+
+        <!-- Policy 2: DogfoodSafety (active) -->
+        <text x="52" y="490" class="mono" font-size="12">
+          <tspan fill="#808080">2. </tspan>
+          <tspan fill="#4ec9b0">DogfoodSafety</tspan>
+          <tspan fill="#808080">    </tspan>
+          <tspan fill="#28c840">active</tspan>
+          <tspan fill="#808080">    </tspan>
+          <tspan fill="#4ade80">0 blocks</tspan>
+        </text>
+
+        <!-- Policy 3: Package Standards (off) -->
+        <text x="52" y="510" class="mono" font-size="12">
+          <tspan fill="#808080">3. </tspan>
+          <tspan fill="#808080">Package Standards</tspan>
+          <tspan fill="#808080"> </tspan>
+          <tspan fill="#808080">off</tspan>
+        </text>
+
+        <!-- Actions menu -->
+        <text x="36" y="538" class="mono" font-size="12" fill="#808080">Actions:</text>
+        <text x="52" y="558" class="mono" font-size="12">
+          <tspan fill="#808080">[</tspan><tspan fill="#4ec9b0">t</tspan><tspan fill="#808080">]oggle policy  [</tspan><tspan fill="#4ec9b0">c</tspan><tspan fill="#808080">]onfigure  [</tspan><tspan fill="#4ec9b0">s</tspan><tspan fill="#808080">]tats  [</tspan><tspan fill="#4ec9b0">q</tspan><tspan fill="#808080">]uit</tspan>
+        </text>
+
+        <!-- Configure command -->
+        <text x="20" y="590" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> c 1</tspan>
+        </text>
+
+        <!-- Configuration output -->
+        <text x="36" y="618" class="mono-bold" font-size="12" fill="#d4d4d4">DeSlop Configuration:</text>
+        <text x="52" y="638" class="mono" font-size="12">
+          <tspan fill="#808080">Source: </tspan>
+          <tspan fill="#d4d4d4">.claude/luthien.yaml</tspan>
+        </text>
+
+        <!-- Rules -->
+        <text x="52" y="664" class="mono" font-size="12" fill="#808080">Rules:</text>
+        <text x="52" y="684" class="mono" font-size="12" fill="#d4d4d4">1. em-dash &#8212; &#8594; hyphen -</text>
+        <text x="52" y="702" class="mono" font-size="12" fill="#d4d4d4">2. en-dash &#8211; &#8594; hyphen -</text>
+        <text x="52" y="720" class="mono" font-size="12" fill="#d4d4d4">3. curly quotes &#8220;&#8221; &#8594; straight ""</text>
+        <text x="52" y="738" class="mono" font-size="12" fill="#d4d4d4">4. smart apostrophe &#8217; &#8594; straight '</text>
+
+        <!-- Config actions -->
+        <text x="52" y="764" class="mono" font-size="12">
+          <tspan fill="#808080">[</tspan><tspan fill="#4ec9b0">a</tspan><tspan fill="#808080">]dd  [</tspan><tspan fill="#4ec9b0">r</tspan><tspan fill="#808080">]emove  [</tspan><tspan fill="#4ec9b0">e</tspan><tspan fill="#808080">]dit source  [</tspan><tspan fill="#4ec9b0">b</tspan><tspan fill="#808080">]ack</tspan>
+        </text>
+
+        <!-- Edit source command -->
+        <text x="20" y="794" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> e</tspan>
+        </text>
+        <text x="36" y="814" class="mono" font-size="12" fill="#808080">Opening .claude/luthien.yaml in $EDITOR...</text>
+
+        <!-- Scene separator 3 -->
+        <line x1="20" y1="834" x2="600" y2="834" stroke="#444444" stroke-width="1"/>
+
+        <!-- ============================================ -->
+        <!-- Scene 4: Session summary on exit             -->
+        <!-- ============================================ -->
+
+        <!-- /exit command -->
+        <text x="20" y="858" class="mono" font-size="13">
+          <tspan fill="#4ec9b0">&#10095;</tspan>
+          <tspan fill="#d4d4d4"> /exit</tspan>
+        </text>
+
+        <!-- Box top border -->
+        <text x="36" y="886" class="mono" font-size="13" fill="#444444">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;</text>
+
+        <!-- Box title row -->
+        <text x="36" y="906" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">   Luthien Session Summary      </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Box middle border -->
+        <text x="36" y="926" class="mono" font-size="13" fill="#444444">&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;</text>
+
+        <!-- Empty row -->
+        <text x="36" y="946" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">                                 </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Catches count row -->
+        <text x="36" y="966" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">   </tspan>
+          <tspan fill="#4ade80" class="mono-bold">47 catches</tspan>
+          <tspan fill="#d4d4d4"> across 15 responses</tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Empty row -->
+        <text x="36" y="986" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">                                 </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Policy row: DeSlop -->
+        <text x="36" y="1006" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">   </tspan>
+          <tspan fill="#4ec9b0">DeSlop</tspan>
+          <tspan fill="#d4d4d4">          44   </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+          <tspan fill="#d4d4d4">        </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Policy row: DogfoodSafety -->
+        <text x="36" y="1026" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">   </tspan>
+          <tspan fill="#4ec9b0">DogfoodSafety</tspan>
+          <tspan fill="#d4d4d4">    2   </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+          <tspan fill="#d4d4d4">        </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Policy row: Package Stds -->
+        <text x="36" y="1046" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">   </tspan>
+          <tspan fill="#4ec9b0">Package Stds</tspan>
+          <tspan fill="#d4d4d4">     1   </tspan>
+          <tspan fill="#28c840">&#10003;</tspan>
+          <tspan fill="#d4d4d4">        </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Empty row -->
+        <text x="36" y="1066" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#d4d4d4">                                 </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Config row -->
+        <text x="36" y="1086" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#808080">   Config: .claude/luthien.yaml  </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Duration row -->
+        <text x="36" y="1106" class="mono" font-size="13">
+          <tspan fill="#444444">&#9474;</tspan>
+          <tspan fill="#808080">   Duration: 42 min              </tspan>
+          <tspan fill="#444444">&#9474;</tspan>
+        </text>
+
+        <!-- Box bottom border -->
+        <text x="36" y="1126" class="mono" font-size="13" fill="#444444">&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</text>
+
+        <!-- Bottom cursor -->
+        <text x="20" y="1158" class="mono" font-size="13" fill="#4ec9b0">$</text>
+        <rect x="34" y="1146" width="8" height="16" rx="1" fill="#4ec9b0" class="cursor-blink"/>
+
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

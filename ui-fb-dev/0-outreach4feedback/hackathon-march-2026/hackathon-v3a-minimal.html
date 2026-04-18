@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luthien - AI Control Hackathon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #09090b; color: #d4d4d8; font-family: 'Inter', sans-serif; line-height: 1.7; }
+    .container { max-width: 600px; margin: 0 auto; padding: 60px 24px 80px; }
+    h1 { color: #fafafa; font-size: 1.6rem; font-weight: 700; margin-bottom: 12px; }
+    h2 { color: #fafafa; font-size: 1.1rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+    p { margin-bottom: 14px; font-size: 0.95rem; }
+    a { color: #6b9fff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul { padding-left: 20px; margin-bottom: 16px; }
+    li { margin-bottom: 10px; font-size: 0.9rem; }
+    .muted { color: #71717a; font-size: 0.85rem; }
+    hr { border: none; border-top: 1px solid #27272a; margin: 40px 0; }
+    @media (max-width: 600px) { .container { padding: 40px 16px 60px; } h1 { font-size: 1.4rem; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Luthien: open-source proxy for AI control</h1>
+    <p>Sits between AI agents and model APIs. Intercepts requests, runs policy checks, logs everything. <a href="https://github.com/LuthienResearch/luthien-proxy">GitHub</a></p>
+    <p class="muted">Built by <a href="https://github.com/jdhyani">Jai Dhyani</a> (speaker/judge at this hackathon, talk Friday noon) and Scott Wofford. We're on Discord all weekend.</p>
+
+    <h2>Project ideas</h2>
+    <ul>
+      <li><strong>Monitor for BashArena/LinuxArena</strong> - Write a policy that flags suspicious commands before they execute. Can a proxy-level monitor beat Ctrl-Z's 58%->7% result? <span class="muted">Track 2, LinuxArena prize eligible</span></li>
+      <li><strong>Red team our policies</strong> - Try to get harmful actions past Luthien's defenses. Build a dataset of what works and what doesn't. <span class="muted">Track 3</span></li>
+      <li><strong>Interrogation protocol</strong> - Extend our LLM-as-judge to ask the untrusted model clarifying questions before allowing actions. Measure safety vs usefulness. <span class="muted">Track 2</span></li>
+      <li><strong>Trusted editing at the proxy layer</strong> - Intercept suspicious code, have a trusted model rewrite it, measure whether functionality survives. <span class="muted">Track 2</span></li>
+    </ul>
+    <p class="muted">More ideas + details: <a href="https://github.com/LuthienResearch/luthien-org/blob/main/ui-fb-dev/0-outreach4feedback/hackathon-march-2026/project-ideas.md">project-ideas.md</a></p>
+
+    <h2>Get started</h2>
+    <p>Docker required. <a href="https://github.com/LuthienResearch/luthien-proxy#quick-start">Quick Start</a> takes about 5 minutes.</p>
+    <p>Questions? Tag us on Discord or <a href="https://calendar.app.google/9Cye1yr6fMJVZNLD6">book a 15-min call</a>.</p>
+
+  </div>
+</body>
+</html>

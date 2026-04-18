@@ -1,0 +1,17 @@
+Company,Category,Primary Tagline,Supporting Text,Formula Type,Key Emotion,Notes
+Vercel,Deployment,"Build and deploy on the AI Cloud","The developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web",Capability + Platform,Confidence,AI as native feature
+Railway,Deployment,Ship software peacefully,All-in-one intelligent cloud provider,Outcome + Emotion,Peace/Relief,Speaks to developer frustration
+Render,Deployment,Your fastest path to production,"Build, deploy, and scale with unparalleled ease",Time-to-Value,Speed,First user to billionth
+Fly.io,Deployment,Build fast. Run any code fearlessly,The platform for devs who just want to ship,Outcome + Emotion,Fearlessness,Acknowledges complexity problem
+Supabase,Backend,Build in a weekend. Scale to millions,"Postgres, Auth, APIs, Edge Functions, Realtime, Storage",Time-to-Value,Empowerment,Weekend = concrete time-to-value
+PlanetScale,Database,The world's fastest and most scalable cloud databases,Benchmarked speed with p95 from 45ms to 5-10ms,Superlative + Proof,Trust,Measurable claims
+Datadog,Observability,AI-Powered Observability and Security,"See inside any stack, any app, at any scale, anywhere",Capability + Scope,Confidence,Comprehensive positioning
+Sentry,Observability,This Is the Web UI,It's HTML all the way down,Anti-Hype,Honesty,Technical credibility
+LangChain,AI/LLM,Ship reliable agents,"Observe, evaluate, and deploy agents",Outcome + Reliability,Trust,Agent engineering platform
+Helicone,AI/LLM,Build Reliable AI Apps,"Route, debug, and analyze your applications",Outcome + Reliability,Trust,Purpose-built for AI
+Braintrust,AI/LLM,"Iterate, eval, ship",The AI observability platform for building quality AI products,Action Trio,Momentum,Workflow summary
+OpenHands,AI Agents,Scale from one to thousands of agents,"Open source, model-agnostic, enterprise-ready",Capability + Scale,Ambition,Social proof emphasis
+Apollo Research,AI Safety,Dedicated to improving our understanding of AI to mitigate its risks,Technical AI governance and evaluation,Mission,Purpose,Research-first positioning
+Stripe,Payments,Financial infrastructure for the internet,Powerful APIs and software solutions,Infrastructure + Scope,Trust,Bold and concise
+Linear,Dev Tools,Linear is a better way to build software,Purpose-built for modern software teams,Comparative,Superiority,Developer-focused design
+Tailscale,Networking,Secure remote access to your infrastructure,Zero config VPN,Capability + Simplicity,Ease,Removes complexity

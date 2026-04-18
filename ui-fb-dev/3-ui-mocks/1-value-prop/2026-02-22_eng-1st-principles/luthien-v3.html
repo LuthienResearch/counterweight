@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luthien — How It Works</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090b; --card: #111113; --border: #27272a;
+    --text: #e4e4e7; --muted: #71717a; --dim: #52525b;
+    --red: #ef4444; --amber: #f59e0b; --blue: #60a5fa; --green: #22c55e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'JetBrains Mono',monospace; padding:1.5rem; font-size:13px; }
+  .c { max-width:600px; margin:0 auto; }
+
+  h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; text-align:center; }
+  h1 span { color:var(--red); }
+  .sub { text-align:center; font-size:0.7rem; color:var(--muted); margin:0.2rem 0 1.5rem; }
+
+  /* FLOW */
+  .row { text-align:center; }
+  .pipe { width:2px; height:10px; background:var(--border); margin:0 auto; }
+  .arr { font-size:0.6rem; color:var(--dim); text-align:center; }
+
+  /* AGENT */
+  .agent {
+    border:2px dashed var(--border); border-radius:6px; padding:0.6rem;
+    text-align:center; background:var(--card);
+  }
+  .agent b { font-family:'Syne',sans-serif; font-size:0.85rem; }
+  .agent .d { font-size:0.6rem; color:var(--muted); }
+  .agent .badge {
+    display:inline-block; margin-top:0.3rem; font-size:0.5rem; font-weight:700;
+    letter-spacing:0.1em; color:var(--red); border:1px solid var(--red);
+    padding:0.05rem 0.4rem; border-radius:2px; text-transform:uppercase;
+  }
+
+  /* BRACKET */
+  .bracket {
+    border:1px solid var(--border); border-radius:8px; padding:0.6rem;
+    position:relative; margin-top:0;
+  }
+  .bracket .bl {
+    position:absolute; top:-0.4rem; left:0.8rem;
+    font-size:0.5rem; font-weight:700; color:var(--dim);
+    letter-spacing:0.1em; text-transform:uppercase;
+    background:var(--bg); padding:0 0.3rem;
+  }
+
+  /* LAYERS */
+  .layer {
+    border-radius:5px; padding:0.5rem 0.7rem; margin-bottom:0.35rem;
+  }
+  .layer:last-child { margin-bottom:0; }
+  .layer .top { display:flex; align-items:baseline; gap:0.4rem; }
+  .layer .n { font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; }
+  .layer .t {
+    font-size:0.45rem; font-weight:700; letter-spacing:0.08em;
+    text-transform:uppercase; padding:0.05rem 0.35rem; border-radius:2px;
+  }
+  .layer .q { font-size:0.65rem; color:var(--muted); font-style:italic; }
+
+  .l1 { background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.35); }
+  .l1 .n { color:var(--red); }
+  .l1 .t { background:rgba(239,68,68,0.12); color:var(--red); }
+
+  .l2 { background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.3); }
+  .l2 .n { color:var(--amber); }
+  .l2 .t { background:rgba(245,158,11,0.1); color:var(--amber); }
+
+  .l3 { background:rgba(96,165,250,0.04); border:1px solid rgba(96,165,250,0.25); }
+  .l3 .n { color:var(--blue); }
+  .l3 .t { background:rgba(96,165,250,0.1); color:var(--blue); }
+  .l3-note {
+    margin-top:0.3rem; font-size:0.58rem; color:var(--dim); line-height:1.5;
+    border-top:1px solid rgba(96,165,250,0.12); padding-top:0.3rem;
+  }
+  .l3-note strong { color:var(--blue); }
+
+  /* DECISIONS */
+  .decs {
+    display:flex; justify-content:center; gap:1rem; padding:0.2rem 0;
+  }
+  .dec {
+    font-size:0.55rem; font-weight:700; letter-spacing:0.06em;
+    text-transform:uppercase; display:flex; align-items:center; gap:0.2rem;
+  }
+  .dec .dot { width:5px; height:5px; border-radius:50%; }
+  .dec-r { color:var(--red); } .dec-r .dot { background:var(--red); }
+  .dec-a { color:var(--amber); } .dec-a .dot { background:var(--amber); }
+  .dec-g { color:var(--green); } .dec-g .dot { background:var(--green); }
+
+  .out {
+    background:var(--card); border:1px solid var(--green); border-radius:6px;
+    text-align:center; padding:0.5rem;
+  }
+  .out b { font-family:'Syne',sans-serif; font-size:0.8rem; color:var(--green); }
+
+  /* TIMELINE */
+  .timeline {
+    margin-top:1.5rem; border:1px solid var(--border); border-radius:6px;
+    padding:0.7rem 0.8rem; background:var(--card);
+  }
+  .timeline .th {
+    font-family:'Syne',sans-serif; font-weight:700; font-size:0.75rem;
+    margin-bottom:0.5rem;
+  }
+  .trow {
+    display:grid; grid-template-columns:auto 1fr; gap:0.5rem;
+    align-items:center; margin-bottom:0.25rem; font-size:0.6rem;
+  }
+  .trow:last-child { margin-bottom:0; }
+  .twhen {
+    font-weight:700; font-size:0.5rem; letter-spacing:0.06em;
+    text-transform:uppercase; padding:0.1rem 0.4rem; border-radius:2px;
+    text-align:center; min-width:100px;
+  }
+  .w0 { background:rgba(239,68,68,0.1); color:var(--red); }
+  .w1 { background:rgba(245,158,11,0.08); color:var(--amber); }
+  .w2 { background:rgba(96,165,250,0.08); color:var(--blue); }
+  .w3 { background:rgba(34,197,94,0.08); color:var(--green); }
+  .twhat { color:var(--muted); }
+  .twhat strong { color:var(--text); }
+
+  /* PUNCHLINE */
+  .punch {
+    margin-top:1rem; font-size:0.65rem; color:var(--muted);
+    border-left:2px solid var(--red); padding-left:0.7rem; line-height:1.6;
+  }
+  .punch strong { color:var(--red); }
+
+  /* TWO COLS */
+  .cols {
+    margin-top:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;
+  }
+  .col {
+    border:1px solid var(--border); border-radius:6px;
+    padding:0.6rem 0.7rem; background:var(--card);
+  }
+  .col .ch { font-family:'Syne',sans-serif; font-weight:700; font-size:0.7rem; margin-bottom:0.2rem; }
+  .col .cb { font-size:0.6rem; color:var(--muted); line-height:1.5; }
+  .col .cb strong { color:var(--text); }
+  .col-y { border-color:rgba(239,68,68,0.25); }
+  .col-y .ch { color:var(--red); }
+  .col-p { border-color:rgba(34,197,94,0.25); }
+  .col-p .ch { color:var(--green); }
+
+  .foot {
+    margin-top:1.5rem; text-align:center; font-size:0.55rem; color:var(--dim);
+  }
+  .foot a { color:var(--muted); text-decoration:none; border-bottom:1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="c">
+
+  <h1>Luthien — <span>Assume Nothing</span></h1>
+  <p class="sub">Your AI agent is a black box. You only see what comes out.</p>
+
+  <div class="agent">
+    <b>🤖 AI Agent</b>
+    <div class="d">Claude Code · Cursor · Codex · whatever</div>
+    <div class="badge">trust: zero</div>
+  </div>
+
+  <div class="pipe"></div><div class="arr">▼ output</div><div class="pipe"></div>
+
+  <div class="bracket">
+    <div class="bl">luthien proxy — intercepts every action</div>
+
+    <div class="layer l1" style="margin-top:0.3rem;">
+      <div class="top"><div class="n">sus</div><div class="t">block · the floor</div></div>
+      <div class="q">"Did it try something dangerous or stupid?"</div>
+    </div>
+
+    <div class="layer l2">
+      <div class="top"><div class="n">claude.md</div><div class="t">flag · your rules</div></div>
+      <div class="q">"Did it follow the rules you already wrote?"</div>
+    </div>
+
+    <div class="layer l3">
+      <div class="top"><div class="n">prompt</div><div class="t">flag · full session</div></div>
+      <div class="q">"Did it actually do what you've asked across the whole conversation?"</div>
+      <div class="l3-note">Luthien logs your full prompt history. When the agent compacts away your earlier instructions, <strong>Luthien still remembers.</strong> Luthien's monitors keep track of the forest, so Claude Code can focus on one tree at a time.</div>
+    </div>
+  </div>
+
+  <div class="pipe"></div>
+  <div class="decs">
+    <span class="dec dec-r"><span class="dot"></span>Block</span>
+    <span class="dec dec-a"><span class="dot"></span>Flag</span>
+    <span class="dec dec-g"><span class="dot"></span>Allow</span>
+  </div>
+  <div class="pipe"></div>
+
+  <div class="out"><b>✓ reaches your codebase</b></div>
+
+  <!-- WHERE IT FITS -->
+  <div class="timeline">
+    <div class="th">Where Luthien sits</div>
+    <div class="trow"><div class="twhen w0">at generation ←</div><div class="twhat"><strong>Luthien</strong> — intercepts + logs full history</div></div>
+    <div class="trow"><div class="twhen w1">at commit</div><div class="twhat">hooks, linters, formatters</div></div>
+    <div class="trow"><div class="twhen w2">at push / PR</div><div class="twhat">CI/CD, CodeRabbit, human review</div></div>
+    <div class="trow"><div class="twhen w3">in production</div><div class="twhat">monitoring, alerting, incidents</div></div>
+  </div>
+
+  <div class="punch">
+    <strong>Everything else catches problems after they're in your code.</strong> Luthien catches them before they exist. And because it logs the full conversation, it remembers what the agent forgot. Earlier = cheaper. Memory = consistency.
+  </div>
+
+  <div class="cols">
+    <div class="col col-y">
+      <div class="ch">😈 --dangerously-skip-permissions</div>
+      <div class="cb">No CI, no PR review, yolo to main. <strong>Luthien is your only safety net.</strong></div>
+    </div>
+    <div class="col col-p">
+      <div class="ch">🛡 Mature pipeline</div>
+      <div class="cb">Luthien sits upstream of your PR. It notifies you the moment a monitor catches Claude Code doing something sus — <strong>so you stay in flow instead of context-switching to review a bad diff later.</strong></div>
+    </div>
+  </div>
+
+  <div class="foot"><a href="https://luthienresearch.org">luthienresearch.org</a> · 2026</div>
+</div>
+</body>
+</html>
